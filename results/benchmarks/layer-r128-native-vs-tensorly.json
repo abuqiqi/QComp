@@ -1,0 +1,135 @@
+{
+  "checkpoint": "/mnt/intern7/xls/projects/qwen3-tn-compression/artifacts/decompositions/qwen3-8b-down-proj-r128/modules/layer-0",
+  "config": {
+    "activation_checkpointing": true,
+    "autocast_dtype": "bfloat16",
+    "backends": [
+      "native",
+      "tensorly_torch"
+    ],
+    "core_dtype": "float32",
+    "device": "cuda:0",
+    "input_dtype": "bfloat16",
+    "iterations": 50,
+    "seed": 42,
+    "token_chunk_size": 8,
+    "tokens": 1024,
+    "warmup": 10
+  },
+  "environment": {
+    "cuda_version": "12.1",
+    "device_name": "NVIDIA A100-SXM4-80GB",
+    "torch_version": "2.5.1"
+  },
+  "format": "qwen3-tn-tt-backend-benchmark-v1",
+  "module_path": "model.layers.0.mlp.down_proj",
+  "results": {
+    "native": {
+      "accuracy": {
+        "core_gradient_max_abs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "core_gradient_relative_l2": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "input_gradient_max_abs": 0.0,
+        "input_gradient_relative_l2": 0.0,
+        "output_max_abs": 0.0,
+        "output_relative_l2": 0.0,
+        "reference_backend": "native"
+      },
+      "backend": {
+        "name": "native",
+        "version": "1"
+      },
+      "forward": {
+        "mean_ms": 51.224969709292054,
+        "median_ms": 51.215708488598466,
+        "peak_allocated_bytes": 226787328,
+        "peak_reserved_bytes": 6754926592,
+        "tokens_per_second": 19993.865753667367
+      },
+      "forward_backward": {
+        "mean_ms": 195.69903095252812,
+        "median_ms": 187.5956687144935,
+        "peak_allocated_bytes": 6677758976,
+        "peak_reserved_bytes": 6754926592,
+        "tokens_per_second": 5458.548201123188
+      }
+    },
+    "tensorly_torch": {
+      "accuracy": {
+        "core_gradient_max_abs": [
+          4.546530544757843e-05,
+          2.053682692348957e-05,
+          6.863614544272423e-06,
+          2.2418098524212837e-06
+        ],
+        "core_gradient_relative_l2": [
+          0.001694276438953471,
+          0.005470009138340519,
+          0.005951301267988947,
+          0.0018037900465827795
+        ],
+        "input_gradient_max_abs": 1.4901161193847656e-08,
+        "input_gradient_relative_l2": 0.004448467567917693,
+        "output_max_abs": 0.040529727935791016,
+        "output_relative_l2": 0.0033332582304896052,
+        "reference_backend": "native"
+      },
+      "backend": {
+        "factorization": "BlockTT",
+        "implementation": "factorized",
+        "name": "tensorly_torch",
+        "package": "tensorly-torch",
+        "version": "0.5.0"
+      },
+      "forward": {
+        "mean_ms": 56.019956432282925,
+        "median_ms": 56.04472802951932,
+        "peak_allocated_bytes": 11366809600,
+        "peak_reserved_bytes": 24280825856,
+        "tokens_per_second": 18271.120870827475
+      },
+      "forward_backward": {
+        "mean_ms": 195.33357106149197,
+        "median_ms": 195.14476042240858,
+        "peak_allocated_bytes": 14656275456,
+        "peak_reserved_bytes": 24280825856,
+        "tokens_per_second": 5247.38659538416
+      }
+    }
+  },
+  "spec": {
+    "compression_ratio": 23.54022988505747,
+    "dense_num_parameters": 50331648,
+    "in_features": 12288,
+    "in_modes": [
+      8,
+      8,
+      8,
+      24
+    ],
+    "num_parameters": 2138112,
+    "out_features": 4096,
+    "out_modes": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "ranks": [
+      1,
+      64,
+      128,
+      192,
+      1
+    ]
+  }
+}

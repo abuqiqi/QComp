@@ -1,0 +1,187 @@
+{
+  "config": {
+    "backends": [
+      "native",
+      "tensorly_torch"
+    ],
+    "batch_size": 1,
+    "bf16_autocast": true,
+    "device": "cuda:0",
+    "fail_fast": false,
+    "gradient_accumulation_steps": 1,
+    "gradient_checkpointing": true,
+    "input_source": "fixed_synthetic_tokens",
+    "learning_rate": 1e-05,
+    "max_grad_norm": 1.0,
+    "seed": 42,
+    "sequence_length": 256,
+    "steps": 5,
+    "token_chunk_size": 8,
+    "tt_activation_checkpointing": true,
+    "warmup_steps": 1,
+    "weight_decay": 0.0
+  },
+  "environment": {
+    "cuda_version": "12.1",
+    "device_name": "NVIDIA A100-SXM4-80GB",
+    "python_version": "3.11.9 (main, Apr 19 2024, 16:48:06) [GCC 11.2.0]",
+    "torch_version": "2.5.1"
+  },
+  "format": "qwen3-tn-tt-training-backend-benchmark-v1",
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_paths": [
+    "model.layers.0.mlp.down_proj",
+    "model.layers.1.mlp.down_proj",
+    "model.layers.2.mlp.down_proj",
+    "model.layers.3.mlp.down_proj",
+    "model.layers.4.mlp.down_proj",
+    "model.layers.5.mlp.down_proj"
+  ],
+  "results": {
+    "native": {
+      "backend": "native",
+      "backend_modules": {
+        "model.layers.0.mlp.down_proj": {
+          "name": "native",
+          "version": "1"
+        },
+        "model.layers.1.mlp.down_proj": {
+          "name": "native",
+          "version": "1"
+        },
+        "model.layers.2.mlp.down_proj": {
+          "name": "native",
+          "version": "1"
+        },
+        "model.layers.3.mlp.down_proj": {
+          "name": "native",
+          "version": "1"
+        },
+        "model.layers.4.mlp.down_proj": {
+          "name": "native",
+          "version": "1"
+        },
+        "model.layers.5.mlp.down_proj": {
+          "name": "native",
+          "version": "1"
+        }
+      },
+      "model_load_seconds": 6.615863534156233,
+      "module_paths": [
+        "model.layers.0.mlp.down_proj",
+        "model.layers.1.mlp.down_proj",
+        "model.layers.2.mlp.down_proj",
+        "model.layers.3.mlp.down_proj",
+        "model.layers.4.mlp.down_proj",
+        "model.layers.5.mlp.down_proj"
+      ],
+      "optimizer_step": {
+        "last_loss": 11.852313041687012,
+        "max_ms": 2754.132536239922,
+        "mean_loss": 12.244208145141602,
+        "mean_ms": 2638.618888426572,
+        "median_ms": 2612.497301772237,
+        "min_ms": 2598.2976220548153,
+        "p95_ms": 2754.132536239922,
+        "peak_allocated_bytes": 28872120320,
+        "peak_reserved_bytes": 29588717568,
+        "samples_ms": [
+          2598.2976220548153,
+          2610.1464270614088,
+          2612.497301772237,
+          2618.0205550044775,
+          2754.132536239922
+        ],
+        "tokens_per_second": 97.02045305703648,
+        "tokens_per_update": 256
+      },
+      "status": "ok",
+      "total_model_parameters": 8090317824,
+      "trainable_tt_parameters": 201572352,
+      "tt_install_seconds": 0.2539034392684698,
+      "warmup_seconds": 2.860117736738175
+    },
+    "tensorly_torch": {
+      "backend": "tensorly_torch",
+      "backend_modules": {
+        "model.layers.0.mlp.down_proj": {
+          "factorization": "BlockTT",
+          "implementation": "factorized",
+          "name": "tensorly_torch",
+          "package": "tensorly-torch",
+          "version": "0.5.0"
+        },
+        "model.layers.1.mlp.down_proj": {
+          "factorization": "BlockTT",
+          "implementation": "factorized",
+          "name": "tensorly_torch",
+          "package": "tensorly-torch",
+          "version": "0.5.0"
+        },
+        "model.layers.2.mlp.down_proj": {
+          "factorization": "BlockTT",
+          "implementation": "factorized",
+          "name": "tensorly_torch",
+          "package": "tensorly-torch",
+          "version": "0.5.0"
+        },
+        "model.layers.3.mlp.down_proj": {
+          "factorization": "BlockTT",
+          "implementation": "factorized",
+          "name": "tensorly_torch",
+          "package": "tensorly-torch",
+          "version": "0.5.0"
+        },
+        "model.layers.4.mlp.down_proj": {
+          "factorization": "BlockTT",
+          "implementation": "factorized",
+          "name": "tensorly_torch",
+          "package": "tensorly-torch",
+          "version": "0.5.0"
+        },
+        "model.layers.5.mlp.down_proj": {
+          "factorization": "BlockTT",
+          "implementation": "factorized",
+          "name": "tensorly_torch",
+          "package": "tensorly-torch",
+          "version": "0.5.0"
+        }
+      },
+      "model_load_seconds": 5.7758929510600865,
+      "module_paths": [
+        "model.layers.0.mlp.down_proj",
+        "model.layers.1.mlp.down_proj",
+        "model.layers.2.mlp.down_proj",
+        "model.layers.3.mlp.down_proj",
+        "model.layers.4.mlp.down_proj",
+        "model.layers.5.mlp.down_proj"
+      ],
+      "optimizer_step": {
+        "last_loss": 11.813812255859375,
+        "max_ms": 3372.1130420453846,
+        "mean_loss": 12.233944511413574,
+        "mean_ms": 3360.149430669844,
+        "median_ms": 3362.247391138226,
+        "min_ms": 3350.6507920101285,
+        "p95_ms": 3372.1130420453846,
+        "peak_allocated_bytes": 46419056640,
+        "peak_reserved_bytes": 58120470528,
+        "samples_ms": [
+          3350.6507920101285,
+          3353.092972189188,
+          3362.247391138226,
+          3362.642955966294,
+          3372.1130420453846
+        ],
+        "tokens_per_second": 76.18708789060209,
+        "tokens_per_update": 256
+      },
+      "status": "ok",
+      "total_model_parameters": 8090317824,
+      "trainable_tt_parameters": 201572352,
+      "tt_install_seconds": 0.25509074376896024,
+      "warmup_seconds": 3.3715534238144755
+    }
+  },
+  "tt_checkpoint_root": "/mnt/intern7/xls/projects/qwen3-tn-compression/artifacts/finetuned/qwen3-8b-down-proj-r2048-wikitext-quick/final"
+}

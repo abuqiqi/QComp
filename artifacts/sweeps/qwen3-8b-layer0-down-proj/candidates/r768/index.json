@@ -1,0 +1,13 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {},
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/projection",
+      "cores_sha256": "4068c76769cfcaee2b2b35afff987dfbe5cbe0b51ecffdff2b6a1f05f4b16841",
+      "module_path": "model.layers.0.mlp.down_proj"
+    }
+  ],
+  "purpose": "rank-sweep-r768"
+}

@@ -1,0 +1,41 @@
+{
+  "checkpoint_bytes": 67191112,
+  "core_dtype": "bfloat16",
+  "cores_sha256": "cec390b05518f7d3374c103201b755335c4ce0adc01ee9b42f9f5f0e5417c718",
+  "format": "qwen3-tn-tt-matrix-v1",
+  "metadata": {
+    "global_step": 1,
+    "migrated_from_legacy_layout": true,
+    "token_chunk_size": 8
+  },
+  "metrics": {},
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.0.mlp.down_proj",
+  "purpose": "tt-matrix-finetuned",
+  "spec": {
+    "compression_ratio": 1.4981711777615216,
+    "dense_num_parameters": 50331648,
+    "in_features": 12288,
+    "in_modes": [
+      8,
+      8,
+      8,
+      24
+    ],
+    "num_parameters": 33595392,
+    "out_features": 4096,
+    "out_modes": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "ranks": [
+      1,
+      64,
+      2048,
+      192,
+      1
+    ]
+  }
+}

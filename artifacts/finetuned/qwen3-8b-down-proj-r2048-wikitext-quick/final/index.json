@@ -1,0 +1,40 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {
+    "global_step": 1
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/layer-0",
+      "cores_sha256": "cec390b05518f7d3374c103201b755335c4ce0adc01ee9b42f9f5f0e5417c718",
+      "module_path": "model.layers.0.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-1",
+      "cores_sha256": "ace8295c1e373bc10aba31298e2b3a1029abd2a5842a99227321b9ddb086ce37",
+      "module_path": "model.layers.1.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-2",
+      "cores_sha256": "f69348ee2a6b40aa2a3960c53122bd5fc9256503e7d2cd80d5d9f3c263bf4d71",
+      "module_path": "model.layers.2.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-3",
+      "cores_sha256": "05e1a3546292e6d65518e838de2d215d0f4bd1b73390686d35478302d1ec9af6",
+      "module_path": "model.layers.3.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-4",
+      "cores_sha256": "41ded34c7efcbc930b27ee5320bdc5dba36dc7a073cc87ebd8c5a6b56f9cf39c",
+      "module_path": "model.layers.4.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-5",
+      "cores_sha256": "524e141c104bf4446f9901b7fcb36eb477a2d0241eda7bbd9928733da9de227c",
+      "module_path": "model.layers.5.mlp.down_proj"
+    }
+  ],
+  "purpose": "qwen3-8b-wikitext-quick-finetuned"
+}

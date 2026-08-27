@@ -1,0 +1,58 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {},
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/layer-0",
+      "cores_sha256": "f326fe0cb47658e272899a7983faab7afeb92dfaf9b34901792393c8fa302430",
+      "module_path": "model.layers.0.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-1",
+      "cores_sha256": "8039623b6f6c75df59c9aec34a0b8974e49a5b2cb02a4eb0dadf115f635f41f6",
+      "module_path": "model.layers.1.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-2",
+      "cores_sha256": "b5604767f472324443af0b7df7961943c6a892a06aa3b063006e6c642c6a27cd",
+      "module_path": "model.layers.2.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-3",
+      "cores_sha256": "0232bf1f11782e438c62f76d12c2446c5998073b36ede2df3c8bb5f056a3e1cf",
+      "module_path": "model.layers.3.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-4",
+      "cores_sha256": "a1117e865ce680f10e054be19f9636b3499ed765032c8528ee928dccbbcc3134",
+      "module_path": "model.layers.4.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-5",
+      "cores_sha256": "ad9c9a61c1b80d0e08a4e25d03e3cc1cd7e12ca1da15eb881291e5f95736936d",
+      "module_path": "model.layers.5.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-6",
+      "cores_sha256": "92d93bd39ecfd557daa10665c0b2eb30992f01eb47b829e471cdd21c6a1b8e2e",
+      "module_path": "model.layers.6.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-7",
+      "cores_sha256": "fa5f5749271f24d81f91556a90498ee45bfe943845fedcc18f6d7f480431eff0",
+      "module_path": "model.layers.7.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-8",
+      "cores_sha256": "a7e8a2986d6f9a6c2dfa6fd14b1b9ebd31d8d97258b601312458acd9d302d033",
+      "module_path": "model.layers.8.mlp.down_proj"
+    },
+    {
+      "checkpoint": "modules/layer-9",
+      "cores_sha256": "025422ea433c43e2e92f0a2a7551c765c2b2113afad7c0cc350747ff5ee97876",
+      "module_path": "model.layers.9.mlp.down_proj"
+    }
+  ],
+  "purpose": "qwen3-8b-down-proj-r2048"
+}

@@ -1,0 +1,61 @@
+{
+  "checkpoint_bytes": 6373696,
+  "core_dtype": "bfloat16",
+  "cores_sha256": "338533e74033d11c3b0a48f97bbf47276d574ae2c4099a7559424cd88aa50c2b",
+  "format": "qwen3-tn-tt-matrix-v1",
+  "metadata": {
+    "migrated_from_legacy_layout": true,
+    "source": "central-bond slice of full-rank FP32 cores",
+    "tensor_name": "model.layers.0.mlp.down_proj.weight",
+    "transformers_version": "4.51.3"
+  },
+  "metrics": {
+    "activation_output": {
+      "cosine": 0.5403863942651107,
+      "finite": true,
+      "max_abs": 9.3125,
+      "relative_l2": 0.8850189141189968
+    },
+    "latency": {
+      "milliseconds_per_run": 5.498455682148536,
+      "peak_gpu_memory_bytes": 360833024,
+      "repeats": 3,
+      "tokens": 32
+    },
+    "weight": {
+      "cosine": 0.3263465126529162,
+      "finite": true,
+      "max_abs": 0.591796875,
+      "relative_l2": 0.9452502071543208
+    }
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.0.mlp.down_proj",
+  "purpose": "compressed-candidate",
+  "spec": {
+    "compression_ratio": 15.794344473007712,
+    "dense_num_parameters": 50331648,
+    "in_features": 12288,
+    "in_modes": [
+      8,
+      8,
+      8,
+      24
+    ],
+    "num_parameters": 3186688,
+    "out_features": 4096,
+    "out_modes": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "ranks": [
+      1,
+      64,
+      192,
+      192,
+      1
+    ]
+  }
+}

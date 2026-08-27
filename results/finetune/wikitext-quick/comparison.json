@@ -1,0 +1,525 @@
+{
+  "changes": {
+    "bits_per_byte,none": {
+      "after_minus_baseline": -0.008146504554163991,
+      "after_minus_before": -0.008146504554163991,
+      "after_vs_baseline_percent": -1.3157894736842248,
+      "after_vs_before_percent": -1.3157894736842248,
+      "before_minus_baseline": 0.0,
+      "before_vs_baseline_percent": 0.0,
+      "recovered_fraction": null,
+      "recovered_percent": null
+    },
+    "word_perplexity,none": {
+      "after_minus_baseline": -0.26700714472535125,
+      "after_minus_before": -0.26700714472535125,
+      "after_vs_baseline_percent": -2.8852792984762528,
+      "after_vs_before_percent": -2.8852792984762528,
+      "before_minus_baseline": 0.0,
+      "before_vs_baseline_percent": 0.0,
+      "recovered_fraction": null,
+      "recovered_percent": null
+    }
+  },
+  "evaluation_config": {
+    "apply_chat_template": false,
+    "batch_size": 1,
+    "bootstrap_iters": 0,
+    "limit": 1,
+    "max_length": 2048,
+    "num_fewshot": 0,
+    "seed": 42,
+    "task": "wikitext"
+  },
+  "evaluation_sources": {
+    "baseline": "cache",
+    "tt_after_finetune": "evaluation",
+    "tt_before_finetune": "evaluation"
+  },
+  "format": "qwen3-tn-notebook06-comparison-v1",
+  "layer_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "metrics": {
+    "baseline": {
+      "bits_per_byte,none": 0.6191343461164566,
+      "word_perplexity,none": 9.254117785628608
+    },
+    "tt_after_finetune": {
+      "bits_per_byte,none": 0.6109878415622926,
+      "word_perplexity,none": 8.987110640903257
+    },
+    "tt_before_finetune": {
+      "bits_per_byte,none": 0.6191343461164566,
+      "word_perplexity,none": 9.254117785628608
+    }
+  },
+  "mode": "quick",
+  "model_path": "/infini-data/Qwen3-8B",
+  "result_files": {
+    "baseline": "/mnt/intern7/xls/projects/qwen3-tn-compression/results/finetune/wikitext-quick/baseline.json",
+    "tt_after_finetune": "/mnt/intern7/xls/projects/qwen3-tn-compression/results/finetune/wikitext-quick/after.json",
+    "tt_before_finetune": "/mnt/intern7/xls/projects/qwen3-tn-compression/results/finetune/wikitext-quick/before.json"
+  },
+  "timing": {
+    "baseline": {
+      "evaluation_seconds": 9.707846083678305,
+      "model_load_seconds": null
+    },
+    "tt_after_finetune": {
+      "evaluation_seconds": 11.82606394123286,
+      "model_load_seconds": null
+    },
+    "tt_before_finetune": {
+      "evaluation_seconds": 11.734869424253702,
+      "model_load_seconds": null
+    }
+  },
+  "training_metrics": {
+    "global_step": 1,
+    "last_training_loss": 2.5788817405700684,
+    "mean_training_loss": 2.679276406764984,
+    "model_gradient_checkpointing": true,
+    "peak_cuda_memory_bytes": 73643805696,
+    "resume_checkpoint": null,
+    "resume_checkpoint_removed_after_success": true,
+    "resumed_from": null,
+    "total_model_parameters": 8090317824,
+    "trainable_tt_parameters": 201572352,
+    "tt_activation_checkpointing": true,
+    "tt_module_paths": [
+      "model.layers.0.mlp.down_proj",
+      "model.layers.1.mlp.down_proj",
+      "model.layers.2.mlp.down_proj",
+      "model.layers.3.mlp.down_proj",
+      "model.layers.4.mlp.down_proj",
+      "model.layers.5.mlp.down_proj"
+    ]
+  },
+  "training_signature": {
+    "dataset": {
+      "config": "wikitext-2-raw-v1",
+      "documents": 629,
+      "fingerprint": "35de03d316a46c28",
+      "full_token_count": 2519154,
+      "name": "EleutherAI/wikitext_document_level",
+      "selected_blocks": 8,
+      "selected_token_count": 8192,
+      "split": "train"
+    },
+    "expected_optimizer_updates": 1,
+    "format": "qwen3-tn-notebook06-training-signature-v1",
+    "initial_tt": {
+      "module_paths": [
+        "model.layers.0.mlp.down_proj",
+        "model.layers.1.mlp.down_proj",
+        "model.layers.2.mlp.down_proj",
+        "model.layers.3.mlp.down_proj",
+        "model.layers.4.mlp.down_proj",
+        "model.layers.5.mlp.down_proj"
+      ],
+      "targets": {
+        "model.layers.0.mlp.down_proj": {
+          "source_cores_sha256": "f326fe0cb47658e272899a7983faab7afeb92dfaf9b34901792393c8fa302430",
+          "source_weight_sha256": "56ca545862b9b22d1feb9e00433b6cc8b5c22787c215b911902d3d40ce1e8096",
+          "spec": {
+            "compression_ratio": 1.4981711777615216,
+            "dense_num_parameters": 50331648,
+            "in_features": 12288,
+            "in_modes": [
+              8,
+              8,
+              8,
+              24
+            ],
+            "num_parameters": 33595392,
+            "out_features": 4096,
+            "out_modes": [
+              8,
+              8,
+              8,
+              8
+            ],
+            "ranks": [
+              1,
+              64,
+              2048,
+              192,
+              1
+            ]
+          }
+        },
+        "model.layers.1.mlp.down_proj": {
+          "source_cores_sha256": "8039623b6f6c75df59c9aec34a0b8974e49a5b2cb02a4eb0dadf115f635f41f6",
+          "source_weight_sha256": "e01965ced1ad919a8c15a542b2da162748fecf2e8478ddf22f25e38a98d66d58",
+          "spec": {
+            "compression_ratio": 1.4981711777615216,
+            "dense_num_parameters": 50331648,
+            "in_features": 12288,
+            "in_modes": [
+              8,
+              8,
+              8,
+              24
+            ],
+            "num_parameters": 33595392,
+            "out_features": 4096,
+            "out_modes": [
+              8,
+              8,
+              8,
+              8
+            ],
+            "ranks": [
+              1,
+              64,
+              2048,
+              192,
+              1
+            ]
+          }
+        },
+        "model.layers.2.mlp.down_proj": {
+          "source_cores_sha256": "b5604767f472324443af0b7df7961943c6a892a06aa3b063006e6c642c6a27cd",
+          "source_weight_sha256": "ecebbf675a7bbe3326877b97a6e4d4c356ad7bb4750c427d555610c43d0e4e28",
+          "spec": {
+            "compression_ratio": 1.4981711777615216,
+            "dense_num_parameters": 50331648,
+            "in_features": 12288,
+            "in_modes": [
+              8,
+              8,
+              8,
+              24
+            ],
+            "num_parameters": 33595392,
+            "out_features": 4096,
+            "out_modes": [
+              8,
+              8,
+              8,
+              8
+            ],
+            "ranks": [
+              1,
+              64,
+              2048,
+              192,
+              1
+            ]
+          }
+        },
+        "model.layers.3.mlp.down_proj": {
+          "source_cores_sha256": "0232bf1f11782e438c62f76d12c2446c5998073b36ede2df3c8bb5f056a3e1cf",
+          "source_weight_sha256": "9937f2f528565a10f07c4f61653576ffb6284bec51d3c9e2794e1f2ea72b4ef5",
+          "spec": {
+            "compression_ratio": 1.4981711777615216,
+            "dense_num_parameters": 50331648,
+            "in_features": 12288,
+            "in_modes": [
+              8,
+              8,
+              8,
+              24
+            ],
+            "num_parameters": 33595392,
+            "out_features": 4096,
+            "out_modes": [
+              8,
+              8,
+              8,
+              8
+            ],
+            "ranks": [
+              1,
+              64,
+              2048,
+              192,
+              1
+            ]
+          }
+        },
+        "model.layers.4.mlp.down_proj": {
+          "source_cores_sha256": "a1117e865ce680f10e054be19f9636b3499ed765032c8528ee928dccbbcc3134",
+          "source_weight_sha256": "db88136d53cfa83813dc857894d8f8090ceb95773ce65513ac9fdc9755e2385c",
+          "spec": {
+            "compression_ratio": 1.4981711777615216,
+            "dense_num_parameters": 50331648,
+            "in_features": 12288,
+            "in_modes": [
+              8,
+              8,
+              8,
+              24
+            ],
+            "num_parameters": 33595392,
+            "out_features": 4096,
+            "out_modes": [
+              8,
+              8,
+              8,
+              8
+            ],
+            "ranks": [
+              1,
+              64,
+              2048,
+              192,
+              1
+            ]
+          }
+        },
+        "model.layers.5.mlp.down_proj": {
+          "source_cores_sha256": "ad9c9a61c1b80d0e08a4e25d03e3cc1cd7e12ca1da15eb881291e5f95736936d",
+          "source_weight_sha256": "53804a63851d218e004d70b37577892370be1b41b382980864a59b51fc0ee6c9",
+          "spec": {
+            "compression_ratio": 1.4981711777615216,
+            "dense_num_parameters": 50331648,
+            "in_features": 12288,
+            "in_modes": [
+              8,
+              8,
+              8,
+              24
+            ],
+            "num_parameters": 33595392,
+            "out_features": 4096,
+            "out_modes": [
+              8,
+              8,
+              8,
+              8
+            ],
+            "ranks": [
+              1,
+              64,
+              2048,
+              192,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "mode": "quick",
+    "model_path": "/infini-data/Qwen3-8B",
+    "model_signature": "e3336cb2b19350c071f2ac48e46b838dd4797498e2ef2934162649a1a2808d7d",
+    "training_config": {
+      "bf16_autocast": true,
+      "device": "cuda:0",
+      "gradient_accumulation_steps": 8,
+      "gradient_checkpointing": true,
+      "learning_rate": 1e-05,
+      "logging_steps": 10,
+      "max_grad_norm": 1.0,
+      "max_length": 1024,
+      "max_steps": null,
+      "num_train_epochs": 1,
+      "per_device_train_batch_size": 1,
+      "save_steps": 10,
+      "save_total_limit": 2,
+      "seed": 42,
+      "tt_activation_checkpointing": true,
+      "warmup_ratio": 0.03,
+      "weight_decay": 0.0
+    }
+  },
+  "training_source": "training",
+  "tt_descriptor": {
+    "module_paths": [
+      "model.layers.0.mlp.down_proj",
+      "model.layers.1.mlp.down_proj",
+      "model.layers.2.mlp.down_proj",
+      "model.layers.3.mlp.down_proj",
+      "model.layers.4.mlp.down_proj",
+      "model.layers.5.mlp.down_proj"
+    ],
+    "targets": {
+      "model.layers.0.mlp.down_proj": {
+        "source_cores_sha256": "f326fe0cb47658e272899a7983faab7afeb92dfaf9b34901792393c8fa302430",
+        "source_weight_sha256": "56ca545862b9b22d1feb9e00433b6cc8b5c22787c215b911902d3d40ce1e8096",
+        "spec": {
+          "compression_ratio": 1.4981711777615216,
+          "dense_num_parameters": 50331648,
+          "in_features": 12288,
+          "in_modes": [
+            8,
+            8,
+            8,
+            24
+          ],
+          "num_parameters": 33595392,
+          "out_features": 4096,
+          "out_modes": [
+            8,
+            8,
+            8,
+            8
+          ],
+          "ranks": [
+            1,
+            64,
+            2048,
+            192,
+            1
+          ]
+        }
+      },
+      "model.layers.1.mlp.down_proj": {
+        "source_cores_sha256": "8039623b6f6c75df59c9aec34a0b8974e49a5b2cb02a4eb0dadf115f635f41f6",
+        "source_weight_sha256": "e01965ced1ad919a8c15a542b2da162748fecf2e8478ddf22f25e38a98d66d58",
+        "spec": {
+          "compression_ratio": 1.4981711777615216,
+          "dense_num_parameters": 50331648,
+          "in_features": 12288,
+          "in_modes": [
+            8,
+            8,
+            8,
+            24
+          ],
+          "num_parameters": 33595392,
+          "out_features": 4096,
+          "out_modes": [
+            8,
+            8,
+            8,
+            8
+          ],
+          "ranks": [
+            1,
+            64,
+            2048,
+            192,
+            1
+          ]
+        }
+      },
+      "model.layers.2.mlp.down_proj": {
+        "source_cores_sha256": "b5604767f472324443af0b7df7961943c6a892a06aa3b063006e6c642c6a27cd",
+        "source_weight_sha256": "ecebbf675a7bbe3326877b97a6e4d4c356ad7bb4750c427d555610c43d0e4e28",
+        "spec": {
+          "compression_ratio": 1.4981711777615216,
+          "dense_num_parameters": 50331648,
+          "in_features": 12288,
+          "in_modes": [
+            8,
+            8,
+            8,
+            24
+          ],
+          "num_parameters": 33595392,
+          "out_features": 4096,
+          "out_modes": [
+            8,
+            8,
+            8,
+            8
+          ],
+          "ranks": [
+            1,
+            64,
+            2048,
+            192,
+            1
+          ]
+        }
+      },
+      "model.layers.3.mlp.down_proj": {
+        "source_cores_sha256": "0232bf1f11782e438c62f76d12c2446c5998073b36ede2df3c8bb5f056a3e1cf",
+        "source_weight_sha256": "9937f2f528565a10f07c4f61653576ffb6284bec51d3c9e2794e1f2ea72b4ef5",
+        "spec": {
+          "compression_ratio": 1.4981711777615216,
+          "dense_num_parameters": 50331648,
+          "in_features": 12288,
+          "in_modes": [
+            8,
+            8,
+            8,
+            24
+          ],
+          "num_parameters": 33595392,
+          "out_features": 4096,
+          "out_modes": [
+            8,
+            8,
+            8,
+            8
+          ],
+          "ranks": [
+            1,
+            64,
+            2048,
+            192,
+            1
+          ]
+        }
+      },
+      "model.layers.4.mlp.down_proj": {
+        "source_cores_sha256": "a1117e865ce680f10e054be19f9636b3499ed765032c8528ee928dccbbcc3134",
+        "source_weight_sha256": "db88136d53cfa83813dc857894d8f8090ceb95773ce65513ac9fdc9755e2385c",
+        "spec": {
+          "compression_ratio": 1.4981711777615216,
+          "dense_num_parameters": 50331648,
+          "in_features": 12288,
+          "in_modes": [
+            8,
+            8,
+            8,
+            24
+          ],
+          "num_parameters": 33595392,
+          "out_features": 4096,
+          "out_modes": [
+            8,
+            8,
+            8,
+            8
+          ],
+          "ranks": [
+            1,
+            64,
+            2048,
+            192,
+            1
+          ]
+        }
+      },
+      "model.layers.5.mlp.down_proj": {
+        "source_cores_sha256": "ad9c9a61c1b80d0e08a4e25d03e3cc1cd7e12ca1da15eb881291e5f95736936d",
+        "source_weight_sha256": "53804a63851d218e004d70b37577892370be1b41b382980864a59b51fc0ee6c9",
+        "spec": {
+          "compression_ratio": 1.4981711777615216,
+          "dense_num_parameters": 50331648,
+          "in_features": 12288,
+          "in_modes": [
+            8,
+            8,
+            8,
+            24
+          ],
+          "num_parameters": 33595392,
+          "out_features": 4096,
+          "out_modes": [
+            8,
+            8,
+            8,
+            8
+          ],
+          "ranks": [
+            1,
+            64,
+            2048,
+            192,
+            1
+          ]
+        }
+      }
+    }
+  }
+}

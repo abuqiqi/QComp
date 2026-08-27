@@ -1,0 +1,14 @@
+{
+  "task": "wikitext",
+  "metrics": [
+    {"name": "word_perplexity,none", "direction": "lower"},
+    {"name": "bits_per_byte,none", "direction": "lower"}
+  ],
+  "limit": null,
+  "batch_size": 1,
+  "max_length": 2048,
+  "num_fewshot": 0,
+  "apply_chat_template": false,
+  "bootstrap_iters": 0,
+  "seed": 42
+}

@@ -1,0 +1,74 @@
+{
+  "checkpoint_bytes": 67191112,
+  "core_dtype": "bfloat16",
+  "cores_sha256": "92d93bd39ecfd557daa10665c0b2eb30992f01eb47b829e471cdd21c6a1b8e2e",
+  "format": "qwen3-tn-tt-matrix-v1",
+  "metadata": {
+    "layer_index": 6,
+    "migrated_from_legacy_layout": true,
+    "projection_name": "down_proj"
+  },
+  "metrics": {
+    "compression_ratio": 1.4981711777615216,
+    "dense_parameters": 50331648,
+    "full_ranks": [
+      1,
+      64,
+      4096,
+      192,
+      1
+    ],
+    "layer_index": 6,
+    "parameter_reduction": 16736256,
+    "parameter_reduction_fraction": 0.33251953125,
+    "peak_gpu_memory_bytes": 0,
+    "projection_name": "down_proj",
+    "ranks": [
+      1,
+      64,
+      2048,
+      192,
+      1
+    ],
+    "svd_seconds": 0.0,
+    "tt_matrix_parameters": 33595392,
+    "weight": {
+      "cosine": 0.8601039551094749,
+      "error_frobenius_norm_squared": 8431.077848334713,
+      "finite": true,
+      "max_abs": 0.20773231983184814,
+      "reference_frobenius_norm_squared": 32399.6595256227,
+      "relative_l2": 0.5101187965907765
+    },
+    "weight_sha256": "2880bfc2e4dc7b07cf84db45273961d421067439ad687a53a718e9fe50cc5a6e"
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.6.mlp.down_proj",
+  "purpose": "multi-layer-tt-matrix-candidate",
+  "spec": {
+    "compression_ratio": 1.4981711777615216,
+    "dense_num_parameters": 50331648,
+    "in_features": 12288,
+    "in_modes": [
+      8,
+      8,
+      8,
+      24
+    ],
+    "num_parameters": 33595392,
+    "out_features": 4096,
+    "out_modes": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "ranks": [
+      1,
+      64,
+      2048,
+      192,
+      1
+    ]
+  }
+}

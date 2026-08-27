@@ -1,0 +1,57 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "targets": [
+    {
+      "module_path": "model.layers.0.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 4096, 192, 1],
+      "token_chunk_size": 8
+    }
+  ],
+  "candidates": [
+    {
+      "name": "full-rank",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 4096, 192, 1]}
+    },
+    {
+      "name": "r192",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 192, 192, 1]}
+    },
+    {
+      "name": "r256",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 256, 192, 1]}
+    },
+    {
+      "name": "r512",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 512, 192, 1]}
+    },
+    {
+      "name": "r768",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 768, 192, 1]}
+    },
+    {
+      "name": "r1024",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 1024, 192, 1]}
+    },
+    {
+      "name": "r1536",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 1536, 192, 1]}
+    },
+    {
+      "name": "r2048",
+      "ranks": {"model.layers.0.mlp.down_proj": [1, 64, 2048, 192, 1]}
+    }
+  ],
+  "output_root": "artifacts/sweeps/qwen3-8b-layer0-down-proj",
+  "cache_root": "artifacts/cache/sweeps",
+  "result_path": "artifacts/sweeps/qwen3-8b-layer0-down-proj/index.json",
+  "evaluation": "configs/evaluation/hellaswag.json",
+  "backend": "native",
+  "device": "cuda:0",
+  "model_dtype": "bfloat16",
+  "core_dtype": "bfloat16",
+  "svd_driver": "gesvdj",
+  "selection_metric": "acc_norm,none",
+  "selection_direction": "higher"
+}

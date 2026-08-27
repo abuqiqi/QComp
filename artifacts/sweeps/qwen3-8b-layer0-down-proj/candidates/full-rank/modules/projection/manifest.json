@@ -1,0 +1,75 @@
+{
+  "checkpoint_bytes": 268599624,
+  "core_dtype": "float32",
+  "cores_sha256": "40c64ecfb57c590faa3f17f1696793aa9f1f63d7975b1ec861073f6d71093d2c",
+  "format": "qwen3-tn-tt-matrix-v1",
+  "metadata": {
+    "migrated_from_legacy_layout": true,
+    "tensor_name": "model.layers.0.mlp.down_proj.weight",
+    "transformers_version": "4.51.3"
+  },
+  "metrics": {
+    "gpu": {
+      "free_mib": 81046,
+      "index": 0,
+      "name": "NVIDIA A100-SXM4-80GB",
+      "total_mib": 81920
+    },
+    "layer_output_bf16": {
+      "cosine": 0.9999928927267464,
+      "finite": true,
+      "max_abs": 0.015625,
+      "relative_l2": 0.003771601254565548
+    },
+    "layer_output_fp32": {
+      "cosine": 0.9999999999965943,
+      "finite": true,
+      "max_abs": 3.874301910400391e-06,
+      "relative_l2": 2.614361657770203e-06
+    },
+    "peak_gpu_memory_bytes": 2441380864,
+    "svd_seconds": 7.019223844865337,
+    "tt_direct_vs_reconstructed_fp32": {
+      "cosine": 0.9999999999993749,
+      "finite": true,
+      "max_abs": 3.814697265625e-06,
+      "relative_l2": 1.118195691114197e-06
+    },
+    "validation_tokens": 32,
+    "weight_fp32": {
+      "cosine": 0.9999999999912963,
+      "finite": true,
+      "max_abs": 2.956017851829529e-06,
+      "relative_l2": 4.174845049187552e-06
+    }
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.0.mlp.down_proj",
+  "purpose": "full-rank-validation",
+  "spec": {
+    "compression_ratio": 0.7495425155544712,
+    "dense_num_parameters": 50331648,
+    "in_features": 12288,
+    "in_modes": [
+      8,
+      8,
+      8,
+      24
+    ],
+    "num_parameters": 67149824,
+    "out_features": 4096,
+    "out_modes": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "ranks": [
+      1,
+      64,
+      4096,
+      192,
+      1
+    ]
+  }
+}

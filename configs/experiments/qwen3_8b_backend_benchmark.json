@@ -1,0 +1,13 @@
+{
+  "module_set": "artifacts/decompositions/qwen3-8b-down-proj-r128/index.json",
+  "module_path": "model.layers.0.mlp.down_proj",
+  "backends": ["native", "tensorly_torch"],
+  "device": "cuda:0",
+  "tokens": 1024,
+  "token_chunk_size": 8,
+  "warmup": 10,
+  "iterations": 50,
+  "training_dtype": "float32",
+  "activation_checkpointing": true,
+  "output": "results/benchmarks/layer-r128-native-vs-tensorly.json"
+}

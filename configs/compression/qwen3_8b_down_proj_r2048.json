@@ -1,0 +1,83 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "output_root": "artifacts/decompositions/qwen3-8b-down-proj-r2048",
+  "cache_root": "artifacts/cache/decompositions",
+  "device": "cuda:0",
+  "model_dtype": "bfloat16",
+  "compute_dtype": "float32",
+  "core_dtype": "bfloat16",
+  "svd_driver": "gesvdj",
+  "purpose": "qwen3-8b-down-proj-r2048",
+  "targets": [
+    {
+      "module_path": "model.layers.0.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.1.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.2.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.3.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.4.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.5.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.6.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.7.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.8.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.9.mlp.down_proj",
+      "out_modes": [8, 8, 8, 8],
+      "in_modes": [8, 8, 8, 24],
+      "ranks": [1, 64, 2048, 192, 1],
+      "token_chunk_size": 8
+    }
+  ]
+}

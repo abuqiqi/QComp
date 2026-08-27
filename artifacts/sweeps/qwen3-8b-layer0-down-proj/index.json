@@ -1,0 +1,16 @@
+{
+  "baseline": "baseline.safetensors",
+  "candidates": {
+    "full-rank": "candidates/full-rank/index.json",
+    "r1024": "candidates/r1024/index.json",
+    "r1536": "candidates/r1536/index.json",
+    "r192": "candidates/r192/index.json",
+    "r2048": "candidates/r2048/index.json",
+    "r256": "candidates/r256/index.json",
+    "r512": "candidates/r512/index.json",
+    "r768": "candidates/r768/index.json"
+  },
+  "format": "qwen3-tn-rank-sweep-artifacts-v1",
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.0.mlp.down_proj"
+}

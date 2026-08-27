@@ -1,0 +1,10 @@
+{
+  "type": "huggingface",
+  "dataset": "EleutherAI/wikitext_document_level",
+  "config": "wikitext-2-raw-v1",
+  "split": "train",
+  "text_field": "page",
+  "max_length": 1024,
+  "max_blocks": null,
+  "drop_remainder": false
+}

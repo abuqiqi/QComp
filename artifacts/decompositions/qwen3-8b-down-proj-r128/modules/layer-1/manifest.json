@@ -1,0 +1,110 @@
+{
+  "checkpoint_bytes": 4276544,
+  "core_dtype": "bfloat16",
+  "cores_sha256": "402c03cf7ea1b331fa4646547b5a13e1f38f04054c7326e797307215357f0b2c",
+  "format": "qwen3-tn-tt-matrix-v1",
+  "metadata": {
+    "cache": {
+      "metadata": {
+        "algorithm": "tt-svd-matrix-v1",
+        "cache_format": "qwen3-tn-tt-matrix-cache-v1",
+        "core_dtype": "bfloat16",
+        "in_modes": [
+          8,
+          8,
+          8,
+          24
+        ],
+        "model_path": "/infini-data/Qwen3-8B",
+        "module_path": "model.layers.1.mlp.down_proj",
+        "out_modes": [
+          8,
+          8,
+          8,
+          8
+        ],
+        "ranks": [
+          1,
+          64,
+          128,
+          192,
+          1
+        ],
+        "svd_driver": "gesvd",
+        "weight_dtype": "bfloat16",
+        "weight_shape": [
+          4096,
+          12288
+        ]
+      },
+      "metadata_sha256": "9182a4a1aea771f074a82e1bf30aea5e4d32c6d049e0dc96d02b15ac46d13e8f",
+      "weight_sha256": "e01965ced1ad919a8c15a542b2da162748fecf2e8478ddf22f25e38a98d66d58"
+    },
+    "layer_index": 1,
+    "migrated_from_legacy_layout": true,
+    "projection_name": "down_proj"
+  },
+  "metrics": {
+    "compression_ratio": 23.54022988505747,
+    "dense_parameters": 50331648,
+    "full_ranks": [
+      1,
+      64,
+      4096,
+      192,
+      1
+    ],
+    "layer_index": 1,
+    "parameter_reduction": 48193536,
+    "parameter_reduction_fraction": 0.95751953125,
+    "peak_gpu_memory_bytes": 18076465152,
+    "projection_name": "down_proj",
+    "ranks": [
+      1,
+      64,
+      128,
+      192,
+      1
+    ],
+    "svd_seconds": 6.8408049191348255,
+    "tt_matrix_parameters": 2138112,
+    "weight": {
+      "cosine": 0.29202558269842277,
+      "error_frobenius_norm_squared": 13039.374689785769,
+      "finite": true,
+      "max_abs": 0.4538654796779156,
+      "reference_frobenius_norm_squared": 14255.028416346086,
+      "relative_l2": 0.9564105076011284
+    },
+    "weight_sha256": "e01965ced1ad919a8c15a542b2da162748fecf2e8478ddf22f25e38a98d66d58"
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.1.mlp.down_proj",
+  "purpose": "multi-layer-tt-matrix-cache",
+  "spec": {
+    "compression_ratio": 23.54022988505747,
+    "dense_num_parameters": 50331648,
+    "in_features": 12288,
+    "in_modes": [
+      8,
+      8,
+      8,
+      24
+    ],
+    "num_parameters": 2138112,
+    "out_features": 4096,
+    "out_modes": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "ranks": [
+      1,
+      64,
+      128,
+      192,
+      1
+    ]
+  }
+}

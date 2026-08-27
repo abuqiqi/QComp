@@ -1,0 +1,36 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_set": "artifacts/decompositions/qwen3-8b-down-proj-r2048/index.json",
+  "artifact_root": "artifacts/finetuned/qwen3-8b-down-proj-r2048-wikitext",
+  "result_root": "results/finetune/wikitext-full",
+  "backend": "native",
+  "evaluation": "configs/evaluation/wikitext.json",
+  "data": {
+    "type": "huggingface",
+    "dataset": "EleutherAI/wikitext_document_level",
+    "config": "wikitext-2-raw-v1",
+    "split": "train",
+    "text_field": "page"
+  },
+  "training": {
+    "num_train_epochs": 1,
+    "max_steps": null,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 1e-5,
+    "weight_decay": 0.0,
+    "warmup_ratio": 0.03,
+    "max_grad_norm": 1.0,
+    "max_length": 1024,
+    "logging_steps": 10,
+    "save_steps": 100,
+    "save_total_limit": 2,
+    "seed": 42,
+    "device": "cuda:0",
+    "bf16_autocast": true,
+    "gradient_checkpointing": true,
+    "tt_activation_checkpointing": true
+  },
+  "force_retrain": false,
+  "force_reevaluate": false
+}
