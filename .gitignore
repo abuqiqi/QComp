@@ -1,0 +1,8 @@
+# 忽略生成的 Python、构建、环境和实验文件。
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+artifacts/
