@@ -58,6 +58,7 @@ qcomp/
 │   └── evaluation/                  # 数据集、预处理和 metrics 的组合
 │
 ├── src/qcomp/
+│   ├── README.md                    # Python 包源码结构和职责说明
 │   ├── representations/             # 张量网络结构及标准数据格式
 │   │   ├── README.md                # 数据格式、数学操作和扩展方式
 │   │   ├── artifact.py              # 与具体张量网络无关的统一 artifact
@@ -81,7 +82,7 @@ qcomp/
 │   │   └── cutensornet/
 │   │       └── mpo.py
 │   │
-│   ├── model.py                     # 查找、替换和恢复模型层
+│   ├── model.py                     # 列出、查找、替换和恢复模型层
 │   ├── storage.py                   # 通用 TensorNetworkArtifact 读写
 │   │
 │   ├── data/                        # 训练和评测共用的数据访问层
@@ -206,7 +207,10 @@ EvaluationTask = Dataset + Split + Preprocessing + Metrics
 
 ### model 与 storage
 
-`model.py` 只负责模型结构操作，例如查找目标层、安装压缩层和恢复原始层。`storage.py` 只负责通用 `TensorNetworkArtifact` 的保存和加载。两者都不包含分解、训练或评测逻辑。
+`model.py` 通过 `list_linears()`、`find_linear()`、`replace_linear()` 和
+`restore_linear()` 列出、查找、安装和恢复无 bias Linear。它接收 backend 已经构造
+好的压缩层，不包含分解、训练或评测逻辑。`storage.py` 只负责通用
+`TensorNetworkArtifact` 的保存和加载。
 
 源码位置与实际数据位置必须区分：
 
@@ -260,6 +264,10 @@ Dense weight
 
 当前支持 native、TensorLy、torchTT 和 cuTensorNet。native、TensorLy 和 torchTT 支持分解、训练与推理；cuTensorNet 支持 CUDA 推理。分解时间、推理时间和完整训练 step 时间由 evaluation 层统一测量。
 
+当前可以按模块路径将一个无 bias `torch.nn.Linear` 替换为 backend 构造的
+`TensorNetworkLinear`，执行模型 forward 后再恢复原始层。多层压缩计划和完整模型
+workflow 尚未实现。
+
 本地 Qwen3-8B 包含 253 个 `torch.nn.Linear`，这些层均不带 bias，因此第一阶段 MPO 模块统一计算 `y = xWᵀ`。
 
 ## 7. 安装与验证
@@ -301,4 +309,4 @@ timing = time_inference(get_backend("native", "mpo"), mpo_artifact, inputs)
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-第一阶段通过后，项目继续增加模型层替换、完整 workflow、数据集和模型质量评测。
+下一步增加多层压缩计划、完整 workflow、数据集和模型质量评测。
