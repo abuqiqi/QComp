@@ -1,11 +1,13 @@
 """Dense/TT evaluation and exact metadata caches."""
 
 from __future__ import annotations
+from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping
 import torch
 from torch import nn
+from ..backends import tt_backend_metadata
 from ..evaluation import EvaluationConfig, evaluate_causal_lm
 from ..model import TTModulePatch
 from ..provenance import (
@@ -29,6 +31,7 @@ def evaluation_cache_metadata(
     config: EvaluationConfig,
     module_set: str | Path | None = None,
     backend: str | None = None,
+    backend_options: Mapping[str, Any] | None = None,
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     metadata: dict[str, Any] = {
@@ -41,7 +44,11 @@ def evaluation_cache_metadata(
         index = Path(module_set)
         index = index if index.name == "index.json" else index / "index.json"
         metadata["tt"] = {
-            "backend": backend,
+            "backend": (
+                tt_backend_metadata(backend, backend_options)
+                if backend is not None
+                else None
+            ),
             "module_set_index": str(index.resolve()),
             "index_sha256": file_sha256(index),
         }
@@ -86,22 +93,22 @@ def evaluate_dense_or_tt(
     metadata: Mapping[str, Any],
     module_set: str | Path | None = None,
     backend: str = "native",
+    backend_options: Mapping[str, Any] | None = None,
     force: bool = False,
     evaluator: Callable[..., Mapping[str, Any]] = evaluate_causal_lm,
 ) -> EvaluationStageResult:
-    if module_set is None:
-        return evaluate_with_cache(
+    patch = (
+        nullcontext()
+        if module_set is None
+        else TTModulePatch(
             model,
-            tokenizer,
-            config,
-            cache_path,
-            metadata,
-            evaluator=evaluator,
-            force=force,
+            module_set,
+            tt_backend=backend,
+            core_dtype=torch.bfloat16,
+            backend_options=backend_options,
         )
-    with TTModulePatch(
-        model, module_set, tt_backend=backend, core_dtype=torch.bfloat16
-    ):
+    )
+    with patch:
         return evaluate_with_cache(
             model,
             tokenizer,

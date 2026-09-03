@@ -17,6 +17,8 @@ dependencies = [
 
 [project.optional-dependencies]
 tensorly = ["tensorly==0.8.1", "tensorly-torch==0.5.0"]
+torchtt = ["torchTT==0.4.0"]
+cutensornet = ["cuquantum-python-cu12>=25.6"]
 
 [project.scripts]
 qwen3-tn-decompose = "qwen3_tn.cli.decompose:main"
@@ -31,4 +33,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src", "tests"]
 testpaths = ["tests"]
-

@@ -1,0 +1,70 @@
+{
+  "checkpoint_bytes": 4915440,
+  "core_dtype": "bfloat16",
+  "cores_sha256": "71ff511f7be84a2669550f2d3215781281159fbf124e679888724636bd5279f8",
+  "format": "qwen3-tn-tt-matrix-v1",
+  "metadata": {
+    "decomposition_input": {
+      "compute_dtype": "torch.float32",
+      "core_dtype": "torch.bfloat16",
+      "format": "qwen3-tn-decomposition-input-v1",
+      "model_path": "/infini-data/Qwen3-8B",
+      "module_path": "model.layers.27.mlp.up_proj",
+      "spec": {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ]
+      },
+      "svd_driver": "gesvdj",
+      "weight_sha256": "f7b0c743093c954253f3a80b5aa413d99cb9659215a7f6b203ee8193ccb548cd"
+    },
+    "token_chunk_size": 8
+  },
+  "metrics": {
+    "weight_relative_l2": 0.9679825901985168
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_path": "model.layers.27.mlp.up_proj",
+  "purpose": "qwen3-8b-compactifai-d96-blocks18-35",
+  "spec": {
+    "compression_ratio": 20.48,
+    "dense_num_parameters": 50331648,
+    "in_features": 4096,
+    "in_modes": [
+      16,
+      16,
+      16
+    ],
+    "num_parameters": 2457600,
+    "out_features": 12288,
+    "out_modes": [
+      16,
+      16,
+      48
+    ],
+    "ranks": [
+      1,
+      96,
+      96,
+      1
+    ]
+  }
+}

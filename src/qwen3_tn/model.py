@@ -74,6 +74,22 @@ def _replace_module(model: nn.Module, module_path: str, module: nn.Module) -> No
     parent._modules[name] = module
 
 
+def _install_replacements(
+    model: nn.Module,
+    originals: Mapping[str, nn.Module],
+    replacements: Mapping[str, nn.Module],
+) -> None:
+    installed: list[str] = []
+    try:
+        for path, replacement in replacements.items():
+            _replace_module(model, path, replacement)
+            installed.append(path)
+    except Exception:
+        for path in reversed(installed):
+            _replace_module(model, path, originals[path])
+        raise
+
+
 def find_tt_modules(model: nn.Module) -> dict[str, TTLinearBase]:
     return {
         name: module
@@ -109,6 +125,7 @@ def _prepare(
     core_dtype: torch.dtype | None,
     token_chunk_size: int | None,
     module_paths: Iterable[str] | None,
+    backend_options: Mapping[str, Any] | None,
 ) -> tuple[dict[str, nn.Linear], dict[str, TTLinearBase]]:
     root, module_set = load_module_set_index(index, verify_modules=False)
     entries = _select_entries(module_set.modules, module_paths)
@@ -143,6 +160,7 @@ def _prepare(
             token_chunk_size=chunk,
             trainable=trainable,
             preserve_input_dtype=True,
+            backend_options=backend_options,
         )
     return originals, replacements
 
@@ -156,6 +174,7 @@ def install_tt_modules(
     core_dtype: torch.dtype | None = None,
     token_chunk_size: int | None = None,
     module_paths: Iterable[str] | None = None,
+    backend_options: Mapping[str, Any] | None = None,
 ) -> dict[str, TTLinearBase]:
     originals, replacements = _prepare(
         model,
@@ -165,16 +184,9 @@ def install_tt_modules(
         core_dtype=core_dtype,
         token_chunk_size=token_chunk_size,
         module_paths=module_paths,
+        backend_options=backend_options,
     )
-    installed: list[str] = []
-    try:
-        for path, replacement in replacements.items():
-            _replace_module(model, path, replacement)
-            installed.append(path)
-    except Exception:
-        for path in reversed(installed):
-            _replace_module(model, path, originals[path])
-        raise
+    _install_replacements(model, originals, replacements)
     return replacements
 
 
@@ -296,17 +308,13 @@ class TTModulePatch:
             core_dtype=options.pop("core_dtype", None),
             token_chunk_size=options.pop("token_chunk_size", None),
             module_paths=options.pop("module_paths", None),
+            backend_options=options.pop("backend_options", None),
         )
         if options:
             raise TypeError(f"unknown install options: {sorted(options)}")
-        installed: list[str] = []
         try:
-            for path, module in self.modules.items():
-                _replace_module(self.model, path, module)
-                installed.append(path)
+            _install_replacements(self.model, self.originals, self.modules)
         except Exception:
-            for path in reversed(installed):
-                _replace_module(self.model, path, self.originals[path])
             self.modules = {}
             self.originals = {}
             raise

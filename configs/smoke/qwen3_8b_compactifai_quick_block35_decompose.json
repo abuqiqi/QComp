@@ -1,0 +1,133 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "output_root": "artifacts/smoke/compactifai-quick-block35/decomposition",
+  "cache_root": "artifacts/cache/decompositions",
+  "device": "cuda:0",
+  "model_dtype": "bfloat16",
+  "compute_dtype": "float32",
+  "core_dtype": "bfloat16",
+  "svd_driver": "gesvdj",
+  "purpose": "qwen3-8b-compactifai-quick-block35-six-projections",
+  "targets": [
+    {
+      "module_path": "model.layers.35.self_attn.q_proj",
+      "out_modes": [
+        16,
+        16,
+        16
+      ],
+      "in_modes": [
+        16,
+        16,
+        16
+      ],
+      "ranks": [
+        1,
+        96,
+        96,
+        1
+      ],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.35.self_attn.k_proj",
+      "out_modes": [
+        8,
+        8,
+        16
+      ],
+      "in_modes": [
+        16,
+        16,
+        16
+      ],
+      "ranks": [
+        1,
+        96,
+        96,
+        1
+      ],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.35.self_attn.v_proj",
+      "out_modes": [
+        8,
+        8,
+        16
+      ],
+      "in_modes": [
+        16,
+        16,
+        16
+      ],
+      "ranks": [
+        1,
+        96,
+        96,
+        1
+      ],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.35.self_attn.o_proj",
+      "out_modes": [
+        16,
+        16,
+        16
+      ],
+      "in_modes": [
+        16,
+        16,
+        16
+      ],
+      "ranks": [
+        1,
+        96,
+        96,
+        1
+      ],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.35.mlp.gate_proj",
+      "out_modes": [
+        16,
+        16,
+        48
+      ],
+      "in_modes": [
+        16,
+        16,
+        16
+      ],
+      "ranks": [
+        1,
+        96,
+        96,
+        1
+      ],
+      "token_chunk_size": 8
+    },
+    {
+      "module_path": "model.layers.35.mlp.up_proj",
+      "out_modes": [
+        16,
+        16,
+        48
+      ],
+      "in_modes": [
+        16,
+        16,
+        16
+      ],
+      "ranks": [
+        1,
+        96,
+        96,
+        1
+      ],
+      "token_chunk_size": 8
+    }
+  ]
+}

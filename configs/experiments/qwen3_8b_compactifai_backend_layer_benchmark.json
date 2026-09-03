@@ -1,0 +1,16 @@
+{
+  "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+  "module_path": "model.layers.18.self_attn.q_proj",
+  "backends": ["native", "tensorly_torch", "torchtt"],
+  "backend_modules": [],
+  "backend_options": {},
+  "device": "cuda:0",
+  "tokens": 1024,
+  "token_chunk_size": 8,
+  "warmup": 3,
+  "iterations": 10,
+  "training_dtype": "bfloat16",
+  "activation_checkpointing": false,
+  "relative_l2_threshold": 0.005,
+  "output": "results/benchmarks/qwen3-8b-compactifai-layer-backends.json"
+}

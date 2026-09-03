@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from qwen3_tn.evaluation import EvaluationConfig, MetricSpec, extract_metrics
 from qwen3_tn.workflows.evaluate import evaluate_with_cache, evaluation_cache_metadata
-from helpers import TinyCausalLM, TinyTokenizer, fake_evaluator
+from helpers import TinyCausalLM, TinyTokenizer, fake_evaluator, make_module_set
 
 
 class EvaluationTests(unittest.TestCase):
@@ -40,3 +40,20 @@ class EvaluationTests(unittest.TestCase):
             )
             self.assertEqual((first.source, second.source), ("evaluation", "cache"))
             self.assertEqual(len(calls), 1)
+
+    def test_tt_cache_identity_includes_version_and_options(self):
+        config = EvaluationConfig("dummy", (MetricSpec("loss"),), limit=1)
+        with TemporaryDirectory() as tmp:
+            index = make_module_set(Path(tmp), TinyCausalLM())
+            metadata = evaluation_cache_metadata(
+                variant="tt",
+                model_signature={"sha256": "x"},
+                config=config,
+                module_set=index,
+                backend="native",
+                backend_options={},
+            )
+            self.assertEqual(
+                metadata["tt"]["backend"],
+                {"name": "native", "version": "2", "options": {}},
+            )

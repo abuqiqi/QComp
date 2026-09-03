@@ -3,11 +3,18 @@
 from __future__ import annotations
 import json
 from pathlib import Path
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from ..evaluation import EvaluationConfig, evaluate_causal_lm, extract_metrics
+from ..model_loading import load_local_causal_lm, load_local_tokenizer
 from ..model import TTTarget
 from ..workflows import RankSweepCandidate, RankSweepConfig, run_rank_sweep
-from .common import check_device, config_argument, parse_dtype, strict_config
+from .common import (
+    check_device,
+    config_argument,
+    load_backend_modules,
+    parse_backend_options,
+    parse_dtype,
+    strict_config,
+)
 
 
 def main() -> None:
@@ -23,6 +30,8 @@ def main() -> None:
             "result_path",
             "evaluation",
             "backend",
+            "backend_modules",
+            "backend_options",
             "device",
             "model_dtype",
             "core_dtype",
@@ -40,16 +49,14 @@ def main() -> None:
             "evaluation",
         },
     )
+    load_backend_modules(value.get("backend_modules"))
     device = check_device(value.get("device", "cuda:0"))
-    tokenizer = AutoTokenizer.from_pretrained(
-        value["model_path"], local_files_only=True
-    )
-    model = AutoModelForCausalLM.from_pretrained(
+    tokenizer = load_local_tokenizer(value["model_path"])
+    model = load_local_causal_lm(
         value["model_path"],
-        torch_dtype=parse_dtype(value.get("model_dtype", "bfloat16")),
-        local_files_only=True,
-        low_cpu_mem_usage=True,
-    ).to(device)
+        dtype=parse_dtype(value.get("model_dtype", "bfloat16")),
+        device=device,
+    )
     evaluation = EvaluationConfig.from_json(value["evaluation"])
     targets = tuple(TTTarget.from_dict(item) for item in value["targets"])
     candidates = tuple(
@@ -69,6 +76,7 @@ def main() -> None:
         value.get("svd_driver", "gesvdj"),
         value.get("selection_metric"),
         value.get("selection_direction", "lower"),
+        parse_backend_options(value.get("backend_options")),
     )
 
     def evaluator(candidate_model):
@@ -78,3 +86,7 @@ def main() -> None:
         )
 
     print(json.dumps(run_rank_sweep(model, targets, config, evaluator), indent=2))
+
+
+if __name__ == "__main__":
+    main()

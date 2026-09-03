@@ -7,7 +7,12 @@ from ..data import HFDatasetDocumentSource, JsonlDocumentSource
 from ..evaluation import EvaluationConfig
 from ..training import TTFineTuneConfig
 from ..workflows import FineTuneExperimentConfig, run_finetune_experiment
-from .common import config_argument, strict_config
+from .common import (
+    config_argument,
+    load_backend_modules,
+    parse_backend_options,
+    strict_config,
+)
 
 
 def main() -> None:
@@ -20,11 +25,14 @@ def main() -> None:
             "artifact_root",
             "result_root",
             "backend",
+            "backend_modules",
+            "backend_options",
             "training",
             "evaluation",
             "data",
             "force_retrain",
             "force_reevaluate",
+            "resume_from",
         },
         required={
             "model_path",
@@ -35,6 +43,7 @@ def main() -> None:
             "data",
         },
     )
+    load_backend_modules(value.get("backend_modules"))
     data = value["data"]
     source_type = data.get("type")
     if source_type == "jsonl":
@@ -59,14 +68,20 @@ def main() -> None:
         else None
     )
     config = FineTuneExperimentConfig(
-        Path(value["model_path"]),
-        Path(value["module_set"]),
-        Path(value["artifact_root"]),
-        Path(value["result_root"]),
-        TTFineTuneConfig(**value["training"]),
-        evaluation,
-        value.get("backend", "native"),
-        bool(value.get("force_retrain", False)),
-        bool(value.get("force_reevaluate", False)),
+        model_path=Path(value["model_path"]),
+        module_set=Path(value["module_set"]),
+        artifact_root=Path(value["artifact_root"]),
+        result_root=Path(value["result_root"]),
+        training=TTFineTuneConfig(**value["training"]),
+        evaluation=evaluation,
+        tt_backend=value.get("backend", "native"),
+        force_retrain=bool(value.get("force_retrain", False)),
+        force_reevaluate=bool(value.get("force_reevaluate", False)),
+        resume_from=value.get("resume_from"),
+        backend_options=parse_backend_options(value.get("backend_options")),
     )
     print(json.dumps(run_finetune_experiment(config, source), indent=2))
+
+
+if __name__ == "__main__":
+    main()

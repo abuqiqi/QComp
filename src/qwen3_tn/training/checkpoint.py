@@ -1,7 +1,6 @@
 """Atomic optimizer, scheduler, RNG, and loop-state checkpoints."""
 
 from __future__ import annotations
-import os
 import random
 import shutil
 import uuid
@@ -13,8 +12,63 @@ from torch import Tensor, nn
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
 from ..model import export_tt_modules, find_tt_modules, load_tt_cores
-from ..provenance import atomic_write_json, load_json
+from ..provenance import atomic_publish_directory, atomic_write_json, load_json
 from .config import TTFineTuneConfig, TTTrainingState
+
+
+def _checkpoint_step(path: Path) -> int | None:
+    value = path.name.removeprefix("checkpoint-")
+    return (
+        int(value) if path.name.startswith("checkpoint-") and value.isdigit() else None
+    )
+
+
+def _config_matches(value: Any, expected: TTFineTuneConfig) -> bool:
+    if not isinstance(value, Mapping):
+        return False
+    expected_values = asdict(expected)
+    if set(value) - set(expected_values):
+        return False
+    return all(
+        value[key] == expected_value if key in value else expected_value is None
+        for key, expected_value in expected_values.items()
+    )
+
+
+def latest_training_checkpoint(
+    output_dir: str | Path,
+    *,
+    expected_config: TTFineTuneConfig | None = None,
+    expected_metadata: Mapping[str, Any] | None = None,
+) -> Path | None:
+    """Return the highest-step complete checkpoint matching this experiment."""
+
+    candidates: list[tuple[int, Path]] = []
+    for path in Path(output_dir).glob("checkpoint-*"):
+        step = _checkpoint_step(path)
+        if step is None or not path.is_dir():
+            continue
+        try:
+            descriptor = load_json(path / "trainer_state.json")
+        except (FileNotFoundError, OSError, ValueError):
+            continue
+        if descriptor.get("format") != "qwen3-tn-training-state-v1":
+            continue
+        if expected_config is not None and not _config_matches(
+            descriptor.get("config"), expected_config
+        ):
+            continue
+        if expected_metadata is not None and descriptor.get("metadata") != dict(
+            expected_metadata
+        ):
+            continue
+        if (
+            not (path / "training_state.pt").is_file()
+            or not (path / "tt_modules" / "index.json").is_file()
+        ):
+            continue
+        candidates.append((step, path))
+    return max(candidates, key=lambda item: item[0])[1] if candidates else None
 
 
 def capture_rng_state() -> dict[str, Any]:
@@ -30,21 +84,6 @@ def restore_rng_state(state: Mapping[str, Any]) -> None:
     torch.set_rng_state(state["torch"])
     if state.get("cuda") is not None and torch.cuda.is_available():
         torch.cuda.set_rng_state_all(state["cuda"])
-
-
-def _publish_directory(temporary: Path, target: Path) -> None:
-    backup: Path | None = None
-    try:
-        if target.exists():
-            backup = target.parent / f".{target.name}.old-{uuid.uuid4().hex}"
-            os.replace(target, backup)
-        os.replace(temporary, target)
-        if backup is not None:
-            shutil.rmtree(backup)
-    except Exception:
-        if backup is not None and backup.exists() and not target.exists():
-            os.replace(backup, target)
-        raise
 
 
 def save_training_checkpoint(
@@ -91,7 +130,7 @@ def save_training_checkpoint(
                 "metadata": dict(metadata or {}),
             },
         )
-        _publish_directory(temporary, target)
+        atomic_publish_directory(temporary, target)
     except Exception:
         shutil.rmtree(temporary, ignore_errors=True)
         raise
@@ -118,8 +157,8 @@ def load_training_checkpoint(
     descriptor = load_json(source / "trainer_state.json")
     if descriptor.get("format") != "qwen3-tn-training-state-v1":
         raise ValueError("unsupported training checkpoint format")
-    if expected_config is not None and descriptor.get("config") != asdict(
-        expected_config
+    if expected_config is not None and not _config_matches(
+        descriptor.get("config"), expected_config
     ):
         raise ValueError("training checkpoint config does not match")
     if expected_metadata is not None and descriptor.get("metadata") != dict(

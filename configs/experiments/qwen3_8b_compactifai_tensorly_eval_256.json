@@ -1,0 +1,9 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "evaluation": "configs/evaluation/compactifai/hellaswag_backend_benchmark.json",
+  "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+  "backend": "tensorly_torch",
+  "device": "cuda:0",
+  "model_dtype": "bfloat16",
+  "output": "results/evaluations/backend-hellaswag-256/tensorly-torch.json"
+}

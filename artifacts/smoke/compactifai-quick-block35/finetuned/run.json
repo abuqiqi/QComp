@@ -1,0 +1,134 @@
+{
+  "final_index_sha256": "2a6018f599cb596dbeb4b47c4e37138e1731053e7afd78a92d1e5bf7c7d9ca2f",
+  "format": "qwen3-tn-finetune-run-v1",
+  "training_metrics": {
+    "first_training_loss": 2.529733657836914,
+    "global_step": 1,
+    "last_training_loss": 2.529733657836914,
+    "loss_history": [
+      {
+        "learning_rate": 0.0,
+        "loss": 2.529733657836914,
+        "step": 1
+      }
+    ],
+    "mean_training_loss": 2.529733657836914,
+    "min_training_loss": 2.529733657836914,
+    "model_gradient_checkpointing": true,
+    "optimizer_steps_this_run": 1,
+    "peak_cuda_allocated_bytes": 17743829504,
+    "resume_checkpoint": "artifacts/smoke/compactifai-quick-block35/finetuned/checkpoint-1",
+    "resumed_from": null,
+    "total_model_parameters": 8060294144,
+    "trainable_tt_parameters": 12165120,
+    "training_seconds_this_run": 1.224807484075427,
+    "training_tokens_seen": 128,
+    "training_tokens_this_run": 128,
+    "tt_activation_checkpointing": true,
+    "tt_backends": {
+      "model.layers.35.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      }
+    },
+    "tt_module_paths": [
+      "model.layers.35.self_attn.q_proj",
+      "model.layers.35.self_attn.k_proj",
+      "model.layers.35.self_attn.v_proj",
+      "model.layers.35.self_attn.o_proj",
+      "model.layers.35.mlp.gate_proj",
+      "model.layers.35.mlp.up_proj"
+    ]
+  },
+  "training_signature": {
+    "backend": "native",
+    "data_fingerprint": "2c8c8cfd24046137d4cff55e556b832141ecbdeeb5e01599af4cd8a71f92972c",
+    "data_metadata": {
+      "batch_size": 1,
+      "blocks": 42080,
+      "documents": 52002,
+      "drop_remainder": false,
+      "full_tokens": 5386125,
+      "max_blocks": null,
+      "max_length": 128,
+      "seed": 42,
+      "selected_tokens": 5386125,
+      "source": {
+        "config": null,
+        "dataset": "tatsu-lab/alpaca",
+        "load_kwargs": {},
+        "split": "train",
+        "text_field": "text",
+        "type": "huggingface"
+      },
+      "source_fingerprint": "5d2168d99ea7e9d673f2169295d7eea05aadb8266984c7a97baf965777586efb"
+    },
+    "format": "qwen3-tn-finetune-signature-v1",
+    "model_signature": {
+      "metadata_files": {
+        "config.json": {
+          "bytes": 728,
+          "sha256": "f7c4eadfbbf522470667b797a3c89be2524832d2d599797248dc304fff447c30"
+        },
+        "generation_config.json": {
+          "bytes": 239,
+          "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+        },
+        "tokenizer_config.json": {
+          "bytes": 9732,
+          "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+        }
+      },
+      "path": "/infini-data/Qwen3-8B",
+      "sha256": "7f149fcb3891e857d4dbd21c3f6058709c5cce13d56420771d7c465a9391336b",
+      "weight_files": [
+        "model-00001-of-00005.safetensors",
+        "model-00002-of-00005.safetensors",
+        "model-00003-of-00005.safetensors",
+        "model-00004-of-00005.safetensors",
+        "model-00005-of-00005.safetensors"
+      ]
+    },
+    "module_set_sha256": "d12d143ffe6dfd473c4b369123fbd70dad1d1887c77e701baf49ac519d0e6813",
+    "training": {
+      "bf16_autocast": true,
+      "device": "cuda:0",
+      "first_step_peak_memory_limit_gib": 80,
+      "gradient_accumulation_steps": 1,
+      "gradient_checkpointing": true,
+      "learning_rate": 1e-05,
+      "logging_steps": 1,
+      "max_grad_norm": 1,
+      "max_length": 128,
+      "max_steps": 1,
+      "num_train_epochs": 1,
+      "per_device_train_batch_size": 1,
+      "save_steps": 1,
+      "save_total_limit": 1,
+      "seed": 42,
+      "tt_activation_checkpointing": true,
+      "warmup_ratio": 0,
+      "weight_decay": 0
+    }
+  }
+}

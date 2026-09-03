@@ -1,0 +1,136 @@
+{
+  "config": {
+    "backend_options": {},
+    "backends": [
+      "native",
+      "tensorly_torch"
+    ],
+    "batch_size": 1,
+    "core_dtype": "torch.float32",
+    "decode_steps": 32,
+    "device": "cuda:0",
+    "iterations": 3,
+    "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+    "prefill_tokens": 1024,
+    "relative_l2_threshold": 0.005,
+    "required_speedup": 2.0,
+    "seed": 42,
+    "top1_agreement_threshold": 0.99,
+    "warmup": 1
+  },
+  "format": "qwen3-tn-inference-benchmark-v1",
+  "results": {
+    "native": {
+      "backend_metadata": {
+        "name": "native",
+        "options": {},
+        "version": "2"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": true,
+        "output_relative_l2": 0.0,
+        "performance_pass": false,
+        "speedup": 1.0,
+        "top1_agreement": 1.0
+      },
+      "decode": {
+        "max_ms": 1578.2698020339012,
+        "mean_ms": 1561.4482273037236,
+        "median_ms": 1563.082018867135,
+        "min_ms": 1542.9928610101342,
+        "samples_ms": [
+          1578.2698020339012,
+          1563.082018867135,
+          1542.9928610101342
+        ],
+        "tokens_per_second": 20.47237420285369
+      },
+      "end_to_end": {
+        "max_ms": 6129.721017088741,
+        "mean_ms": 6123.528291316082,
+        "median_ms": 6121.414894703776,
+        "min_ms": 6119.4489621557295,
+        "samples_ms": [
+          6121.414894703776,
+          6119.4489621557295,
+          6129.721017088741
+        ],
+        "tokens_per_second": 172.50913688494586
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 13097122816,
+      "peak_reserved_bytes": 13446938624,
+      "prefill": {
+        "max_ms": 4543.969899881631,
+        "mean_ms": 4532.873180384438,
+        "median_ms": 4542.661005165428,
+        "min_ms": 4511.988636106253,
+        "samples_ms": [
+          4511.988636106253,
+          4542.661005165428,
+          4543.969899881631
+        ],
+        "tokens_per_second": 225.41853746859314
+      },
+      "status": "ok"
+    },
+    "tensorly_torch": {
+      "backend_metadata": {
+        "factorization": "BlockTT",
+        "implementation": "factorized",
+        "name": "tensorly_torch",
+        "options": {},
+        "version": "0.5.0"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": false,
+        "output_relative_l2": 0.00929916463792324,
+        "performance_pass": true,
+        "speedup": 2.158549687908536,
+        "top1_agreement": 0.939393937587738
+      },
+      "decode": {
+        "max_ms": 2609.178526327014,
+        "mean_ms": 2601.209615046779,
+        "median_ms": 2598.700921982527,
+        "min_ms": 2595.749396830797,
+        "samples_ms": [
+          2595.749396830797,
+          2598.700921982527,
+          2609.178526327014
+        ],
+        "tokens_per_second": 12.313844863527994
+      },
+      "end_to_end": {
+        "max_ms": 2855.553016997874,
+        "mean_ms": 2837.2202332442007,
+        "median_ms": 2835.8925110660493,
+        "min_ms": 2820.2151716686785,
+        "samples_ms": [
+          2820.2151716686785,
+          2855.553016997874,
+          2835.8925110660493
+        ],
+        "tokens_per_second": 372.3695435843708
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 13309214720,
+      "peak_reserved_bytes": 13803454464,
+      "prefill": {
+        "max_ms": 255.21431025117636,
+        "mean_ms": 249.95014925176898,
+        "median_ms": 247.4633720703423,
+        "min_ms": 247.1727654337883,
+        "samples_ms": [
+          255.21431025117636,
+          247.1727654337883,
+          247.4633720703423
+        ],
+        "tokens_per_second": 4137.98612470586
+      },
+      "status": "ok"
+    }
+  }
+}

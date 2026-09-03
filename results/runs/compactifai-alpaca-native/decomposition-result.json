@@ -1,0 +1,876 @@
+{
+  "format": "qwen3-tn-decomposition-result-v1",
+  "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+  "targets": {
+    "model.layers.18.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "aa0405efe0ada18676ca658a052e714f9d0967eb4f8c4dc778a77219a1ece02e",
+      "weight_relative_l2": 0.8908874988555908,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.18.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "e933ef3a00fb5545ffdddf7a0b73842d374d4edfd839636dcfd7ccf9eeb144fc",
+      "weight_relative_l2": 0.8016893267631531,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.18.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "380d81100d5b46a157a6e0618407d27892ed9a0a6dbe8df2b0f1740b59706bcd",
+      "weight_relative_l2": 0.8066208362579346,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.18.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "108e0251414f859d1d31ee24f343babf966d276ce4a9d149418e7310edd51614",
+      "weight_relative_l2": 0.8963454961776733,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.18.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "f0aa6098622e1b9abab3403a07b44f830ea43bdddf693ace2e285e910684480d",
+      "weight_relative_l2": 0.9670627117156982,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.18.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "515289f10049b0887e145a642a86fc00206a107971b45afc2faf29774b4870e5",
+      "weight_relative_l2": 0.9679675698280334,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.19.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "62a65e508dc6830d3b8a5f7d574bf37760d4b082b4811e83f2a571e13db9be5b",
+      "weight_relative_l2": 0.8848353624343872,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.19.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "df5a61ef2cd52deb31b029e04ebf7a0c7fb35c9b94b871ae7052753f8826857f",
+      "weight_relative_l2": 0.7971535325050354,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.19.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "3f115a43c0531b515bfc241cce24c5ae6b857527def08ef0fcaae526ff793548",
+      "weight_relative_l2": 0.7992691397666931,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.19.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "b685730a981a0ed9fca2237859d12143b94dc6b517b3b0e5c1f8672b72ddbcee",
+      "weight_relative_l2": 0.8884950280189514,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.19.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "80e5778db9c9a229286deecda4a8c2ce15a475d604e8bf7ee200544fad38bbe3",
+      "weight_relative_l2": 0.9671973586082458,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.19.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "a5f60d80db4ce0ad9bb825d69343dff24b9e5afc7a007f6ffdf7d45b8d1d9390",
+      "weight_relative_l2": 0.9679555296897888,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.20.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "562478bcdcac4d5c5b0860de75210b61f8da73db1b7fa0fde0c56818934b78f4",
+      "weight_relative_l2": 0.8847652077674866,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.20.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "48f2b21bee13c799193d4c9be8f486f737577a8d827a52938ed5b3f9f2caa2ba",
+      "weight_relative_l2": 0.7998101711273193,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.20.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "581e3a3e86180131ff37b6fe7001aeec1f8a68ae60491c3fd96b33ecae449aa2",
+      "weight_relative_l2": 0.813473641872406,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.20.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "3d1d988f06c74f2ef95b3c1e2d9700a262cb2ca9b0032e137a31d4579674d65f",
+      "weight_relative_l2": 0.8900700807571411,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.20.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "bdcf880e82ba32f2bd1eeb1110b31c867541c3d96a115e09e3bcc54e7c2cdced",
+      "weight_relative_l2": 0.9670503735542297,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.20.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "7336cb23378217f1d0900a7b33d0e0366604bb08accc3946841807c62ce2ab1b",
+      "weight_relative_l2": 0.9679971933364868,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.21.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "031383adfbf2c20f76f7a144a2ff3e17e69f8462df38054c1fd5d95a0d58b2e7",
+      "weight_relative_l2": 0.8846125602722168,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.21.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "0c0bb0b84f629ce0d2b9b9f2845cd5b0e835f9325a18523edff03da0321da604",
+      "weight_relative_l2": 0.8084707260131836,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.21.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "e465ade697e2696e2abf3e6d7752734f54a477f36185c8d985f504ec3ba08c4a",
+      "weight_relative_l2": 0.8026025295257568,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.21.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "8a711fc247f42a7cae089ed4dc7156ee36fa50f04c87cd3e53ffc965a747a303",
+      "weight_relative_l2": 0.8932315707206726,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.21.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "c2dd927ea21f6982e50fbace5e726c43502ada160ecd39b44b091cc8177bd1c1",
+      "weight_relative_l2": 0.967027485370636,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.21.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "91e2823ae626ee14de24a71ec0d0f6641d0b819bc33d9adb096987e2d86ca690",
+      "weight_relative_l2": 0.9679537415504456,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.22.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "15b57fb2213380e3ade8526e8c1af2e9e292fa476d1e2ea4e4022ac116998f4b",
+      "weight_relative_l2": 0.8859638571739197,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.22.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "7e568c3b323101de1b9bfa77f1e407ab88081e3fe5ad3eefe1bfa6b68a5deb22",
+      "weight_relative_l2": 0.7939791083335876,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.22.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "b8c3eadb470723cd27c5b0798d22dda961b7b060800faba073d88b84bda0acbf",
+      "weight_relative_l2": 0.8054558634757996,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.22.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "a9647da69e3be5d4749667a9c2be0b1542434be51ea271ca0fcc5dd3a73a903a",
+      "weight_relative_l2": 0.8902769684791565,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.22.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "68501b4fbd75496617967afa906ec3baefc905b8e986a8ccfb9d77b34c5459cf",
+      "weight_relative_l2": 0.9670596122741699,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.22.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "d2a5094cd6ce2121f416db3b4b76536ec664299705b1add936ea0ce26807f8cd",
+      "weight_relative_l2": 0.9679660797119141,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.23.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "6ac6387389c090ef29b27e862bd7c75ab01b5212789cdffb0a7cd0bb3c54e081",
+      "weight_relative_l2": 0.881596565246582,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.23.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "4143bc15870e6704d1142a276349bcde735c2cd49f84c7d89e033509ee693711",
+      "weight_relative_l2": 0.8039824366569519,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.23.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "6788c1ceda08613cd02cf5b1c017e5f0a9dfd432da752be5d5311d7aa84eee65",
+      "weight_relative_l2": 0.8020818829536438,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.23.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "9e7aee631d9feda18235368894c5bb502610fd3294be1fa717a062993520495a",
+      "weight_relative_l2": 0.8954025506973267,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.23.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "fb3516ba8502a9fc9aa47d8e21543ad0b1bfdea034027555ca0510626813a6b4",
+      "weight_relative_l2": 0.9667935371398926,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.23.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "c0d55db612276e2e45ba73cc6c7bd60986ad679f9e56e85382e9a515cd620a84",
+      "weight_relative_l2": 0.9679715633392334,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.24.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "eace11c449fe65d05daf49903ff502c8e760721efbaa358dc2c954077737dcc1",
+      "weight_relative_l2": 0.8861221671104431,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.24.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "817398cb6a3b5476ac6707a81cf87d0aaea44feb08012f7827a4afe697f1ec6a",
+      "weight_relative_l2": 0.8075761198997498,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.24.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "7d4d0edc19682a76059ecee7a2c7ac8cb0f4c4b5ed9ddef253956f68eeddaa48",
+      "weight_relative_l2": 0.8038130402565002,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.24.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "3acc83b2cec6cb342f6ae8148912dc55a2ecaf8b6e4a4977e5acbd2179f2aa44",
+      "weight_relative_l2": 0.8959585428237915,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.24.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "d7691d2ad42237f696d29887a86b2d0e3462c11b71a833f1c38fd9f75fdf9a63",
+      "weight_relative_l2": 0.9665163159370422,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.24.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "d44e4b7ed77788cfc80b7501595a6068fa4a63a957a32032e3d1722701216e79",
+      "weight_relative_l2": 0.9679729342460632,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.25.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "7476d79188584a7d7587d88a89d8fef6b9b2f7038dd8bf54118a46f4a1409e05",
+      "weight_relative_l2": 0.8950875401496887,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.25.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "352461a533aa7ff7fe1c88d98106ee63e386ee91db5d0df13c2699d50bb0aa96",
+      "weight_relative_l2": 0.803788959980011,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.25.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "179cd124e2ab4f153dda44a9a00d1c0da42e1a02cb6be0f57df8bbd22857b62a",
+      "weight_relative_l2": 0.8062145113945007,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.25.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "610b26077b86be5251f098f528172e0991bae47d5e9ac4b8704ec9d18e264f9d",
+      "weight_relative_l2": 0.902179479598999,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.25.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "3e9ef0486f0102c2eb7ea80b371fc9cbd0c5cce074e967432810c9bf0eda37fe",
+      "weight_relative_l2": 0.9664301872253418,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.25.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "5f59847d1d78c2e312dfcda30448f8680557d30d4ed8a5c3a1adc4163d9e1a66",
+      "weight_relative_l2": 0.967980682849884,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.26.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "69a5c0042bdfac1c7bb41001efb566d31639dbb04e3bc8a76cf70c9404922fb7",
+      "weight_relative_l2": 0.892210841178894,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.26.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "f469092b0dc0891409ea6e4595f49beae9e760d4b9cf9409d43e88f66a25dee5",
+      "weight_relative_l2": 0.8046695590019226,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.26.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "4f1b165139b4d745b10d81d8382eb6b57d9cefac3c9b9f23141adfb623de51ed",
+      "weight_relative_l2": 0.8060595393180847,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.26.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "7c4e4c8c4e523baaf482cd1041a66ba2d6c2c27299933b55e91e6908a16ede2b",
+      "weight_relative_l2": 0.8972266912460327,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.26.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "5fd7595ec6d23c915c3b8670da23ceb108d30ec24bf6d8ed860176b185d9d010",
+      "weight_relative_l2": 0.9657745361328125,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.26.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "0a8019cf9496ba55ffad07c7e3a6275bdb740768bfdfd2a3540f82c732349178",
+      "weight_relative_l2": 0.967994749546051,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.27.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "6bdff9f05d667b9d6de3b3edb0d16d98c05679cb0bb40271c902bc37cd6ff65f",
+      "weight_relative_l2": 0.8963432908058167,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.27.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "61125f47e05a60ae5156c592d7d8708dd0b08e217b1fdcfcab3861c1ba9a6d50",
+      "weight_relative_l2": 0.8042909502983093,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.27.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "7f0a1b88bd04438562cccd9e5dd0df9e4cf3788093fc2240acd5b8ad61d30147",
+      "weight_relative_l2": 0.8069255352020264,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.27.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "9d1c1e6fd2df585d356e0c18f5a6f87f3ecd21a656be584fffbb2cd755be5cc6",
+      "weight_relative_l2": 0.9023963212966919,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.27.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "f14375a3a7049c0822779d8d562e028a685fe51273bcb34c3e2e2df08117e8e0",
+      "weight_relative_l2": 0.965761661529541,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.27.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "c3578b6bad165a2573323b7bd8790db7a2793b42955f895da347cb6824a17b86",
+      "weight_relative_l2": 0.9679825901985168,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.28.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "f09fd4d4f0cb4836d7db57c7dcc7d100a68cfab9afff11fb393fcea16b52c9fe",
+      "weight_relative_l2": 0.8972658514976501,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.28.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "2ca9b538af51417cae3b6a200c2ba02730ac05bc66bd547fe84339a36d6add6e",
+      "weight_relative_l2": 0.7907382249832153,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.28.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "ccfdf5fb9b76c4fb87c2365ce40634b73f9e2d4276e039e1c9b09400e2126fdc",
+      "weight_relative_l2": 0.804542064666748,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.28.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "06349d22fa04182d30402bc488938d3e78f94b7e47c7a28ba8e9fbb411d85501",
+      "weight_relative_l2": 0.897406280040741,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.28.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "6c537726a9fbdfae5d6ff4f515f3cb66c2ce91e5ec8667f0967af1cc01d5796c",
+      "weight_relative_l2": 0.9657248854637146,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.28.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "4d25b7374196b399ac03e1f49863b9d282a87eb4dd9d209c2c435512166b6fdf",
+      "weight_relative_l2": 0.9680004715919495,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.29.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "5605c889d02ea6ea0f975253da86a4a31d2d4c301c30e7c6adb50627a81e34ec",
+      "weight_relative_l2": 0.8853127956390381,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.29.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "e240cad3345ea935be49f1a6e1ed37b833aca0b831493266fda2e3ee1ec45049",
+      "weight_relative_l2": 0.796671450138092,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.29.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "758793834da8757ba78de62d9fcaf219c0ab884c8988bb359b49f91505001cf6",
+      "weight_relative_l2": 0.7914376258850098,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.29.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "432d68828c566b943ad31df5542f239fc0efb252b8c734cfbf2fb25607d3173e",
+      "weight_relative_l2": 0.8989753127098083,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.29.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "a084354acfbb15bd8614dda967a01be9bd7ba81fd56f027278e907a435d64fa7",
+      "weight_relative_l2": 0.9650180339813232,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.29.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "ff3700e14b61492d36f13e36081a7e00d1e5084e440cd2ada7a1e4fe2757fbf4",
+      "weight_relative_l2": 0.9679964184761047,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.30.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "c66940e4a5482bc8d58a0feedcb4ead0fc4c610dff00f35bd5d9bccc713c78fe",
+      "weight_relative_l2": 0.8970324993133545,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.30.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "1efc3c1f0bdb2b78af512c2996ed4e10ca9aa5517c91310feaa0fd91de84dcae",
+      "weight_relative_l2": 0.7941714525222778,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.30.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "a8c571d11a7b2515b284827957501f469654467a3801cab7f86b527ed7dc7045",
+      "weight_relative_l2": 0.8019002676010132,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.30.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "971fc58169e773e435ca639c711970bef7e78e1237f4dbf1ccbcbb93bd5665ed",
+      "weight_relative_l2": 0.9006978869438171,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.30.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "7166005ccac6cdb1415881f001570eb19fe2a4eee5ab8946391bdc5081799378",
+      "weight_relative_l2": 0.9652873277664185,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.30.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "9112b453652511f157edecabb22a5a9997ce5b794bef0ce7e491748329f2ef20",
+      "weight_relative_l2": 0.9679902195930481,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.31.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "fa589dfa9139c31b443af6e6bba671134bc6130c61dfb673449469485a57ace6",
+      "weight_relative_l2": 0.8959031701087952,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.31.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "390a89c2fb1fbc7e18871187300e683a84bf47a21eb759ac3764c97d7f1fc113",
+      "weight_relative_l2": 0.7882646322250366,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.31.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "3904f25f3e4dc87ba8643d68676ef16c0c8f20356c4a9a89fb65549cdb87afc2",
+      "weight_relative_l2": 0.804431140422821,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.31.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "243650c75b982bfaa28947254350e2ec05fcbb0353ae92935c7534b1a5a53e0a",
+      "weight_relative_l2": 0.9013926982879639,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.31.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "22c8b92cfe51028d9593e41d6c5e01959741d7c34f49cf661cfa8956304777a7",
+      "weight_relative_l2": 0.9657176733016968,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.31.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "b9b09ba767ee4712daac448eb8ab3e59a62f70c193d5d34bacb86fd883641581",
+      "weight_relative_l2": 0.9680074453353882,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.32.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "4033a971111c8426a5a29d00728a1d2cb053d6d63d55d865a763563b27836573",
+      "weight_relative_l2": 0.8950864672660828,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.32.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "a3e436bf66a3a4a9295f05adce41eecc0679e8274d65e9ebc2104806ee3ca8d1",
+      "weight_relative_l2": 0.7890929579734802,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.32.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "80c31b271f0d77bc6f7fe2c94483ff5e26cdecec712263160d48df653813e575",
+      "weight_relative_l2": 0.8092172741889954,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.32.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "429c2b196cccf336eb9af418f7b7681e35aba44cf7473e1c22581a6600d5609a",
+      "weight_relative_l2": 0.8958182334899902,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.32.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "67beb8ee88946b43620c658fb6a090a0ca9aee8499f03f91bb56c2e6930b5756",
+      "weight_relative_l2": 0.9660300016403198,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.32.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "4194294016c2066392987bb1da7a1863fd9b0f54abe69882b538c4028d306d16",
+      "weight_relative_l2": 0.9679890275001526,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.33.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "54059818c1435299d7847fd476daae4ba77ed48597d7143e095f3cbf0f332beb",
+      "weight_relative_l2": 0.8911216855049133,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.33.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "dbac376526fe6c75edc4b113b9a56a941b238e4cf16233d2acc9c7fab65c4a6c",
+      "weight_relative_l2": 0.7882577776908875,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.33.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "d1e0b1eb2a2a548c697bbcab2ea3bcf596de8afb9d087647d94a87b665c9f67d",
+      "weight_relative_l2": 0.8005481362342834,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.33.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "beb322ac556d67728ca39e857a4fa84b242e57974ddf60aae9f25c90d7a1a843",
+      "weight_relative_l2": 0.8997211456298828,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.33.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "b5fd7ea41673df52045a90ba59e82814f4391e9ba304677481a55295a27b804a",
+      "weight_relative_l2": 0.966519832611084,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.33.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "87e5fa62ab5e9729b0381a929660a38a32d29466a31b76110f0cb6d3b6d0204c",
+      "weight_relative_l2": 0.9680056571960449,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.34.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "5c7dd096926b372619aa9f3eea1b95bb3f3483671860ceeb569efc1e8e5f191b",
+      "weight_relative_l2": 0.890568196773529,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.34.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "77519b9910300f740dbef78a98b7c00da12838f5a378d4b67afaf1739d13c23d",
+      "weight_relative_l2": 0.7800395488739014,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.34.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "517ffa455eea88cba5cb7a6ca821446105fc08677292a29c99e6a70d6b0ef3c4",
+      "weight_relative_l2": 0.8080878257751465,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.34.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "ed789bfbc909b2ad7e989746cc7154618dc12c26ffb7f13e4e2fec8e9cdcc95c",
+      "weight_relative_l2": 0.8982756733894348,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.34.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "8fcbbda7e7a6ceb4d608e5d3f87f3e29c4bdc4cd321bee1f9abed4005394285b",
+      "weight_relative_l2": 0.9666462540626526,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.34.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "2d58a6da3d81940f2ce35d929da274ba92490831888844bc30c1fcc72513fb3c",
+      "weight_relative_l2": 0.9679809808731079,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.35.self_attn.q_proj": {
+      "source": "cache",
+      "cache_key": "339723da2df756c78d3a43b26b2247a3a08952e91f050578ad4a58c0fc123a3c",
+      "weight_relative_l2": 0.9011738896369934,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.35.self_attn.k_proj": {
+      "source": "cache",
+      "cache_key": "2b853b5af2a6a0fd34d060e1e0563670aa35b8b8990debba7bf0d976b2b04a53",
+      "weight_relative_l2": 0.798029899597168,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.35.self_attn.v_proj": {
+      "source": "cache",
+      "cache_key": "6c8e56dd41cfd8b64815e8f6ffa98c6cb7ef3b34850bb9e0d48aea526b3d3792",
+      "weight_relative_l2": 0.800460696220398,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.35.self_attn.o_proj": {
+      "source": "cache",
+      "cache_key": "08b626ab5e745adcaf38cc012036aed4cf198d193db5b4a82643d5fd74d63753",
+      "weight_relative_l2": 0.8845176100730896,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.35.mlp.gate_proj": {
+      "source": "cache",
+      "cache_key": "2d74dda68d3553fa52031dffe118da0ea1ca0be4d208b3c1e30d3af0a1ee0f5b",
+      "weight_relative_l2": 0.9641891121864319,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.35.mlp.up_proj": {
+      "source": "cache",
+      "cache_key": "7405f92b975df47ed999390aab73dbc30d370c1db415c7983f795e3073f8d21d",
+      "weight_relative_l2": 0.9678990244865417,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    }
+  },
+  "aggregate": {
+    "target_count": 108,
+    "dense_parameters": 2566914048,
+    "tt_parameters": 218972160,
+    "compression_ratio": 11.722558922558923
+  }
+}

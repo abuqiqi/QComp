@@ -9,7 +9,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 import torch
-from .provenance import atomic_write_json
+from .model_loading import load_local_causal_lm, load_local_tokenizer
+from .provenance import atomic_write_json, load_json
 
 
 @dataclass(frozen=True)
@@ -75,11 +76,7 @@ class EvaluationConfig:
 
     @classmethod
     def from_json(cls, path: str | Path) -> "EvaluationConfig":
-        with Path(path).open(encoding="utf-8") as handle:
-            value = json.load(handle)
-        if not isinstance(value, Mapping):
-            raise ValueError("evaluation config root must be an object")
-        return cls.from_dict(value)
+        return cls.from_dict(load_json(path))
 
     def to_dict(self) -> dict[str, Any]:
         value = asdict(self)
@@ -126,21 +123,15 @@ def evaluate_causal_lm(
         torch.cuda.manual_seed_all(config.seed)
     model_load_seconds: float | None = None
     if isinstance(model_or_path, (str, os.PathLike)):
-        from transformers import AutoModelForCausalLM, AutoTokenizer
-
         model_path = Path(model_or_path).expanduser().resolve()
         if not model_path.is_dir():
             raise FileNotFoundError(f"model directory does not exist: {model_path}")
         started = time.perf_counter()
-        tokenizer = tokenizer or AutoTokenizer.from_pretrained(
-            model_path, local_files_only=True
-        )
-        model = AutoModelForCausalLM.from_pretrained(
+        tokenizer = tokenizer or load_local_tokenizer(model_path)
+        model = load_local_causal_lm(
             model_path,
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
             device_map="auto",
-            local_files_only=True,
-            low_cpu_mem_usage=True,
         )
         model_load_seconds = time.perf_counter() - started
         model_source = str(model_path)

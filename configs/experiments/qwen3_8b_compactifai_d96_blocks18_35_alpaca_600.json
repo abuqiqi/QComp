@@ -1,0 +1,36 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+  "artifact_root": "artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600",
+  "result_root": "results/finetune/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600",
+  "backend": "native",
+  "data": {
+    "type": "huggingface",
+    "dataset": "tatsu-lab/alpaca",
+    "split": "train",
+    "text_field": "text"
+  },
+  "training": {
+    "num_train_epochs": 1,
+    "max_steps": 600,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 0.00001,
+    "weight_decay": 0,
+    "warmup_ratio": 0.03,
+    "max_grad_norm": 1,
+    "max_length": 512,
+    "logging_steps": 10,
+    "save_steps": 150,
+    "save_total_limit": 2,
+    "seed": 42,
+    "device": "cuda:0",
+    "bf16_autocast": true,
+    "gradient_checkpointing": true,
+    "tt_activation_checkpointing": true,
+    "first_step_peak_memory_limit_gib": 80.0
+  },
+  "force_retrain": false,
+  "force_reevaluate": false,
+  "resume_from": "latest"
+}

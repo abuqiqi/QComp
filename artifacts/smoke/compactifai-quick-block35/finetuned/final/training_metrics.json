@@ -1,0 +1,59 @@
+{
+  "first_training_loss": 2.529733657836914,
+  "global_step": 1,
+  "last_training_loss": 2.529733657836914,
+  "loss_history": [
+    {
+      "learning_rate": 0.0,
+      "loss": 2.529733657836914,
+      "step": 1
+    }
+  ],
+  "mean_training_loss": 2.529733657836914,
+  "min_training_loss": 2.529733657836914,
+  "model_gradient_checkpointing": true,
+  "optimizer_steps_this_run": 1,
+  "peak_cuda_allocated_bytes": 17743829504,
+  "resume_checkpoint": "artifacts/smoke/compactifai-quick-block35/finetuned/checkpoint-1",
+  "resumed_from": null,
+  "total_model_parameters": 8060294144,
+  "trainable_tt_parameters": 12165120,
+  "training_seconds_this_run": 1.224807484075427,
+  "training_tokens_seen": 128,
+  "training_tokens_this_run": 128,
+  "tt_activation_checkpointing": true,
+  "tt_backends": {
+    "model.layers.35.mlp.gate_proj": {
+      "name": "native",
+      "version": "2"
+    },
+    "model.layers.35.mlp.up_proj": {
+      "name": "native",
+      "version": "2"
+    },
+    "model.layers.35.self_attn.k_proj": {
+      "name": "native",
+      "version": "2"
+    },
+    "model.layers.35.self_attn.o_proj": {
+      "name": "native",
+      "version": "2"
+    },
+    "model.layers.35.self_attn.q_proj": {
+      "name": "native",
+      "version": "2"
+    },
+    "model.layers.35.self_attn.v_proj": {
+      "name": "native",
+      "version": "2"
+    }
+  },
+  "tt_module_paths": [
+    "model.layers.35.self_attn.q_proj",
+    "model.layers.35.self_attn.k_proj",
+    "model.layers.35.self_attn.v_proj",
+    "model.layers.35.self_attn.o_proj",
+    "model.layers.35.mlp.gate_proj",
+    "model.layers.35.mlp.up_proj"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "elapsed_seconds": 8.892669566906989,
+  "format": "qwen3-tn-offline-verification-v1",
+  "generated_text": "请用两句话解释张量网络压缩。### Input:\n1. 1-2-3-4 - 1",
+  "max_new_tokens": 16,
+  "module_count": 108,
+  "module_set": "/home/xls/workspace/projects/qwen3-tn-compression/artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600/final/index.json",
+  "peak_cuda_allocated_bytes": 16823964160,
+  "prompt": "请用两句话解释张量网络压缩。",
+  "success": true
+}

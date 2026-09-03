@@ -23,6 +23,7 @@ class TTFineTuneConfig:
     bf16_autocast: bool = True
     gradient_checkpointing: bool = False
     tt_activation_checkpointing: bool = True
+    first_step_peak_memory_limit_gib: float | None = None
 
     def __post_init__(self) -> None:
         for name in (
@@ -45,6 +46,11 @@ class TTFineTuneConfig:
             raise ValueError("warmup_ratio must be in [0, 1]")
         if self.save_steps < 0:
             raise ValueError("save_steps must be non-negative")
+        if (
+            self.first_step_peak_memory_limit_gib is not None
+            and self.first_step_peak_memory_limit_gib <= 0
+        ):
+            raise ValueError("first_step_peak_memory_limit_gib must be positive")
 
 
 @dataclass(frozen=True)
@@ -52,6 +58,7 @@ class TTTrainingState:
     global_step: int = 0
     epoch: int = 0
     batch_index: int = 0
+    tokens_seen: int = 0
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,40 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {
+    "global_step": 1
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/model__layers__35__mlp__gate_proj--90c0403c24",
+      "cores_sha256": "76a9fc064739b5072ca4bd15c126bd68d664574d5a6fc433137df0b4cb464b4b",
+      "module_path": "model.layers.35.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__mlp__up_proj--1ef90557d1",
+      "cores_sha256": "bea0f4dab0888a24504037bdf49473f5245e1201decc6eb060c2c0c0423dc7cd",
+      "module_path": "model.layers.35.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__k_proj--e4b9c681d8",
+      "cores_sha256": "e9ad7078f330bea06e98ec9c9db9f7cb73d32a7a8853810ff65532036fa37877",
+      "module_path": "model.layers.35.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__o_proj--efcaf069fc",
+      "cores_sha256": "cd7cf5b7553d8eda3668db656d0f20774a5a560175dd6b745516e0ae08be5ad6",
+      "module_path": "model.layers.35.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__q_proj--be726dcc26",
+      "cores_sha256": "2547cb7126cc65322708230b9c334b02ad3aacac9c5e73bcfd21c6a4d2a3aefd",
+      "module_path": "model.layers.35.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__v_proj--8ce799ba65",
+      "cores_sha256": "faa9ad746bc8e9daec0f44f647d43ec6549deada43728fb349f587d6a0aa1416",
+      "module_path": "model.layers.35.self_attn.v_proj"
+    }
+  ],
+  "purpose": "tt-finetuned"
+}

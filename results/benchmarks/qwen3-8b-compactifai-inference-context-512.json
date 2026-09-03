@@ -1,0 +1,255 @@
+{
+  "config": {
+    "backend_options": {
+      "cutensornet": {
+        "max_cached_networks": 2,
+        "memory_limit": "256MiB",
+        "min_tokens": 16,
+        "token_bucket_size": 128
+      }
+    },
+    "backends": [
+      "native",
+      "tensorly_torch",
+      "torchtt",
+      "cutensornet"
+    ],
+    "batch_size": 1,
+    "core_dtype": "torch.bfloat16",
+    "decode_steps": 32,
+    "device": "cuda:0",
+    "iterations": 2,
+    "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+    "prefill_tokens": 512,
+    "relative_l2_threshold": 0.005,
+    "required_speedup": 2.0,
+    "seed": 42,
+    "top1_agreement_threshold": 0.99,
+    "warmup": 1
+  },
+  "format": "qwen3-tn-inference-benchmark-v1",
+  "results": {
+    "cutensornet": {
+      "backend_metadata": {
+        "implementation": "cuquantum.tensornet.Network",
+        "inference_only": true,
+        "max_cached_networks": 2,
+        "memory_limit": "256MiB",
+        "min_tokens": 16,
+        "name": "cutensornet",
+        "options": {
+          "max_cached_networks": 2,
+          "memory_limit": "256MiB",
+          "min_tokens": 16,
+          "token_bucket_size": 128
+        },
+        "token_bucket_size": 128,
+        "version": "2.13.0"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": false,
+        "output_relative_l2": 0.012892894446849823,
+        "performance_pass": false,
+        "speedup": 1.8495366748728905,
+        "top1_agreement": 0.9696969985961914
+      },
+      "decode": {
+        "max_ms": 1670.9933751262724,
+        "mean_ms": 1641.5736596100032,
+        "median_ms": 1641.5736596100032,
+        "min_ms": 1612.153944093734,
+        "samples_ms": [
+          1670.9933751262724,
+          1612.153944093734
+        ],
+        "tokens_per_second": 19.493490171864963
+      },
+      "end_to_end": {
+        "max_ms": 1759.134674910456,
+        "mean_ms": 1716.1795676220208,
+        "median_ms": 1716.1795676220208,
+        "min_ms": 1673.2244603335857,
+        "samples_ms": [
+          1673.2244603335857,
+          1759.134674910456
+        ],
+        "tokens_per_second": 316.98314690564655
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 35889787904,
+      "peak_reserved_bytes": 36066820096,
+      "prefill": {
+        "max_ms": 73.42263264581561,
+        "mean_ms": 73.38110124692321,
+        "median_ms": 73.38110124692321,
+        "min_ms": 73.3395698480308,
+        "samples_ms": [
+          73.42263264581561,
+          73.3395698480308
+        ],
+        "tokens_per_second": 6977.27332105782
+      },
+      "status": "ok"
+    },
+    "native": {
+      "backend_metadata": {
+        "name": "native",
+        "options": {},
+        "version": "2"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": true,
+        "output_relative_l2": 0.0,
+        "performance_pass": false,
+        "speedup": 1.0,
+        "top1_agreement": 1.0
+      },
+      "decode": {
+        "max_ms": 1602.5718860328197,
+        "mean_ms": 1602.4211060721427,
+        "median_ms": 1602.4211060721427,
+        "min_ms": 1602.2703261114657,
+        "samples_ms": [
+          1602.2703261114657,
+          1602.5718860328197
+        ],
+        "tokens_per_second": 19.969781899864294
+      },
+      "end_to_end": {
+        "max_ms": 3184.467939194292,
+        "mean_ms": 3174.1370509844273,
+        "median_ms": 3174.1370509844273,
+        "min_ms": 3163.806162774563,
+        "samples_ms": [
+          3184.467939194292,
+          3163.806162774563
+        ],
+        "tokens_per_second": 171.38516430198996
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 12234632192,
+      "peak_reserved_bytes": 12576620544,
+      "prefill": {
+        "max_ms": 1583.159709814936,
+        "mean_ms": 1583.1332004163414,
+        "median_ms": 1583.1332004163414,
+        "min_ms": 1583.106691017747,
+        "samples_ms": [
+          1583.159709814936,
+          1583.106691017747
+        ],
+        "tokens_per_second": 323.40929990309803
+      },
+      "status": "ok"
+    },
+    "tensorly_torch": {
+      "backend_metadata": {
+        "factorization": "BlockTT",
+        "implementation": "factorized",
+        "name": "tensorly_torch",
+        "options": {},
+        "version": "0.5.0"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": false,
+        "output_relative_l2": 0.012338187545537949,
+        "performance_pass": false,
+        "speedup": 1.1205225559278313,
+        "top1_agreement": 0.939393937587738
+      },
+      "decode": {
+        "max_ms": 2685.1574666798115,
+        "mean_ms": 2672.4333583842963,
+        "median_ms": 2672.4333583842963,
+        "min_ms": 2659.709250088781,
+        "samples_ms": [
+          2685.1574666798115,
+          2659.709250088781
+        ],
+        "tokens_per_second": 11.974105883540762
+      },
+      "end_to_end": {
+        "max_ms": 2838.0040139891207,
+        "mean_ms": 2832.7292781323195,
+        "median_ms": 2832.7292781323195,
+        "min_ms": 2827.454542275518,
+        "samples_ms": [
+          2838.0040139891207,
+          2827.454542275518
+        ],
+        "tokens_per_second": 192.04094235177712
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 12315177984,
+      "peak_reserved_bytes": 12863930368,
+      "prefill": {
+        "max_ms": 180.29789812862873,
+        "mean_ms": 171.99226561933756,
+        "median_ms": 171.99226561933756,
+        "min_ms": 163.6866331100464,
+        "samples_ms": [
+          180.29789812862873,
+          163.6866331100464
+        ],
+        "tokens_per_second": 2976.878048302391
+      },
+      "status": "ok"
+    },
+    "torchtt": {
+      "backend_metadata": {
+        "implementation": "LinearLayerTT",
+        "name": "torchtt",
+        "options": {},
+        "version": "0.4.0"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": false,
+        "output_relative_l2": 0.011546673253178596,
+        "performance_pass": false,
+        "speedup": 1.1045457346107432,
+        "top1_agreement": 0.9696969985961914
+      },
+      "decode": {
+        "max_ms": 1849.8448976315558,
+        "mean_ms": 1767.7963238675147,
+        "median_ms": 1767.7963238675147,
+        "min_ms": 1685.7477501034737,
+        "samples_ms": [
+          1849.8448976315558,
+          1685.7477501034737
+        ],
+        "tokens_per_second": 18.101632845344803
+      },
+      "end_to_end": {
+        "max_ms": 2875.5854507908225,
+        "mean_ms": 2873.7035973463207,
+        "median_ms": 2873.7035973463207,
+        "min_ms": 2871.821743901819,
+        "samples_ms": [
+          2871.821743901819,
+          2875.5854507908225
+        ],
+        "tokens_per_second": 189.30275220532445
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 12234486784,
+      "peak_reserved_bytes": 12566134784,
+      "prefill": {
+        "max_ms": 1195.9075350314379,
+        "mean_ms": 1193.6778610106558,
+        "median_ms": 1193.6778610106558,
+        "min_ms": 1191.4481869898736,
+        "samples_ms": [
+          1195.9075350314379,
+          1191.4481869898736
+        ],
+        "tokens_per_second": 428.92644382840695
+      },
+      "status": "ok"
+    }
+  }
+}

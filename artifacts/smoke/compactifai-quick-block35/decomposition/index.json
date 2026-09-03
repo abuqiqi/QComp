@@ -1,0 +1,191 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {
+    "targets": [
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      }
+    ]
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/model__layers__35__mlp__gate_proj",
+      "cores_sha256": "b76748a80a087e28b0e48ca229c0e72581decfa07e59122b2a0c412e188010d0",
+      "module_path": "model.layers.35.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__mlp__up_proj",
+      "cores_sha256": "e4e142cc0c152c063366de713ab288df0d08d68ec44b730c6cdffb8678121833",
+      "module_path": "model.layers.35.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__k_proj",
+      "cores_sha256": "74b1a172fa20cd4395da8e535b0efc52f9341975684b56c9b6cf5e40e5fb054b",
+      "module_path": "model.layers.35.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__o_proj",
+      "cores_sha256": "59304b9a2011650e6e5952e92c5c07406fe5ab67195e80b104c996a38ad6bf11",
+      "module_path": "model.layers.35.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__q_proj",
+      "cores_sha256": "95e01098451935418cb91996cea7ecfd17caea712b5f6a0402ee8a596cd77565",
+      "module_path": "model.layers.35.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__v_proj",
+      "cores_sha256": "1b4bc5bce79050aeb1ff7dbd2ed98cab5680ba7fdce62a7118cf8ca28b02f81e",
+      "module_path": "model.layers.35.self_attn.v_proj"
+    }
+  ],
+  "purpose": "qwen3-8b-compactifai-quick-block35-six-projections"
+}

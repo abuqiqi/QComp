@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 import os
-import shutil
 import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -10,7 +9,12 @@ from typing import Any, Mapping, Sequence
 import torch
 from safetensors.torch import load_file, save_file
 from torch import Tensor
-from .provenance import atomic_write_json, file_sha256, load_json
+from .provenance import (
+    atomic_publish_directory,
+    atomic_write_json,
+    file_sha256,
+    load_json,
+)
 from .tt import TTMatrixSpec, validate_cores
 
 TT_MODULE_FORMAT = "qwen3-tn-tt-matrix-v1"
@@ -235,16 +239,4 @@ def load_module_set_index(
 
 
 def publish_module_set(temporary: Path, target: Path) -> None:
-    backup: Path | None = None
-    target.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        if target.exists():
-            backup = target.parent / f".{target.name}.old-{uuid.uuid4().hex}"
-            os.replace(target, backup)
-        os.replace(temporary, target)
-        if backup is not None:
-            shutil.rmtree(backup)
-    except Exception:
-        if backup is not None and backup.exists() and not target.exists():
-            os.replace(backup, target)
-        raise
+    atomic_publish_directory(temporary, target)

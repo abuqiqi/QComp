@@ -1,0 +1,15 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {
+    "global_step": 1
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__q_proj--be726dcc26",
+      "cores_sha256": "2944a6eab2db57a482f4c4337a3af23b9ff589654e8cd0f347a1e957aefcc278",
+      "module_path": "model.layers.35.self_attn.q_proj"
+    }
+  ],
+  "purpose": "tt-finetuned"
+}

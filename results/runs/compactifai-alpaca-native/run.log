@@ -1,0 +1,968 @@
+[2026-08-27T17:25:58+00:00] 开始 CompactifAI 风格 Alpaca healing
+GPU: NVIDIA A100-SXM4-80GB, 79.2 GiB
+Using the latest cached version of the dataset since tatsu-lab/alpaca couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/xls/workspace/datasets/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017 (last modified on Thu Aug 27 15:58:46 2026).
+Alpaca offline validation: 52,002 rows, columns=['instruction', 'input', 'output', 'text']
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+/home/xls/workspace/projects/qwen3-tn-compression/scripts/run_compactifai_alpaca_native.sh: line 1: phase: unbound variable
+[2026-08-28T01:44:42+00:00] 开始 CompactifAI 风格 Alpaca healing
+GPU: NVIDIA A100-SXM4-80GB, 79.2 GiB
+Using the latest cached version of the dataset since tatsu-lab/alpaca couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/xls/workspace/datasets/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017 (last modified on Thu Aug 27 15:58:46 2026).
+Alpaca offline validation: 52,002 rows, columns=['instruction', 'input', 'output', 'text']
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 73.70it/s]
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 74.07it/s]
+Using the latest cached version of the dataset since tatsu-lab/alpaca couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/xls/workspace/datasets/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017 (last modified on Thu Aug 27 15:58:46 2026).
+You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+first-step smoke passed: finite loss, peak=21.68 GiB
+step=10 loss=11.342712 lr=5.556e-06
+step=20 loss=6.500569 lr=9.966e-06
+step=30 loss=4.929598 lr=9.794e-06
+step=40 loss=4.227395 lr=9.622e-06
+step=50 loss=3.864465 lr=9.450e-06
+step=60 loss=3.630096 lr=9.278e-06
+step=70 loss=3.482244 lr=9.107e-06
+step=80 loss=3.263908 lr=8.935e-06
+step=90 loss=3.298770 lr=8.763e-06
+step=100 loss=3.156343 lr=8.591e-06
+step=110 loss=3.280462 lr=8.419e-06
+step=120 loss=3.009882 lr=8.247e-06
+step=130 loss=3.132782 lr=8.076e-06
+step=140 loss=3.011847 lr=7.904e-06
+step=150 loss=3.079680 lr=7.732e-06
+step=160 loss=3.011819 lr=7.560e-06
+step=170 loss=2.871029 lr=7.388e-06
+step=180 loss=2.913728 lr=7.216e-06
+step=190 loss=2.887333 lr=7.045e-06
+step=200 loss=2.884938 lr=6.873e-06
+step=210 loss=2.881741 lr=6.701e-06
+step=220 loss=2.817454 lr=6.529e-06
+step=230 loss=2.708773 lr=6.357e-06
+step=240 loss=2.799439 lr=6.186e-06
+step=250 loss=2.709255 lr=6.014e-06
+step=260 loss=2.907365 lr=5.842e-06
+step=270 loss=2.738801 lr=5.670e-06
+step=280 loss=2.734815 lr=5.498e-06
+step=290 loss=2.570571 lr=5.326e-06
+step=300 loss=2.809296 lr=5.155e-06
+step=310 loss=2.680933 lr=4.983e-06
+step=320 loss=2.721234 lr=4.811e-06
+step=330 loss=2.683762 lr=4.639e-06
+step=340 loss=2.586246 lr=4.467e-06
+step=350 loss=2.707160 lr=4.296e-06
+step=360 loss=2.635432 lr=4.124e-06
+step=370 loss=2.698779 lr=3.952e-06
+step=380 loss=2.617913 lr=3.780e-06
+step=390 loss=2.732096 lr=3.608e-06
+step=400 loss=2.615667 lr=3.436e-06
+step=410 loss=2.603567 lr=3.265e-06
+step=420 loss=2.394200 lr=3.093e-06
+step=430 loss=2.573325 lr=2.921e-06
+step=440 loss=2.586236 lr=2.749e-06
+step=450 loss=2.556624 lr=2.577e-06
+step=460 loss=2.576144 lr=2.405e-06
+step=470 loss=2.498055 lr=2.234e-06
+step=480 loss=2.519162 lr=2.062e-06
+step=490 loss=2.554810 lr=1.890e-06
+step=500 loss=2.486769 lr=1.718e-06
+step=510 loss=2.540484 lr=1.546e-06
+step=520 loss=2.586833 lr=1.375e-06
+step=530 loss=2.554473 lr=1.203e-06
+step=540 loss=2.384072 lr=1.031e-06
+step=550 loss=2.550367 lr=8.591e-07
+step=560 loss=2.498943 lr=6.873e-07
+step=570 loss=2.477100 lr=5.155e-07
+step=580 loss=2.472971 lr=3.436e-07
+step=590 loss=2.557362 lr=1.718e-07
+step=600 loss=2.563291 lr=0.000e+00
+{
+  "format": "qwen3-tn-finetune-experiment-v1",
+  "training_source": "training",
+  "training_metrics": {
+    "global_step": 600,
+    "optimizer_steps_this_run": 600,
+    "training_tokens_seen": 1228800,
+    "training_tokens_this_run": 1228800,
+    "training_seconds_this_run": 34541.52929875115,
+    "mean_training_loss": 3.0445186687012513,
+    "first_training_loss": 13.48275089263916,
+    "min_training_loss": 1.5427955389022827,
+    "last_training_loss": 2.3387961387634277,
+    "loss_history": [
+      {
+        "step": 10,
+        "loss": 11.342712366580963,
+        "learning_rate": 5.555555555555557e-06
+      },
+      {
+        "step": 20,
+        "loss": 6.500568842887878,
+        "learning_rate": 9.965635738831616e-06
+      },
+      {
+        "step": 30,
+        "loss": 4.929597997665406,
+        "learning_rate": 9.793814432989691e-06
+      },
+      {
+        "step": 40,
+        "loss": 4.227394944429397,
+        "learning_rate": 9.621993127147768e-06
+      },
+      {
+        "step": 50,
+        "loss": 3.8644651532173158,
+        "learning_rate": 9.450171821305843e-06
+      },
+      {
+        "step": 60,
+        "loss": 3.6300963699817657,
+        "learning_rate": 9.278350515463918e-06
+      },
+      {
+        "step": 70,
+        "loss": 3.482243573665619,
+        "learning_rate": 9.106529209621994e-06
+      },
+      {
+        "step": 80,
+        "loss": 3.263908475637436,
+        "learning_rate": 8.93470790378007e-06
+      },
+      {
+        "step": 90,
+        "loss": 3.298770081996918,
+        "learning_rate": 8.762886597938146e-06
+      },
+      {
+        "step": 100,
+        "loss": 3.1563432574272157,
+        "learning_rate": 8.591065292096221e-06
+      },
+      {
+        "step": 110,
+        "loss": 3.280462223291397,
+        "learning_rate": 8.419243986254296e-06
+      },
+      {
+        "step": 120,
+        "loss": 3.0098822832107546,
+        "learning_rate": 8.247422680412371e-06
+      },
+      {
+        "step": 130,
+        "loss": 3.132781946659088,
+        "learning_rate": 8.075601374570448e-06
+      },
+      {
+        "step": 140,
+        "loss": 3.0118465960025786,
+        "learning_rate": 7.903780068728523e-06
+      },
+      {
+        "step": 150,
+        "loss": 3.079679736495018,
+        "learning_rate": 7.731958762886599e-06
+      },
+      {
+        "step": 160,
+        "loss": 3.0118190944194794,
+        "learning_rate": 7.560137457044674e-06
+      },
+      {
+        "step": 170,
+        "loss": 2.871029272675514,
+        "learning_rate": 7.38831615120275e-06
+      },
+      {
+        "step": 180,
+        "loss": 2.913727563619614,
+        "learning_rate": 7.216494845360825e-06
+      },
+      {
+        "step": 190,
+        "loss": 2.8873331964015962,
+        "learning_rate": 7.044673539518901e-06
+      },
+      {
+        "step": 200,
+        "loss": 2.8849383115768434,
+        "learning_rate": 6.872852233676976e-06
+      },
+      {
+        "step": 210,
+        "loss": 2.881741300225258,
+        "learning_rate": 6.701030927835052e-06
+      },
+      {
+        "step": 220,
+        "loss": 2.8174543619155883,
+        "learning_rate": 6.529209621993128e-06
+      },
+      {
+        "step": 230,
+        "loss": 2.708772751688957,
+        "learning_rate": 6.357388316151203e-06
+      },
+      {
+        "step": 240,
+        "loss": 2.7994391679763795,
+        "learning_rate": 6.185567010309279e-06
+      },
+      {
+        "step": 250,
+        "loss": 2.7092548251152038,
+        "learning_rate": 6.013745704467354e-06
+      },
+      {
+        "step": 260,
+        "loss": 2.9073647439479826,
+        "learning_rate": 5.84192439862543e-06
+      },
+      {
+        "step": 270,
+        "loss": 2.738800659775734,
+        "learning_rate": 5.670103092783505e-06
+      },
+      {
+        "step": 280,
+        "loss": 2.734815338253975,
+        "learning_rate": 5.4982817869415815e-06
+      },
+      {
+        "step": 290,
+        "loss": 2.570571023225784,
+        "learning_rate": 5.326460481099657e-06
+      },
+      {
+        "step": 300,
+        "loss": 2.80929633975029,
+        "learning_rate": 5.154639175257732e-06
+      },
+      {
+        "step": 310,
+        "loss": 2.680933099985123,
+        "learning_rate": 4.982817869415808e-06
+      },
+      {
+        "step": 320,
+        "loss": 2.721234342455864,
+        "learning_rate": 4.810996563573884e-06
+      },
+      {
+        "step": 330,
+        "loss": 2.683761739730835,
+        "learning_rate": 4.639175257731959e-06
+      },
+      {
+        "step": 340,
+        "loss": 2.586245799064636,
+        "learning_rate": 4.467353951890035e-06
+      },
+      {
+        "step": 350,
+        "loss": 2.7071595072746275,
+        "learning_rate": 4.2955326460481105e-06
+      },
+      {
+        "step": 360,
+        "loss": 2.6354320108890534,
+        "learning_rate": 4.123711340206186e-06
+      },
+      {
+        "step": 370,
+        "loss": 2.6987785428762434,
+        "learning_rate": 3.951890034364262e-06
+      },
+      {
+        "step": 380,
+        "loss": 2.61791278719902,
+        "learning_rate": 3.780068728522337e-06
+      },
+      {
+        "step": 390,
+        "loss": 2.732095795869827,
+        "learning_rate": 3.6082474226804126e-06
+      },
+      {
+        "step": 400,
+        "loss": 2.615666902065277,
+        "learning_rate": 3.436426116838488e-06
+      },
+      {
+        "step": 410,
+        "loss": 2.603567397594452,
+        "learning_rate": 3.264604810996564e-06
+      },
+      {
+        "step": 420,
+        "loss": 2.3941997051239015,
+        "learning_rate": 3.0927835051546395e-06
+      },
+      {
+        "step": 430,
+        "loss": 2.573325216770172,
+        "learning_rate": 2.920962199312715e-06
+      },
+      {
+        "step": 440,
+        "loss": 2.586235836148262,
+        "learning_rate": 2.7491408934707907e-06
+      },
+      {
+        "step": 450,
+        "loss": 2.556624287366867,
+        "learning_rate": 2.577319587628866e-06
+      },
+      {
+        "step": 460,
+        "loss": 2.5761444687843325,
+        "learning_rate": 2.405498281786942e-06
+      },
+      {
+        "step": 470,
+        "loss": 2.498054975271225,
+        "learning_rate": 2.2336769759450176e-06
+      },
+      {
+        "step": 480,
+        "loss": 2.519161745905876,
+        "learning_rate": 2.061855670103093e-06
+      },
+      {
+        "step": 490,
+        "loss": 2.554809921979904,
+        "learning_rate": 1.8900343642611685e-06
+      },
+      {
+        "step": 500,
+        "loss": 2.4867688328027726,
+        "learning_rate": 1.718213058419244e-06
+      },
+      {
+        "step": 510,
+        "loss": 2.5404836744070054,
+        "learning_rate": 1.5463917525773197e-06
+      },
+      {
+        "step": 520,
+        "loss": 2.586833417415619,
+        "learning_rate": 1.3745704467353954e-06
+      },
+      {
+        "step": 530,
+        "loss": 2.5544728845357896,
+        "learning_rate": 1.202749140893471e-06
+      },
+      {
+        "step": 540,
+        "loss": 2.38407184779644,
+        "learning_rate": 1.0309278350515464e-06
+      },
+      {
+        "step": 550,
+        "loss": 2.550367161631584,
+        "learning_rate": 8.59106529209622e-07
+      },
+      {
+        "step": 560,
+        "loss": 2.498942556977272,
+        "learning_rate": 6.872852233676977e-07
+      },
+      {
+        "step": 570,
+        "loss": 2.4770997017621994,
+        "learning_rate": 5.154639175257732e-07
+      },
+      {
+        "step": 580,
+        "loss": 2.4729712873697283,
+        "learning_rate": 3.4364261168384884e-07
+      },
+      {
+        "step": 590,
+        "loss": 2.5573616683483125,
+        "learning_rate": 1.7182130584192442e-07
+      },
+      {
+        "step": 600,
+        "loss": 2.5632912069559097,
+        "learning_rate": 0.0
+      }
+    ],
+    "trainable_tt_parameters": 218972160,
+    "total_model_parameters": 5842793472,
+    "tt_module_paths": [
+      "model.layers.18.self_attn.q_proj",
+      "model.layers.18.self_attn.k_proj",
+      "model.layers.18.self_attn.v_proj",
+      "model.layers.18.self_attn.o_proj",
+      "model.layers.18.mlp.gate_proj",
+      "model.layers.18.mlp.up_proj",
+      "model.layers.19.self_attn.q_proj",
+      "model.layers.19.self_attn.k_proj",
+      "model.layers.19.self_attn.v_proj",
+      "model.layers.19.self_attn.o_proj",
+      "model.layers.19.mlp.gate_proj",
+      "model.layers.19.mlp.up_proj",
+      "model.layers.20.self_attn.q_proj",
+      "model.layers.20.self_attn.k_proj",
+      "model.layers.20.self_attn.v_proj",
+      "model.layers.20.self_attn.o_proj",
+      "model.layers.20.mlp.gate_proj",
+      "model.layers.20.mlp.up_proj",
+      "model.layers.21.self_attn.q_proj",
+      "model.layers.21.self_attn.k_proj",
+      "model.layers.21.self_attn.v_proj",
+      "model.layers.21.self_attn.o_proj",
+      "model.layers.21.mlp.gate_proj",
+      "model.layers.21.mlp.up_proj",
+      "model.layers.22.self_attn.q_proj",
+      "model.layers.22.self_attn.k_proj",
+      "model.layers.22.self_attn.v_proj",
+      "model.layers.22.self_attn.o_proj",
+      "model.layers.22.mlp.gate_proj",
+      "model.layers.22.mlp.up_proj",
+      "model.layers.23.self_attn.q_proj",
+      "model.layers.23.self_attn.k_proj",
+      "model.layers.23.self_attn.v_proj",
+      "model.layers.23.self_attn.o_proj",
+      "model.layers.23.mlp.gate_proj",
+      "model.layers.23.mlp.up_proj",
+      "model.layers.24.self_attn.q_proj",
+      "model.layers.24.self_attn.k_proj",
+      "model.layers.24.self_attn.v_proj",
+      "model.layers.24.self_attn.o_proj",
+      "model.layers.24.mlp.gate_proj",
+      "model.layers.24.mlp.up_proj",
+      "model.layers.25.self_attn.q_proj",
+      "model.layers.25.self_attn.k_proj",
+      "model.layers.25.self_attn.v_proj",
+      "model.layers.25.self_attn.o_proj",
+      "model.layers.25.mlp.gate_proj",
+      "model.layers.25.mlp.up_proj",
+      "model.layers.26.self_attn.q_proj",
+      "model.layers.26.self_attn.k_proj",
+      "model.layers.26.self_attn.v_proj",
+      "model.layers.26.self_attn.o_proj",
+      "model.layers.26.mlp.gate_proj",
+      "model.layers.26.mlp.up_proj",
+      "model.layers.27.self_attn.q_proj",
+      "model.layers.27.self_attn.k_proj",
+      "model.layers.27.self_attn.v_proj",
+      "model.layers.27.self_attn.o_proj",
+      "model.layers.27.mlp.gate_proj",
+      "model.layers.27.mlp.up_proj",
+      "model.layers.28.self_attn.q_proj",
+      "model.layers.28.self_attn.k_proj",
+      "model.layers.28.self_attn.v_proj",
+      "model.layers.28.self_attn.o_proj",
+      "model.layers.28.mlp.gate_proj",
+      "model.layers.28.mlp.up_proj",
+      "model.layers.29.self_attn.q_proj",
+      "model.layers.29.self_attn.k_proj",
+      "model.layers.29.self_attn.v_proj",
+      "model.layers.29.self_attn.o_proj",
+      "model.layers.29.mlp.gate_proj",
+      "model.layers.29.mlp.up_proj",
+      "model.layers.30.self_attn.q_proj",
+      "model.layers.30.self_attn.k_proj",
+      "model.layers.30.self_attn.v_proj",
+      "model.layers.30.self_attn.o_proj",
+      "model.layers.30.mlp.gate_proj",
+      "model.layers.30.mlp.up_proj",
+      "model.layers.31.self_attn.q_proj",
+      "model.layers.31.self_attn.k_proj",
+      "model.layers.31.self_attn.v_proj",
+      "model.layers.31.self_attn.o_proj",
+      "model.layers.31.mlp.gate_proj",
+      "model.layers.31.mlp.up_proj",
+      "model.layers.32.self_attn.q_proj",
+      "model.layers.32.self_attn.k_proj",
+      "model.layers.32.self_attn.v_proj",
+      "model.layers.32.self_attn.o_proj",
+      "model.layers.32.mlp.gate_proj",
+      "model.layers.32.mlp.up_proj",
+      "model.layers.33.self_attn.q_proj",
+      "model.layers.33.self_attn.k_proj",
+      "model.layers.33.self_attn.v_proj",
+      "model.layers.33.self_attn.o_proj",
+      "model.layers.33.mlp.gate_proj",
+      "model.layers.33.mlp.up_proj",
+      "model.layers.34.self_attn.q_proj",
+      "model.layers.34.self_attn.k_proj",
+      "model.layers.34.self_attn.v_proj",
+      "model.layers.34.self_attn.o_proj",
+      "model.layers.34.mlp.gate_proj",
+      "model.layers.34.mlp.up_proj",
+      "model.layers.35.self_attn.q_proj",
+      "model.layers.35.self_attn.k_proj",
+      "model.layers.35.self_attn.v_proj",
+      "model.layers.35.self_attn.o_proj",
+      "model.layers.35.mlp.gate_proj",
+      "model.layers.35.mlp.up_proj"
+    ],
+    "tt_backends": {
+      "model.layers.18.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.18.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.18.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.18.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.18.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.18.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.19.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.19.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.19.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.19.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.19.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.19.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.20.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.20.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.20.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.20.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.20.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.20.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.21.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.21.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.21.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.21.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.21.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.21.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.22.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.22.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.22.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.22.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.22.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.22.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.23.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.23.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.23.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.23.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.23.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.23.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.24.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.24.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.24.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.24.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.24.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.24.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.25.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.25.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.25.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.25.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.25.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.25.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.26.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.26.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.26.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.26.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.26.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.26.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.27.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.27.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.27.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.27.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.27.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.27.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.28.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.28.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.28.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.28.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.28.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.28.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.29.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.29.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.29.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.29.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.29.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.29.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.30.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.30.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.30.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.30.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.30.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.30.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.31.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.31.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.31.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.31.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.31.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.31.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.32.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.32.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.32.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.32.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.32.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.32.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.33.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.33.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.33.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.33.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.33.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.33.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.34.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.34.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.34.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.34.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.34.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.34.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.q_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.k_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.v_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.self_attn.o_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.mlp.gate_proj": {
+        "name": "native",
+        "version": "2"
+      },
+      "model.layers.35.mlp.up_proj": {
+        "name": "native",
+        "version": "2"
+      }
+    },
+    "tt_activation_checkpointing": true,
+    "model_gradient_checkpointing": true,
+    "peak_cuda_allocated_bytes": 25027954688,
+    "resumed_from": null,
+    "resume_checkpoint": "artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600/checkpoint-600"
+  },
+  "data_fingerprint": "e113e134bcedc75edf9588d8650bf3c2269bfa3eb682a434127c087f121b05d5"
+}
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 124.50it/s]
+/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:631: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.6` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:636: UserWarning: `do_sample` is set to `False`. However, `top_p` is set to `0.95` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_p`.
+  warnings.warn(
+/home/xls/appdata/miniforge3/envs/qwen3-tn/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:653: UserWarning: `do_sample` is set to `False`. However, `top_k` is set to `20` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_k`.
+  warnings.warn(
+[2026-08-28T11:22:18+00:00] 实验成功，报告已更新：/home/xls/workspace/projects/qwen3-tn-compression/reports/weekly/2026-08-27-compactifai-alpaca-native.md

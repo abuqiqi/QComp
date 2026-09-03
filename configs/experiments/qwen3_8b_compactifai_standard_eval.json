@@ -1,0 +1,31 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "output_root": "results/evaluations/compactifai-standard",
+  "backend": "native",
+  "device": "cuda:0",
+  "model_dtype": "bfloat16",
+  "force": false,
+  "tasks": [
+    {"name": "mmlu_5shot", "evaluation": "configs/evaluation/compactifai/mmlu_5shot.json"},
+    {"name": "hellaswag_0shot", "evaluation": "configs/evaluation/compactifai/hellaswag_0shot.json"},
+    {"name": "boolq_0shot", "evaluation": "configs/evaluation/compactifai/boolq_0shot.json"},
+    {"name": "triviaqa_0shot", "evaluation": "configs/evaluation/compactifai/triviaqa_0shot.json"},
+    {"name": "gsm8k_5shot", "evaluation": "configs/evaluation/compactifai/gsm8k_5shot.json"}
+  ],
+  "variants": [
+    {"name": "baseline"},
+    {
+      "name": "mpo",
+      "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json"
+    },
+    {
+      "name": "retrained_mpo",
+      "module_set": "artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600/final/index.json"
+    }
+  ],
+  "comparison": {
+    "baseline": "baseline",
+    "compressed": "mpo",
+    "retrained": "retrained_mpo"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "elapsed_seconds": 11.381194407120347,
+  "format": "qwen3-tn-offline-verification-v1",
+  "generated_text": "请用两句话解释张量网络压缩。 � � � � � � � � � � � � � � � �",
+  "max_new_tokens": 16,
+  "module_count": 6,
+  "module_set": "artifacts/smoke/compactifai-quick-block35/finetuned/final/index.json",
+  "peak_cuda_allocated_bytes": 16410350080,
+  "prompt": "请用两句话解释张量网络压缩。",
+  "success": true
+}

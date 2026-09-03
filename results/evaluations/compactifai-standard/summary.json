@@ -1,0 +1,151 @@
+{
+  "backend": "native",
+  "comparison": {
+    "baseline": "baseline",
+    "compressed": "mpo",
+    "retrained": "retrained_mpo"
+  },
+  "comparisons": [
+    {
+      "baseline": 0.7479703745905142,
+      "compressed": 0.25231448511608034,
+      "compressed_delta": -0.49565588947443384,
+      "direction": "higher",
+      "healing_gain": -0.01815980629539954,
+      "lm_eval_task": "mmlu",
+      "metric": "acc,none",
+      "recovery_fraction": -0.036637931034482804,
+      "retrained": 0.2341546788206808,
+      "retrained_delta": -0.5138156957698334,
+      "task": "mmlu_5shot"
+    },
+    {
+      "baseline": 0.7495518820952002,
+      "compressed": 0.30193188607847044,
+      "compressed_delta": -0.44761999601672975,
+      "direction": "higher",
+      "healing_gain": 0.05287791276638121,
+      "lm_eval_task": "hellaswag",
+      "metric": "acc_norm,none",
+      "recovery_fraction": 0.1181312569521691,
+      "retrained": 0.35480979884485164,
+      "retrained_delta": -0.39474208325034854,
+      "task": "hellaswag_0shot"
+    },
+    {
+      "baseline": 0.8672782874617737,
+      "compressed": 0.40703363914373086,
+      "compressed_delta": -0.46024464831804285,
+      "direction": "higher",
+      "healing_gain": 0.20825688073394494,
+      "lm_eval_task": "boolq",
+      "metric": "acc,none",
+      "recovery_fraction": 0.4524916943521594,
+      "retrained": 0.6152905198776758,
+      "retrained_delta": -0.2519877675840979,
+      "task": "boolq_0shot"
+    },
+    {
+      "baseline": 0.3203299152920196,
+      "compressed": 0.0,
+      "compressed_delta": -0.3203299152920196,
+      "direction": "higher",
+      "healing_gain": 0.0020062416406598305,
+      "lm_eval_task": "triviaqa",
+      "metric": "exact_match,remove_whitespace",
+      "recovery_fraction": 0.006263048016701462,
+      "retrained": 0.0020062416406598305,
+      "retrained_delta": -0.3183236736513598,
+      "task": "triviaqa_0shot"
+    },
+    {
+      "baseline": 0.8786959818043972,
+      "compressed": 0.0,
+      "compressed_delta": -0.8786959818043972,
+      "direction": "higher",
+      "healing_gain": 0.0,
+      "lm_eval_task": "gsm8k",
+      "metric": "exact_match,strict-match",
+      "recovery_fraction": 0.0,
+      "retrained": 0.0,
+      "retrained_delta": -0.8786959818043972,
+      "task": "gsm8k_5shot"
+    }
+  ],
+  "complete": true,
+  "completed_at": "2026-08-30T15:46:28+00:00",
+  "completed_evaluations": [
+    "baseline/mmlu_5shot",
+    "baseline/hellaswag_0shot",
+    "baseline/boolq_0shot",
+    "baseline/triviaqa_0shot",
+    "baseline/gsm8k_5shot",
+    "mpo/mmlu_5shot",
+    "mpo/hellaswag_0shot",
+    "mpo/boolq_0shot",
+    "mpo/triviaqa_0shot",
+    "mpo/gsm8k_5shot",
+    "retrained_mpo/mmlu_5shot",
+    "retrained_mpo/hellaswag_0shot",
+    "retrained_mpo/boolq_0shot",
+    "retrained_mpo/triviaqa_0shot",
+    "retrained_mpo/gsm8k_5shot"
+  ],
+  "expected_evaluations": 15,
+  "format": "qwen3-tn-evaluation-suite-summary-v1",
+  "model_path": "/infini-data/Qwen3-8B",
+  "scores": {
+    "baseline": {
+      "boolq_0shot": {
+        "acc,none": 0.8672782874617737
+      },
+      "gsm8k_5shot": {
+        "exact_match,strict-match": 0.8786959818043972
+      },
+      "hellaswag_0shot": {
+        "acc_norm,none": 0.7495518820952002
+      },
+      "mmlu_5shot": {
+        "acc,none": 0.7479703745905142
+      },
+      "triviaqa_0shot": {
+        "exact_match,remove_whitespace": 0.3203299152920196
+      }
+    },
+    "mpo": {
+      "boolq_0shot": {
+        "acc,none": 0.40703363914373086
+      },
+      "gsm8k_5shot": {
+        "exact_match,strict-match": 0.0
+      },
+      "hellaswag_0shot": {
+        "acc_norm,none": 0.30193188607847044
+      },
+      "mmlu_5shot": {
+        "acc,none": 0.25231448511608034
+      },
+      "triviaqa_0shot": {
+        "exact_match,remove_whitespace": 0.0
+      }
+    },
+    "retrained_mpo": {
+      "boolq_0shot": {
+        "acc,none": 0.6152905198776758
+      },
+      "gsm8k_5shot": {
+        "exact_match,strict-match": 0.0
+      },
+      "hellaswag_0shot": {
+        "acc_norm,none": 0.35480979884485164
+      },
+      "mmlu_5shot": {
+        "acc,none": 0.2341546788206808
+      },
+      "triviaqa_0shot": {
+        "exact_match,remove_whitespace": 0.0020062416406598305
+      }
+    }
+  },
+  "started_at": "2026-08-28T16:11:28+00:00"
+}

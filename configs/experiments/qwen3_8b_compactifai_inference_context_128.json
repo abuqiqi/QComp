@@ -1,0 +1,27 @@
+{
+  "model_path": "/infini-data/Qwen3-8B",
+  "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+  "backends": ["native", "tensorly_torch", "torchtt", "cutensornet"],
+  "backend_modules": [],
+  "backend_options": {
+    "cutensornet": {
+      "min_tokens": 16,
+      "token_bucket_size": 128,
+      "max_cached_networks": 2,
+      "memory_limit": "256MiB"
+    }
+  },
+  "device": "cuda:0",
+  "model_dtype": "bfloat16",
+  "core_dtype": "bfloat16",
+  "batch_size": 1,
+  "prefill_tokens": 128,
+  "decode_steps": 32,
+  "warmup": 1,
+  "iterations": 2,
+  "seed": 42,
+  "required_speedup": 2.0,
+  "relative_l2_threshold": 0.005,
+  "top1_agreement_threshold": 0.99,
+  "output": "results/benchmarks/qwen3-8b-compactifai-inference-context-128.json"
+}

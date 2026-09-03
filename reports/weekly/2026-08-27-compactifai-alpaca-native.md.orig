@@ -1,0 +1,141 @@
+# Qwen3-8B CompactifAI 风格压缩 + Alpaca Healing 实验
+
+> 周会一页摘要：这次不是追求论文最终精度，而是先跑通一个有实际规模、可中断续训的 TT 压缩实验。我们把 Qwen3-8B 后半段 18 个 block 中的 108 个投影矩阵换成三节点 MPO（D_max=96），目标矩阵参数减少约 91.47%，完整模型参数减少约 28.67%；随后只训练 TT cores，用 Alpaca 跑 600 个 optimizer steps。正式下游能力评测暂不做，因此本周的成功标准是“分解、训练、保存、离线重载和生成全部跑通”。
+
+## 这次想验证什么
+
+一句话方案：在单张 A100 80GB 上，用仓库原生 PyTorch TT backend 压缩 Qwen3-8B 的中后期层，再用本地 Alpaca 数据做一次 5–6 小时以内的 TT-only healing。
+
+本次最重要的交付不是一个漂亮的 MMLU 数字，而是一条以后能重复使用的实验流水线：配置可追溯、训练可后台运行、断点可恢复、最终 TT 权重可重新加载。
+
+## 为什么这样选层
+
+- 选择 block 18–35：覆盖模型后半段共 18 个 block，一次压缩 108 个矩阵，规模足以验证“多层压缩”，同时保留前半段 Dense 表征作为稳定底座。
+- 每个 block 压缩 `q_proj/k_proj/v_proj/o_proj/gate_proj/up_proj`：注意力输入输出投影和 MLP 扩张投影占参数大头，尤其 `gate_proj/up_proj` 的收益最高。
+- 保留 `down_proj`：它把宽维中间表示压回 hidden size，当前阶段按较敏感矩阵处理；先不碰它能降低首次大规模 healing 失败的风险。
+- 使用统一 `D_max=96`：比之前尝试的 2048 小很多，能取得更明显的参数压缩；统一 rank 也方便核对、复现和汇报。它是本轮工程折中，不声称是最优 rank。
+
+## 压缩规模
+
+| 投影 | Dense 参数/矩阵 | TT 参数/矩阵 | 压缩倍数 | 参数减少 |
+|---|---:|---:|---:|---:|
+| `q_proj/o_proj` | 16.78M | 2.41M | 6.97× | 85.64% |
+| `k_proj/v_proj` | 4.19M | 1.22M | 3.45× | 71.00% |
+| `gate_proj/up_proj` | 50.33M | 2.46M | 20.48× | 95.12% |
+| 每个目标 block 合计 | 142.61M | 12.17M | 11.72× | 91.47% |
+| 18 个 block 的目标矩阵 | 2.567B | 218.97M | 11.72× | 91.47% |
+| 完整模型 | 8.191B | 5.843B | 1.40× | 28.67% |
+
+TT 采用三节点 MPO。模式分别是：`q/o` 的 out/in 都为 `[16,16,16]`；`k/v` 的 out 为 `[8,8,16]`、in 为 `[16,16,16]`；`gate/up` 的 out 为 `[16,16,48]`、in 为 `[16,16,16]`。所有 ranks 均为 `[1,96,96,1]`。
+
+## Healing 数据和训练设置
+
+Alpaca 从本地 Hugging Face 缓存加载：`tatsu-lab/alpaca` 的 `train` split，共 52,002 条记录，直接使用已有 `text` 字段。数据总计约 5,386,125 tokens，按长度 512 连续打包为 10,520 个 blocks。
+
+- 训练 600 optimizer steps，batch size 1，gradient accumulation 4。
+- 预计处理 1,228,800 tokens，约是完整一轮数据的 22.81%。
+- 学习率 `1e-5`，BF16 autocast；模型和 TT activation checkpointing 都开启。
+- 只训练约 218.97M 个 FP32 TT core 参数。Embedding、LM head、block 0–17、全部 `down_proj`、normalization 等 Dense 参数全部冻结。
+- 每 150 steps 保存一次，最多保留两个 checkpoint；中断后只接受训练配置和数据签名一致的最新 checkpoint。
+- 本轮不跑 MMLU，也不把 loss 下降直接解释成模型能力恢复。
+
+预计时间：分解 15–30 分钟，数据准备 5–15 分钟，训练 3.8–5 小时，最终保存和重载验证 15–30 分钟，总计约 4.5–6 小时。硬件基线为单张 NVIDIA A100 80GB；脚本会记录实际峰值显存。
+正式训练的第 1 个 optimizer step 同时作为 smoke gate：只有 loss 为有限值且训练峰值显存低于 80 GiB，脚本才会继续后面的 599 steps。
+
+## 和 CompactifAI 原文的关系
+
+一致之处：都把大矩阵表示成低秩张量网络，并通过后续训练修复分解带来的能力损失；本实验也选择批量替换多个 Transformer block 中的主要投影矩阵。
+
+不同之处：这里使用 Qwen3-8B、仓库原生 PyTorch contraction、固定三节点 MPO 和统一 D=96；层选择没有先做敏感性消融；healing 数据改用 Alpaca；冻结策略明确限定为 TT-only。论文没有公开足够细节证明这些设置与其 healing 完全相同。
+
+主要风险：D=96 可能让初始分解误差较大；108 个 TT Linear 的 native contraction 不保证同比提速；只训练 600 steps 可能只够证明 loss 可优化，不足以恢复下游能力；最后 16 个新 token 的生成只是可加载性检查，不是正式效果评测。
+
+## 怎么运行
+
+在项目根目录执行：
+
+```bash
+bash scripts/run_compactifai_alpaca_native.sh start
+bash scripts/run_compactifai_alpaca_native.sh status
+bash scripts/run_compactifai_alpaca_native.sh tail
+```
+
+`start` 会用 `nohup` 后台启动并立即返回。关闭聊天窗口或本地电脑不会影响远程开发机上的进程，但如果平台把远程开发机关停，训练也会停止；重新开机后再次运行 `start` 会从签名匹配的最新 checkpoint 续训。
+
+配置文件：[压缩配置](../../configs/compression/qwen3_8b_compactifai_d96_blocks18_35.json)；[训练配置](../../configs/experiments/qwen3_8b_compactifai_d96_blocks18_35_alpaca_600.json)。
+
+## Quick run（正式实验前链路验证）
+
+2026-08-28 在正式 108 层实验前，使用真实 Qwen3-8B、真实本地 Alpaca 和 native TT backend 做了一个隔离的 quick run。它只压缩 `model.layers.35.self_attn.q_proj`，TT 结构和正式实验相同（3 节点、D=96），训练 1 个 optimizer step、序列长度 128。
+
+| 检查项 | Quick run 实际结果 |
+|---|---|
+| 单矩阵参数量 | 16,777,216 → 2,408,448，压缩 6.97× |
+| TT-SVD | 成功，真实 Qwen 权重分解耗时约 20 秒 |
+| 初始重构误差 | relative L2 = 0.9012；说明 D=96 很激进，但不影响本次链路验证目的 |
+| Alpaca healing | 成功完成 1 step，实际处理 128 tokens |
+| Loss | 2.9335，有限值 |
+| 可训练参数 | 2,408,448，全部为 native FP32 TT cores |
+| 训练峰值显存 | 15.68 GiB |
+| 权重是否真的更新 | 是；2,408,448 个 core 数值发生变化，最大变化约 1.0e-5 |
+| Checkpoint / final | `checkpoint-1` 和 BF16 `final/index.json` 均存在且哈希可加载 |
+| 离线重载生成 | 成功；峰值显存 15.27 GiB |
+| 固定 prompt 输出 | “请用两句话解释张量网络压缩。 张量网络压缩是一种通过将高维张量分解为更小” |
+
+Quick run 同时发现并修复了三个正式脚本问题：`decompose/finetune` 缺少 `python -m` 入口；失败处理的局部 `phase` 会在 EXIT trap 中失效；Torch 2.5.1 的 CUDA 显存统计需要先初始化设备。第一次正式启动在任何 SVD 开始前就退出，因此没有丢失分解或训练进度。
+
+可追溯记录：[quick 分解配置](../../configs/smoke/qwen3_8b_compactifai_quick_decompose.json)、[quick 训练配置](../../configs/smoke/qwen3_8b_compactifai_quick_alpaca_1step.json)、[分解结果](../../results/smoke/compactifai-quick/decomposition-result.json)、[训练 run.json](../../artifacts/smoke/compactifai-quick/finetuned/run.json)、[离线重载结果](../../results/smoke/compactifai-quick/offline-verification.json)。
+
+结论：从真实权重分解、TT-only 反向传播、checkpoint、final 导出到离线重载生成的整条链路已经跑通，可以进入正式 108 层压缩实验。
+
+
+<!-- AUTO_RESULTS_START -->
+## 实验结果（脚本自动更新）
+
+**当前状态：失败。** 当前阶段：后台进程已经退出；自动修正陈旧状态。
+
+| 项目 | 实际结果 |
+|---|---|
+| 开始 / 结束 | 2026-08-27T17:25:58+00:00 / 2026-08-28T01:28:18+00:00 |
+| 总耗时 | 8 小时 2 分 20 秒 |
+| 中断 / 续训 | 记录到 0 次中断；本次未从 checkpoint 恢复 |
+| optimizer steps / 实际训练 tokens | 尚无 / 尚无 |
+| 观测首段 / 末段 / 最低 loss | 尚无 / 尚无 / 尚无 |
+| loss 变化（末段－首段） | 尚无；负数表示训练日志中的 loss 总体下降 |
+| 峰值 GPU 显存 | 尚无 GiB |
+| 保留的 checkpoint | 0 个；最后一个：尚无 |
+| 最终 TT artifact | [final/index.json](../../artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600/final/index.json) |
+| 目标矩阵参数量 | 2,566,914,048 → 218,972,160，约 11.72× |
+| 完整模型参数量 | 8,190,735,360 → 5,842,793,472，减少 28.67% |
+| 最终模型离线重载 | 尚未成功验证 |
+| 原始训练记录 | [run.json](../../artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600/run.json) |
+| 原始分解记录 / 日志 | [decomposition result](../../results/runs/compactifai-alpaca-native/decomposition-result.json) / [日志](../../results/runs/compactifai-alpaca-native/run.log) |
+
+固定 prompt 的生成结果：
+
+> 尚无
+
+失败阶段：后台进程已经退出；自动修正陈旧状态。错误摘要：raise JSONDecodeError("Expecting value", s, err.value) from None / json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0) / /home/xls/workspace/projects/qwen3-tn-compression/scripts/run_compactifai_alpaca_native.sh: line 1: phase: unbound variable
+
+最后有效 checkpoint：尚无；完整日志：[日志](../../results/runs/compactifai-alpaca-native/run.log)。
+
+<!-- AUTO_RESULTS_END -->
+
+## 本次实验能说明什么
+
+如果实验成功，它能说明：当前原生 backend 可以承载 108 个 TT Linear；TT-only 参数可以在 Alpaca causal-LM loss 上正常反向传播；checkpoint、自动续训、最终导出和离线重载链路可用。
+
+## 本次实验还不能说明什么
+
+它不能说明压缩后 MMLU、HellaSwag 或实际对话能力恢复到了什么程度，也不能证明 D=96、block 18–35 或 TT-only healing 是最佳选择。参数量减少 28.67% 也不等于推理延迟或显存会同比下降。
+
+## 下一步建议
+
+先看本轮是否稳定完成以及 loss 趋势。如果 loss 有明显下降且生成没有完全崩坏，下一轮再补一个小规模下游评测，并围绕 layer 范围、rank 和是否加入少量 Dense 参数训练做对照；如果 loss 不稳定，优先提高 rank 或减少目标 block，而不是立即扩大数据量。
+
+## 周会口头汇报版三句话
+
+1. 我把 Qwen3-8B 后 18 个 block 的 108 个主要投影换成了 D=96 的三节点 TT，目标矩阵压缩约 11.72 倍，完整模型参数减少约 28.67%。
+2. Healing 用本地 Alpaca 跑 600 steps，只更新 TT cores，后台脚本支持断点续训，并会自动记录 loss、显存、产物和离线重载结果。
+3. 本周目标是先把大规模训练链路跑通，暂时不做 MMLU，所以最终结论只谈工程可行性，不把训练 loss 当成能力评测。
+

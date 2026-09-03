@@ -1,0 +1,152 @@
+{
+  "config": {
+    "backend_options": {
+      "cutensornet": {
+        "max_cached_networks": 2,
+        "memory_limit": "256MiB",
+        "min_tokens": 16,
+        "token_bucket_size": 128
+      }
+    },
+    "backends": [
+      "native",
+      "cutensornet"
+    ],
+    "batch_size": 1,
+    "core_dtype": "torch.bfloat16",
+    "decode_steps": 32,
+    "device": "cuda:0",
+    "iterations": 3,
+    "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+    "prefill_tokens": 1024,
+    "relative_l2_threshold": 0.005,
+    "required_speedup": 2.0,
+    "seed": 42,
+    "top1_agreement_threshold": 0.99,
+    "warmup": 1
+  },
+  "format": "qwen3-tn-inference-benchmark-v1",
+  "results": {
+    "cutensornet": {
+      "backend_metadata": {
+        "implementation": "cuquantum.tensornet.Network",
+        "inference_only": true,
+        "max_cached_networks": 2,
+        "memory_limit": "256MiB",
+        "min_tokens": 16,
+        "name": "cutensornet",
+        "options": {
+          "max_cached_networks": 2,
+          "memory_limit": "256MiB",
+          "min_tokens": 16,
+          "token_bucket_size": 128
+        },
+        "token_bucket_size": 128,
+        "version": "2.13.0"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": false,
+        "output_relative_l2": 0.012455787509679794,
+        "performance_pass": true,
+        "speedup": 2.7549804997499012,
+        "top1_agreement": 0.9090909361839294
+      },
+      "decode": {
+        "max_ms": 1618.9385750330985,
+        "mean_ms": 1614.0394539882739,
+        "median_ms": 1612.9333898425102,
+        "min_ms": 1610.2463970892131,
+        "samples_ms": [
+          1610.2463970892131,
+          1618.9385750330985,
+          1612.9333898425102
+        ],
+        "tokens_per_second": 19.839628965164234
+      },
+      "end_to_end": {
+        "max_ms": 1718.531419057399,
+        "mean_ms": 1710.6176136682432,
+        "median_ms": 1713.2162298075855,
+        "min_ms": 1700.1051921397448,
+        "samples_ms": [
+          1713.2162298075855,
+          1718.531419057399,
+          1700.1051921397448
+        ],
+        "tokens_per_second": 616.3845413247114
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 36843948032,
+      "peak_reserved_bytes": 37425774592,
+      "prefill": {
+        "max_ms": 128.14784096553922,
+        "mean_ms": 127.42761693273981,
+        "median_ms": 127.60788109153509,
+        "min_ms": 126.52712874114513,
+        "samples_ms": [
+          126.52712874114513,
+          127.60788109153509,
+          128.14784096553922
+        ],
+        "tokens_per_second": 8024.58273925471
+      },
+      "status": "ok"
+    },
+    "native": {
+      "backend_metadata": {
+        "name": "native",
+        "options": {},
+        "version": "2"
+      },
+      "comparison_vs_native": {
+        "eligible_for_lm_eval": false,
+        "numerical_pass": true,
+        "output_relative_l2": 0.0,
+        "performance_pass": false,
+        "speedup": 1.0,
+        "top1_agreement": 1.0
+      },
+      "decode": {
+        "max_ms": 1597.7537343278527,
+        "mean_ms": 1589.8150685243309,
+        "median_ms": 1586.8168291635811,
+        "min_ms": 1584.8746420815587,
+        "samples_ms": [
+          1597.7537343278527,
+          1586.8168291635811,
+          1584.8746420815587
+        ],
+        "tokens_per_second": 20.16615869701064
+      },
+      "end_to_end": {
+        "max_ms": 4757.447827607393,
+        "mean_ms": 4727.700228181978,
+        "median_ms": 4719.877304974943,
+        "min_ms": 4705.7755519635975,
+        "samples_ms": [
+          4719.877304974943,
+          4757.447827607393,
+          4705.7755519635975
+        ],
+        "tokens_per_second": 223.73462947584102
+      },
+      "module_count": 108,
+      "peak_allocated_bytes": 12655838208,
+      "peak_reserved_bytes": 12924747776,
+      "prefill": {
+        "max_ms": 3155.0941048189998,
+        "mean_ms": 3154.91239214316,
+        "median_ms": 3154.9728056415915,
+        "min_ms": 3154.670265968889,
+        "samples_ms": [
+          3154.670265968889,
+          3154.9728056415915,
+          3155.0941048189998
+        ],
+        "tokens_per_second": 324.5669814233979
+      },
+      "status": "ok"
+    }
+  }
+}

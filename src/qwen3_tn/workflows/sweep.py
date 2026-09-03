@@ -1,7 +1,7 @@
 """Generic full-rank-tuple sweep over arbitrary module paths."""
 
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 import torch
@@ -36,6 +36,7 @@ class RankSweepConfig:
     svd_driver: str | None = "gesvdj"
     selection_metric: str | None = None
     selection_direction: str = "lower"
+    backend_options: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.candidates:
@@ -95,7 +96,11 @@ def run_rank_sweep(
                 ),
             )
             with TTModulePatch(
-                model, artifact, tt_backend=config.backend, core_dtype=config.core_dtype
+                model,
+                artifact,
+                tt_backend=config.backend,
+                core_dtype=config.core_dtype,
+                backend_options=config.backend_options,
             ):
                 metrics = dict(evaluator(model))
             candidates[candidate.name] = {

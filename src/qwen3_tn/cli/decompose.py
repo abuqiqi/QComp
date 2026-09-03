@@ -3,7 +3,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
-from transformers import AutoModelForCausalLM
+from ..model_loading import load_local_causal_lm
 from ..model import TTTarget
 from ..workflows import DecomposeConfig, decompose_targets
 from .common import check_device, config_argument, parse_dtype, strict_config
@@ -29,12 +29,11 @@ def main() -> None:
     )
     device = check_device(value.get("device", "cuda:0"))
     model_dtype = parse_dtype(value.get("model_dtype", "bfloat16"))
-    model = AutoModelForCausalLM.from_pretrained(
+    model = load_local_causal_lm(
         value["model_path"],
-        torch_dtype=model_dtype,
-        local_files_only=True,
-        low_cpu_mem_usage=True,
-    ).to(device)
+        dtype=model_dtype,
+        device=device,
+    )
     targets = tuple(TTTarget.from_dict(item) for item in value["targets"])
     config = DecomposeConfig(
         str(Path(value["model_path"]).expanduser().resolve()),
@@ -46,3 +45,7 @@ def main() -> None:
         value.get("purpose", "tt-decomposition"),
     )
     print(json.dumps(decompose_targets(model, targets, config), indent=2))
+
+
+if __name__ == "__main__":
+    main()

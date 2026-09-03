@@ -1,0 +1,3251 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {
+    "targets": [
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.18.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.18.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.18.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.18.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.18.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.18.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.19.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.19.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.19.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.19.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.19.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.19.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.20.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.20.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.20.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.20.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.20.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.20.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.21.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.21.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.21.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.21.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.21.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.21.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.22.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.22.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.22.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.22.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.22.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.22.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.23.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.23.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.23.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.23.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.23.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.23.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.24.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.24.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.24.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.24.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.24.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.24.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.25.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.25.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.25.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.25.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.25.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.25.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.26.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.26.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.26.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.26.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.26.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.26.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.27.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.27.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.27.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.27.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.27.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.27.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.28.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.28.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.28.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.28.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.28.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.28.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.29.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.29.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.29.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.29.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.29.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.29.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.30.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.30.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.30.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.30.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.30.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.30.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.31.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.31.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.31.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.31.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.31.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.31.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.32.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.32.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.32.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.32.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.32.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.32.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.33.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.33.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.33.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.33.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.33.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.33.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.34.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.34.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.34.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.34.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.34.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.34.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.q_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.k_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 3.4478114478114477,
+        "dense_num_parameters": 4194304,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.v_proj",
+        "num_parameters": 1216512,
+        "out_features": 1024,
+        "out_modes": [
+          8,
+          8,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 6.965986394557823,
+        "dense_num_parameters": 16777216,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.self_attn.o_proj",
+        "num_parameters": 2408448,
+        "out_features": 4096,
+        "out_modes": [
+          16,
+          16,
+          16
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.mlp.gate_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      },
+      {
+        "compression_ratio": 20.48,
+        "dense_num_parameters": 50331648,
+        "in_features": 4096,
+        "in_modes": [
+          16,
+          16,
+          16
+        ],
+        "module_path": "model.layers.35.mlp.up_proj",
+        "num_parameters": 2457600,
+        "out_features": 12288,
+        "out_modes": [
+          16,
+          16,
+          48
+        ],
+        "ranks": [
+          1,
+          96,
+          96,
+          1
+        ],
+        "token_chunk_size": 8
+      }
+    ]
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/model__layers__18__mlp__gate_proj",
+      "cores_sha256": "dcc57e54ff64f80f2bc236352a95fc923644cf31dd69eedcfa76ca3af32a6ed4",
+      "module_path": "model.layers.18.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__mlp__up_proj",
+      "cores_sha256": "70ad10e7d01bd88156b1f48a7baa3447bb004f000650ae9aca06f5eb8a59e222",
+      "module_path": "model.layers.18.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__k_proj",
+      "cores_sha256": "13c355cce838f53f7b1874dcaccdbc6abaeb5c9828730183f3377cf2f212fbfd",
+      "module_path": "model.layers.18.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__o_proj",
+      "cores_sha256": "8ac2d76c95e92834104f8450cff266828d7bfce9cd944802ad6f01946d30456b",
+      "module_path": "model.layers.18.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__q_proj",
+      "cores_sha256": "2164c6dca16398a7d582108018d383d58b9d9099eac05568641b73ec7d9cc7f3",
+      "module_path": "model.layers.18.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__v_proj",
+      "cores_sha256": "0f9a771e9bc969a55d849b3d4352e82ab82e5d2d83c5cedb97efe48a01b34e87",
+      "module_path": "model.layers.18.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__mlp__gate_proj",
+      "cores_sha256": "8c5c8a9b48fcf7386d48b10856a3a8a151b3de246ac8c76871a73756f90a584b",
+      "module_path": "model.layers.19.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__mlp__up_proj",
+      "cores_sha256": "bad3620ad3b0f7390710abdfb94500c77d3f397e8392f56c4a9972ed12f74bb8",
+      "module_path": "model.layers.19.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__k_proj",
+      "cores_sha256": "bc21806d2fa649a991665c5f31b099cde1d92da01af23c137ecaa513a5308cf3",
+      "module_path": "model.layers.19.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__o_proj",
+      "cores_sha256": "0216a340668d77d8123494c6549e26c09cfa9e2406f777cace795df741630f0b",
+      "module_path": "model.layers.19.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__q_proj",
+      "cores_sha256": "27cd12edbddb6f1bdf4bcd2ee21b5a8f2bdf4f190f023d96061416352a6efb5c",
+      "module_path": "model.layers.19.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__v_proj",
+      "cores_sha256": "fecaa5b9096227aa84e62bb39673073b575ceb0b62c95d7401b2d8a29ac12b5c",
+      "module_path": "model.layers.19.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__mlp__gate_proj",
+      "cores_sha256": "c3ad3e7825bee967c928af35ab782b9c34c8bb071b309ccf73b23e440fe64b6d",
+      "module_path": "model.layers.20.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__mlp__up_proj",
+      "cores_sha256": "1c0bb9a5abce636cd5feb510bd1686b859aba708ffb1bb0dceb30f381110d6cf",
+      "module_path": "model.layers.20.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__k_proj",
+      "cores_sha256": "8b5de5a9f17a69269e00dea3e50bdb1f8b3b419ce019785ebf208439f2f5458c",
+      "module_path": "model.layers.20.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__o_proj",
+      "cores_sha256": "e838e2adfafa2abd267cc39c6723c1fbc0c7107a132edbf34cd241bc35a6faa2",
+      "module_path": "model.layers.20.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__q_proj",
+      "cores_sha256": "d661e140c84b2b2f21f921b69ab1100ca1840488d98e041a6a440a9cb30fffa8",
+      "module_path": "model.layers.20.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__v_proj",
+      "cores_sha256": "0ac08caa07e80eacb9b095cf29f650e89ca86d6c5e7e8ac8ca1c44c693780115",
+      "module_path": "model.layers.20.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__mlp__gate_proj",
+      "cores_sha256": "50e5edad4be8878b5caff6f1542577820b5266010fd765704d7837f3df3a8b0d",
+      "module_path": "model.layers.21.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__mlp__up_proj",
+      "cores_sha256": "83f769f2124fd033d60c179dda4b63b3dccea8d01f90539ea7ecf74a058eb645",
+      "module_path": "model.layers.21.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__k_proj",
+      "cores_sha256": "888809eee3b059f46f6ea45bfc7a1636bbd5919f14117d78a58aca7d852b0688",
+      "module_path": "model.layers.21.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__o_proj",
+      "cores_sha256": "8d37b94dd149f2d5d38dbf620dcfc9364bed46a1ab29d67ae8696f7c8c2be577",
+      "module_path": "model.layers.21.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__q_proj",
+      "cores_sha256": "a2ed737b1f52f82f19070b81b9f69b9f8bbc1b6557b72251ac34e25a50307507",
+      "module_path": "model.layers.21.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__v_proj",
+      "cores_sha256": "3ea8ab3c0bd307927ea75ac0682a7d23053b1b98302bc20d39f727ca55be4f7c",
+      "module_path": "model.layers.21.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__mlp__gate_proj",
+      "cores_sha256": "eb613269f724d9fde06c1cfa49e0941d65da973c4f8b4884f370459321ec0d55",
+      "module_path": "model.layers.22.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__mlp__up_proj",
+      "cores_sha256": "34e0ef90a2d9c5d69b9d786a515c2054220c496752f9baa62eca3c45ecbb12c4",
+      "module_path": "model.layers.22.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__k_proj",
+      "cores_sha256": "0dcf58bd4b59968d29ee81ed816d1adec2441ff48f1b0fea2fc6443dbdf0eef2",
+      "module_path": "model.layers.22.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__o_proj",
+      "cores_sha256": "a5b2323425307f6252e226829ce8fe3a941b91aafaa542ca507c15ddac8bc520",
+      "module_path": "model.layers.22.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__q_proj",
+      "cores_sha256": "03807aa378ed6fb75a8ebf4a803ba8d691c95c654c8cf2ed874c120d2f111c72",
+      "module_path": "model.layers.22.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__v_proj",
+      "cores_sha256": "9373d9456dc7199ae7093189ee8810a494fc8dd19b1756c6285884bd95dcb0f4",
+      "module_path": "model.layers.22.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__mlp__gate_proj",
+      "cores_sha256": "482ed91d7f7e8a9117c58315170d8764650324f781b9a71a849b8f86581cde36",
+      "module_path": "model.layers.23.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__mlp__up_proj",
+      "cores_sha256": "49722e51bfe01b7a9c7af6e31e4d707433cdc080f628bd037935391e80eceda8",
+      "module_path": "model.layers.23.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__k_proj",
+      "cores_sha256": "f14ac7d8357bd8e313c97f9546d4d674580db3ae76eb4e4182b16a26c6881f98",
+      "module_path": "model.layers.23.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__o_proj",
+      "cores_sha256": "df1662959b8ace6799319e3b29ef3554f32795bfb9ddd035ad5c181d9eefbaf2",
+      "module_path": "model.layers.23.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__q_proj",
+      "cores_sha256": "e281a6b1847010eaafae5065c6d172b35eed8f3accc2adefd1b1c623b762f404",
+      "module_path": "model.layers.23.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__v_proj",
+      "cores_sha256": "91ed4749cfb6d5fc5057a0073d9df960963da17e2813097f0f7d2ef9ad4d50c6",
+      "module_path": "model.layers.23.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__mlp__gate_proj",
+      "cores_sha256": "3283212d2aacb0a9b953ea686c2ad43b8322de68e4e8e86240714cb17b5caefa",
+      "module_path": "model.layers.24.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__mlp__up_proj",
+      "cores_sha256": "41f379b04e3cdc1317cfa241d13ab7e4c9d467ab5b03032c9e1eda2d65928441",
+      "module_path": "model.layers.24.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__k_proj",
+      "cores_sha256": "6bd84f4b130e87a381773d0ab765f20df0e6f745cf07d819d083f48f727b1b6b",
+      "module_path": "model.layers.24.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__o_proj",
+      "cores_sha256": "ac6c3d4d80da5698992b1227d204d7ee15dc3638c0566da1e4416ef6ae38cf07",
+      "module_path": "model.layers.24.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__q_proj",
+      "cores_sha256": "c414992af3ace6fea490f51f7111e90b22532e852e907ee43333389be9573cea",
+      "module_path": "model.layers.24.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__v_proj",
+      "cores_sha256": "d119948141991c8ba873e64435add849720dee560566251f0b6568f5a8c12887",
+      "module_path": "model.layers.24.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__mlp__gate_proj",
+      "cores_sha256": "e22fae838b7b5a155c5b47703952444e9ed05c95aea18a6998e406dad5eef917",
+      "module_path": "model.layers.25.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__mlp__up_proj",
+      "cores_sha256": "87b5e47c9771d589681394549b6ecdcd1929907aa4a97db471c7f09d83d45cf0",
+      "module_path": "model.layers.25.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__k_proj",
+      "cores_sha256": "784f6944639634e90240b0bd68e08adb6ea8a64b388c245a670dae5ed6569ebe",
+      "module_path": "model.layers.25.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__o_proj",
+      "cores_sha256": "3462aeec5a858da9c07b6a18827fa87c110244296c7ed415eac44a3da66de6b3",
+      "module_path": "model.layers.25.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__q_proj",
+      "cores_sha256": "6f66e011a87406325650acf23919a2cecee1337a6aa1c63e03c34a3ee333e474",
+      "module_path": "model.layers.25.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__v_proj",
+      "cores_sha256": "6e95c2be1202d99d6902ba9487a42c74be533eb94afead9a77620edd3ca2d418",
+      "module_path": "model.layers.25.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__mlp__gate_proj",
+      "cores_sha256": "3137c80d3096bba8062f89a77892fadafff06cdb7c4b3718a42eebfe1e9c2f94",
+      "module_path": "model.layers.26.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__mlp__up_proj",
+      "cores_sha256": "560d4fb6d6b4ccc60f8363952b02a0e96ce467f7c79216227cbb1f4328870735",
+      "module_path": "model.layers.26.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__k_proj",
+      "cores_sha256": "08fc388a5da53e6eea2ee82fbbde84a91bf02bccd7051b353088fff32db06562",
+      "module_path": "model.layers.26.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__o_proj",
+      "cores_sha256": "dd43566c146c530320d7fccc804df25d0d4c231ebbc8e3a03daff2bf2bb8c1bc",
+      "module_path": "model.layers.26.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__q_proj",
+      "cores_sha256": "6a6780e15d4d8b4cb8728c0f313b8ae393f9e07adfd380b0c767341003220710",
+      "module_path": "model.layers.26.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__v_proj",
+      "cores_sha256": "827f974e213d6684a6bf02cc0aa1daf7d3acd1e35f7275d2bec632e2561d1c1a",
+      "module_path": "model.layers.26.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__mlp__gate_proj",
+      "cores_sha256": "6c92888063181333652220b2a76a40625fdf73c2b3dbd081fbd7394ced324e77",
+      "module_path": "model.layers.27.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__mlp__up_proj",
+      "cores_sha256": "71ff511f7be84a2669550f2d3215781281159fbf124e679888724636bd5279f8",
+      "module_path": "model.layers.27.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__k_proj",
+      "cores_sha256": "bdb03dfb7625aeacf7123bf36be77e4c86034751038eef287e93fa0c2590caba",
+      "module_path": "model.layers.27.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__o_proj",
+      "cores_sha256": "e1b0b4192784b7fe31ae58b650abe13f83984574e30f9d47af9c15e7804798b1",
+      "module_path": "model.layers.27.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__q_proj",
+      "cores_sha256": "376d71e6c2af70dca107b0e9796e4fd353935804fff28ba137f300bb46ab4aa7",
+      "module_path": "model.layers.27.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__v_proj",
+      "cores_sha256": "fabddb19065c6b362a6ebe2942eed04b89c6e82b845d06cd86d4709a864223b1",
+      "module_path": "model.layers.27.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__mlp__gate_proj",
+      "cores_sha256": "878df8f83efb91e6005a44a32f601cb10fa689fd2e574767f34dcbcea44bb933",
+      "module_path": "model.layers.28.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__mlp__up_proj",
+      "cores_sha256": "3a9a2e48c8b6455474272bbe052d1b7136abe8b96690079eaca3f2531eb87784",
+      "module_path": "model.layers.28.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__k_proj",
+      "cores_sha256": "94c568772d062355429bab41373f3277921931bc65d700c9c7c89c5fb938ab44",
+      "module_path": "model.layers.28.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__o_proj",
+      "cores_sha256": "407b5a8cb3bbdf5bd64a8e3ad346bdfd4e48d38d1ae9434013854dc7a12e1113",
+      "module_path": "model.layers.28.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__q_proj",
+      "cores_sha256": "85970ed94022c402abcecbe82f76b3de9460ac44f38254ca8933f5f4dc72a25c",
+      "module_path": "model.layers.28.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__v_proj",
+      "cores_sha256": "a5406c0c71b0b06085bb5504cfc81a2f5ad46b62290eb0ba756c24708cf31396",
+      "module_path": "model.layers.28.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__mlp__gate_proj",
+      "cores_sha256": "94cb9b31fa8939d146dba330a0714e952ec182130cf4a2dd14875424d38d4df7",
+      "module_path": "model.layers.29.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__mlp__up_proj",
+      "cores_sha256": "e410ebbce2bb1b141b1f9d90e2fab96653ac994dbac7a7413457f595e2942578",
+      "module_path": "model.layers.29.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__k_proj",
+      "cores_sha256": "4ac7670dcc00206d4ebcf46f823c6975412c54eedb81ca869cbbe6dfbda57599",
+      "module_path": "model.layers.29.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__o_proj",
+      "cores_sha256": "7d2c33fa3abd4a19ab5cedee3f8253de06d43712f3d9c5156e9aaf29d0d26116",
+      "module_path": "model.layers.29.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__q_proj",
+      "cores_sha256": "45fa3e06bcaf1f848c89b00de3d3530ebb3bd2da517d4c39c3c05d27bd2db3d0",
+      "module_path": "model.layers.29.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__v_proj",
+      "cores_sha256": "e1ac86ffde33c18a6d7c61394f0d395b77cd74348a949aaabb6f2e4acac33475",
+      "module_path": "model.layers.29.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__mlp__gate_proj",
+      "cores_sha256": "492d2d302ca96fdafe3def89336faea5fb4479b5e67f1d54f9f47bff828da986",
+      "module_path": "model.layers.30.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__mlp__up_proj",
+      "cores_sha256": "45276ba4d240273c7691e983f4937bb38c52b8219b09289daf82e58497529cab",
+      "module_path": "model.layers.30.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__k_proj",
+      "cores_sha256": "5f4c961f775acbd393e4c4e34258f8cbb02d91e38eaa4ea23d602afe2645b54e",
+      "module_path": "model.layers.30.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__o_proj",
+      "cores_sha256": "09c3054927c38b24bfb79e6d037770e13dfebc3ab99405b01993aaa465a99250",
+      "module_path": "model.layers.30.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__q_proj",
+      "cores_sha256": "5a47a4e109283908ce3b765acd94de778800fac8e62ce198db534f16844e3526",
+      "module_path": "model.layers.30.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__v_proj",
+      "cores_sha256": "14c6759c9573a4b025b96f794acbfe9586d68b86ae985d10d55df59d815618a5",
+      "module_path": "model.layers.30.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__mlp__gate_proj",
+      "cores_sha256": "e5401a2b19dce72455258075c7a8151f782443383aaff70ac7ff26c1514d8182",
+      "module_path": "model.layers.31.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__mlp__up_proj",
+      "cores_sha256": "e93dae0bb8713bde3fd624dd4a53cf33897f62ffab0b2045f59a1d4d9db9b6ab",
+      "module_path": "model.layers.31.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__k_proj",
+      "cores_sha256": "09286840979517ff974fe9c939c6876ef1914c2040c1c4740d1fcef1aecd97d5",
+      "module_path": "model.layers.31.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__o_proj",
+      "cores_sha256": "4cfa489413632742bd2011fc86b33950c501e6380cad97df0bde8c19f6f5e646",
+      "module_path": "model.layers.31.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__q_proj",
+      "cores_sha256": "922c8eb33151679e23d35b83f2056501e38e17bc796da416f10c5258554bf43e",
+      "module_path": "model.layers.31.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__v_proj",
+      "cores_sha256": "5f63e718a5fb9ac792548cb99615d9ef2d2f6fd11fb03c068960ab483129c056",
+      "module_path": "model.layers.31.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__mlp__gate_proj",
+      "cores_sha256": "82d3dac5ae4fa3c01cdcdc7077827c54b3ec2631bd393af5c06af2f7fa94a2fe",
+      "module_path": "model.layers.32.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__mlp__up_proj",
+      "cores_sha256": "dfa9fd8479814e7407ffd73d59806513bddcff0312b4f3c8a74a9f4f6ce1ab09",
+      "module_path": "model.layers.32.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__k_proj",
+      "cores_sha256": "948195fa6c481de4d52c6ace832d315bb7428a1056d32c3943fa00be730d4022",
+      "module_path": "model.layers.32.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__o_proj",
+      "cores_sha256": "7e1542b6ad2409532620c771d8df4322153799b65067b996a42589e10f5b54ac",
+      "module_path": "model.layers.32.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__q_proj",
+      "cores_sha256": "609bde51c142e430059c9fc6896ab1cf777e10e1911d5d8777926f53011a39ea",
+      "module_path": "model.layers.32.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__v_proj",
+      "cores_sha256": "336df45aa3d0c1a060950581fdf9dbbd8c3580bd3a06cf6ae1750e2e6117ce25",
+      "module_path": "model.layers.32.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__mlp__gate_proj",
+      "cores_sha256": "b5ca2de1b66d1b3873953ce5d41b5d0fdab094ef1179051e85b9e248e268a6e8",
+      "module_path": "model.layers.33.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__mlp__up_proj",
+      "cores_sha256": "57af13c7cdf42558a2a57e9f0a10fb66165236501e1af71719d21af6862bbe52",
+      "module_path": "model.layers.33.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__k_proj",
+      "cores_sha256": "7827020992666e11c8ed9fac73f5eb0cb1873f8cc085e954a92f5c36c7b814f4",
+      "module_path": "model.layers.33.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__o_proj",
+      "cores_sha256": "eb49794d2c9ba9e5cdee15ab318c90738dd9f609fc893364a223833b276e517b",
+      "module_path": "model.layers.33.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__q_proj",
+      "cores_sha256": "c5d7b534edd2112664ea4121e9409190025ab14eaa1a409c8a6f85441de81dfa",
+      "module_path": "model.layers.33.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__v_proj",
+      "cores_sha256": "78a003b64678811ade6d8179c5837708b3da0dab3f6820f3c58a84a4ece52585",
+      "module_path": "model.layers.33.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__mlp__gate_proj",
+      "cores_sha256": "d09f5317c5f267d692be2e9af07824f0012291fbc4b40ef0d9f576d332846393",
+      "module_path": "model.layers.34.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__mlp__up_proj",
+      "cores_sha256": "65bf36ac3bb242df96013bd6f9913382acee3f669bd56bbf649aa4caf86ae98b",
+      "module_path": "model.layers.34.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__k_proj",
+      "cores_sha256": "9bed760259c7f2fc7e31e71ddb490ed1eb9efc442a4fe125278b65e0e8137704",
+      "module_path": "model.layers.34.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__o_proj",
+      "cores_sha256": "e1629b73a1d419346bab9365cbfb7ef5d794a78ce91d6f4e3add22c700bfe303",
+      "module_path": "model.layers.34.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__q_proj",
+      "cores_sha256": "edcb22fa0c6e6092578cbcd4aea3602ed5706c08834e24139b92c92ea13ed51a",
+      "module_path": "model.layers.34.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__v_proj",
+      "cores_sha256": "24a17d4b465297d9e29f7b6d45a0f76cbb8236b7915608ffdd55cff0ce2b2f85",
+      "module_path": "model.layers.34.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__mlp__gate_proj",
+      "cores_sha256": "b76748a80a087e28b0e48ca229c0e72581decfa07e59122b2a0c412e188010d0",
+      "module_path": "model.layers.35.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__mlp__up_proj",
+      "cores_sha256": "e4e142cc0c152c063366de713ab288df0d08d68ec44b730c6cdffb8678121833",
+      "module_path": "model.layers.35.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__k_proj",
+      "cores_sha256": "74b1a172fa20cd4395da8e535b0efc52f9341975684b56c9b6cf5e40e5fb054b",
+      "module_path": "model.layers.35.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__o_proj",
+      "cores_sha256": "59304b9a2011650e6e5952e92c5c07406fe5ab67195e80b104c996a38ad6bf11",
+      "module_path": "model.layers.35.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__q_proj",
+      "cores_sha256": "95e01098451935418cb91996cea7ecfd17caea712b5f6a0402ee8a596cd77565",
+      "module_path": "model.layers.35.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__v_proj",
+      "cores_sha256": "1b4bc5bce79050aeb1ff7dbd2ed98cab5680ba7fdce62a7118cf8ca28b02f81e",
+      "module_path": "model.layers.35.self_attn.v_proj"
+    }
+  ],
+  "purpose": "qwen3-8b-compactifai-d96-blocks18-35"
+}

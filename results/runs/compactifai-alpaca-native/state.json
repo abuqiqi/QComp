@@ -1,0 +1,13 @@
+{
+  "artifact_root": "/home/xls/workspace/projects/qwen3-tn-compression/artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600",
+  "attempt_count": 2,
+  "decomposition_json": "/home/xls/workspace/projects/qwen3-tn-compression/results/runs/compactifai-alpaca-native/decomposition-result.json",
+  "end_time": "2026-08-28T11:22:18+00:00",
+  "last_resume_time": "2026-08-28T01:44:42+00:00",
+  "log_path": "/home/xls/workspace/projects/qwen3-tn-compression/results/runs/compactifai-alpaca-native/run.log",
+  "run_json": "/home/xls/workspace/projects/qwen3-tn-compression/artifacts/finetuned/qwen3-8b-compactifai-d96-blocks18-35-alpaca-600/run.json",
+  "stage": "全部完成",
+  "start_time": "2026-08-27T17:25:58+00:00",
+  "status": "success",
+  "verification_json": "/home/xls/workspace/projects/qwen3-tn-compression/results/runs/compactifai-alpaca-native/offline-verification.json"
+}

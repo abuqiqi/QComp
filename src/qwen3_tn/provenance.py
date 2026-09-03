@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import uuid
 from pathlib import Path
 from typing import Any, Mapping
@@ -73,6 +74,24 @@ def atomic_write_json(path: str | Path, value: Mapping[str, Any]) -> Path:
         if temporary.exists():
             temporary.unlink()
     return target
+
+
+def atomic_publish_directory(temporary: Path, target: Path) -> None:
+    """Replace a directory atomically and restore the previous value on failure."""
+
+    backup: Path | None = None
+    target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        if target.exists():
+            backup = target.parent / f".{target.name}.old-{uuid.uuid4().hex}"
+            os.replace(target, backup)
+        os.replace(temporary, target)
+        if backup is not None:
+            shutil.rmtree(backup)
+    except Exception:
+        if backup is not None and backup.exists() and not target.exists():
+            os.replace(backup, target)
+        raise
 
 
 def require_signature(actual: Any, expected_sha256: str, *, label: str) -> None:

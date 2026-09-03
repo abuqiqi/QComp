@@ -1,0 +1,60 @@
+{
+  "format": "qwen3-tn-decomposition-result-v1",
+  "module_set": "artifacts/smoke/compactifai-quick-block35/decomposition/index.json",
+  "targets": {
+    "model.layers.35.self_attn.q_proj": {
+      "source": "cache",
+      "cache_key": "339723da2df756c78d3a43b26b2247a3a08952e91f050578ad4a58c0fc123a3c",
+      "weight_relative_l2": 0.9011738896369934,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.35.self_attn.k_proj": {
+      "source": "decomposition",
+      "cache_key": "2b853b5af2a6a0fd34d060e1e0563670aa35b8b8990debba7bf0d976b2b04a53",
+      "weight_relative_l2": 0.798029899597168,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.35.self_attn.v_proj": {
+      "source": "decomposition",
+      "cache_key": "6c8e56dd41cfd8b64815e8f6ffa98c6cb7ef3b34850bb9e0d48aea526b3d3792",
+      "weight_relative_l2": 0.800460696220398,
+      "dense_parameters": 4194304,
+      "tt_parameters": 1216512,
+      "compression_ratio": 3.4478114478114477
+    },
+    "model.layers.35.self_attn.o_proj": {
+      "source": "decomposition",
+      "cache_key": "08b626ab5e745adcaf38cc012036aed4cf198d193db5b4a82643d5fd74d63753",
+      "weight_relative_l2": 0.8845176100730896,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    },
+    "model.layers.35.mlp.gate_proj": {
+      "source": "decomposition",
+      "cache_key": "2d74dda68d3553fa52031dffe118da0ea1ca0be4d208b3c1e30d3af0a1ee0f5b",
+      "weight_relative_l2": 0.9641891121864319,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    },
+    "model.layers.35.mlp.up_proj": {
+      "source": "decomposition",
+      "cache_key": "7405f92b975df47ed999390aab73dbc30d370c1db415c7983f795e3073f8d21d",
+      "weight_relative_l2": 0.9678990244865417,
+      "dense_parameters": 50331648,
+      "tt_parameters": 2457600,
+      "compression_ratio": 20.48
+    }
+  },
+  "aggregate": {
+    "target_count": 6,
+    "dense_parameters": 142606336,
+    "tt_parameters": 12165120,
+    "compression_ratio": 11.722558922558923
+  }
+}

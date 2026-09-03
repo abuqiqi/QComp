@@ -1,12 +1,17 @@
 """CLI for dense or TT causal-LM evaluation."""
 
 from __future__ import annotations
-from pathlib import Path
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from ..evaluation import EvaluationConfig, evaluate_causal_lm
+from ..model_loading import load_local_causal_lm, load_local_tokenizer
 from ..model import TTModulePatch
-from .common import check_device, config_argument, parse_dtype, strict_config
+from .common import (
+    check_device,
+    config_argument,
+    load_backend_modules,
+    parse_backend_options,
+    parse_dtype,
+    strict_config,
+)
 
 
 def main() -> None:
@@ -18,22 +23,23 @@ def main() -> None:
             "evaluation",
             "module_set",
             "backend",
+            "backend_modules",
+            "backend_options",
             "output",
             "device",
             "model_dtype",
         },
         required={"model_path", "evaluation", "output"},
     )
+    load_backend_modules(value.get("backend_modules"))
+    backend_options = parse_backend_options(value.get("backend_options"))
     device = check_device(value.get("device", "cuda:0"))
-    tokenizer = AutoTokenizer.from_pretrained(
-        value["model_path"], local_files_only=True
-    )
-    model = AutoModelForCausalLM.from_pretrained(
+    tokenizer = load_local_tokenizer(value["model_path"])
+    model = load_local_causal_lm(
         value["model_path"],
-        torch_dtype=parse_dtype(value.get("model_dtype", "bfloat16")),
-        local_files_only=True,
-        low_cpu_mem_usage=True,
-    ).to(device)
+        dtype=parse_dtype(value.get("model_dtype", "bfloat16")),
+        device=device,
+    )
     config = EvaluationConfig.from_json(value["evaluation"])
     if value.get("module_set"):
         with TTModulePatch(
@@ -41,6 +47,7 @@ def main() -> None:
             value["module_set"],
             tt_backend=value.get("backend", "native"),
             core_dtype=parse_dtype(value.get("model_dtype", "bfloat16")),
+            backend_options=backend_options,
         ):
             evaluate_causal_lm(
                 model, config, tokenizer=tokenizer, output_path=value["output"]
@@ -49,3 +56,7 @@ def main() -> None:
         evaluate_causal_lm(
             model, config, tokenizer=tokenizer, output_path=value["output"]
         )
+
+
+if __name__ == "__main__":
+    main()

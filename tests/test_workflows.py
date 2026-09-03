@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -86,6 +87,10 @@ class WorkflowTests(unittest.TestCase):
                 tokenizer=tokenizer,
                 evaluator=fake_evaluator,
             )
+            run_path = config.artifact_root / "run.json"
+            run = json.loads(run_path.read_text())
+            run["training_signature"]["backend"] = "native"
+            run_path.write_text(json.dumps(run))
             second = run_finetune_experiment(
                 config,
                 prepared,

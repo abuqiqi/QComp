@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 import gc
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Mapping
 import torch
 from torch import nn
+from ..backends import tt_backend_metadata
 from ..data import DocumentSource, PreparedCausalLMData, prepare_causal_lm_data
 from ..evaluation import EvaluationConfig, evaluate_causal_lm, extract_metrics
+from ..model_loading import load_local_causal_lm, load_local_tokenizer
 from ..model import TTModulePatch, load_tt_cores
 from ..provenance import (
     atomic_write_json,
@@ -17,7 +19,11 @@ from ..provenance import (
     load_json,
     model_signature,
 )
-from ..training import TTFineTuneConfig, finetune_causal_lm
+from ..training import (
+    TTFineTuneConfig,
+    finetune_causal_lm,
+    latest_training_checkpoint,
+)
 from .evaluate import (
     EvaluationStageResult,
     evaluate_with_cache,
@@ -36,22 +42,37 @@ class FineTuneExperimentConfig:
     tt_backend: str = "native"
     force_retrain: bool = False
     force_reevaluate: bool = False
+    resume_from: Path | str | None = None
+    backend_options: Mapping[str, Any] = field(default_factory=dict)
+
+
+def _resolve_resume_checkpoint(
+    config: FineTuneExperimentConfig,
+    checkpoint_metadata: Mapping[str, Any],
+) -> Path | None:
+    if config.resume_from is None:
+        return None
+    if str(config.resume_from) == "latest":
+        return latest_training_checkpoint(
+            config.artifact_root,
+            expected_config=config.training,
+            expected_metadata=checkpoint_metadata,
+        )
+    checkpoint = Path(config.resume_from)
+    if not checkpoint.is_dir():
+        raise FileNotFoundError(f"resume checkpoint does not exist: {checkpoint}")
+    return checkpoint
 
 
 def _load_default_model(config: FineTuneExperimentConfig) -> tuple[nn.Module, Any]:
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-
     device = torch.device(config.training.device)
     dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
-    tokenizer = AutoTokenizer.from_pretrained(config.model_path, local_files_only=True)
-    if tokenizer.pad_token_id is None:
-        tokenizer.pad_token = tokenizer.eos_token
-    model = AutoModelForCausalLM.from_pretrained(
+    tokenizer = load_local_tokenizer(config.model_path, ensure_padding=True)
+    model = load_local_causal_lm(
         config.model_path,
-        torch_dtype=dtype,
-        local_files_only=True,
-        low_cpu_mem_usage=True,
-    ).to(device)
+        dtype=dtype,
+        device=device,
+    )
     return model, tokenizer
 
 
@@ -69,7 +90,7 @@ def _training_signature(
         "format": "qwen3-tn-finetune-signature-v1",
         "model_signature": dict(signature),
         "module_set_sha256": file_sha256(index),
-        "backend": config.tt_backend,
+        "backend": tt_backend_metadata(config.tt_backend, config.backend_options),
         "data_fingerprint": prepared.fingerprint,
         "data_metadata": dict(prepared.metadata),
         "training": asdict(config.training),
@@ -85,7 +106,22 @@ def _completed_training(
         return None
     try:
         value = load_json(path)
-        if value.get("training_signature") != dict(signature) or value.get(
+        stored_signature = value.get("training_signature")
+        expected_signature = dict(signature)
+        if isinstance(stored_signature, Mapping):
+            stored_signature = dict(stored_signature)
+            stored_backend = stored_signature.get("backend")
+            expected_backend = expected_signature.get("backend")
+            if (
+                isinstance(stored_backend, str)
+                and isinstance(expected_backend, Mapping)
+                and stored_backend == expected_backend.get("name")
+                and not expected_backend.get("options")
+            ):
+                # Signatures written before backend metadata was introduced only
+                # stored the backend name. Empty options preserve that meaning.
+                stored_signature["backend"] = dict(expected_backend)
+        if stored_signature != expected_signature or value.get(
             "final_index_sha256"
         ) != file_sha256(final_index):
             return None
@@ -182,6 +218,7 @@ def run_finetune_experiment(
             tt_backend=config.tt_backend,
             trainable=True,
             core_dtype=torch.float32,
+            backend_options=config.backend_options,
         ) as modules:
             if config.evaluation is not None:
                 metadata = evaluation_cache_metadata(
@@ -190,6 +227,7 @@ def run_finetune_experiment(
                     config=config.evaluation,
                     module_set=config.module_set,
                     backend=config.tt_backend,
+                    backend_options=config.backend_options,
                 )
                 before = evaluate_with_cache(
                     model,
@@ -210,17 +248,22 @@ def run_finetune_experiment(
                 gc.collect()
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
+                checkpoint_metadata = {
+                    "training_signature_sha256": canonical_json_sha256(
+                        training_signature
+                    )
+                }
+                resume_checkpoint = _resolve_resume_checkpoint(
+                    config, checkpoint_metadata
+                )
                 training_metrics = finetune_causal_lm(
                     model,
                     prepared.dataloader,
                     config.training,
                     config.artifact_root,
                     model_path=str(config.model_path.resolve()),
-                    checkpoint_metadata={
-                        "training_signature_sha256": canonical_json_sha256(
-                            training_signature
-                        )
-                    },
+                    resume_from=resume_checkpoint,
+                    checkpoint_metadata=checkpoint_metadata,
                 )
                 training_source = "training"
                 run = {
@@ -241,6 +284,7 @@ def run_finetune_experiment(
                     config=config.evaluation,
                     module_set=config.artifact_root / "final",
                     backend=config.tt_backend,
+                    backend_options=config.backend_options,
                     extra={
                         "training_signature_sha256": canonical_json_sha256(
                             training_signature

@@ -1,0 +1,209 @@
+{
+  "config": {
+    "activation_checkpointing": false,
+    "backend_options": {},
+    "backends": [
+      "native",
+      "tensorly_torch",
+      "torchtt"
+    ],
+    "device": "cuda:0",
+    "iterations": 10,
+    "module_path": "model.layers.18.self_attn.q_proj",
+    "module_set": "artifacts/decompositions/qwen3-8b-compactifai-d96-blocks18-35/index.json",
+    "relative_l2_threshold": 0.005,
+    "token_chunk_size": 8,
+    "tokens": 1024,
+    "training_dtype": "torch.bfloat16",
+    "warmup": 3
+  },
+  "format": "qwen3-tn-layer-benchmark-v1",
+  "results": {
+    "native": {
+      "backend_metadata": {
+        "name": "native",
+        "options": {},
+        "version": "2"
+      },
+      "errors_vs_first_backend": {
+        "core_gradient_max_abs": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "input_gradient_max_abs": 0.0,
+        "numerical_pass": true,
+        "output_max_abs": 0.0,
+        "output_relative_l2": 0.0
+      },
+      "forward": {
+        "max_ms": 23.309186100959778,
+        "mean_ms": 21.60095456056297,
+        "median_ms": 22.997469641268253,
+        "min_ms": 18.784967251121998,
+        "peak_allocated_bytes": 70516736,
+        "peak_reserved_bytes": 94371840,
+        "samples_ms": [
+          23.062847554683685,
+          23.309186100959778,
+          22.988390177488327,
+          23.03520403802395,
+          23.00654910504818,
+          23.040786385536194,
+          21.060886792838573,
+          18.85665999725461,
+          18.784967251121998,
+          18.86406820267439
+        ],
+        "tokens_per_second": 44526.63775507126
+      },
+      "forward_backward": {
+        "max_ms": 65.74155669659376,
+        "mean_ms": 64.63183742016554,
+        "median_ms": 64.63317573070526,
+        "min_ms": 63.84517392143607,
+        "peak_allocated_bytes": 1704395776,
+        "peak_reserved_bytes": 1918894080,
+        "samples_ms": [
+          63.84517392143607,
+          65.74155669659376,
+          64.73040860146284,
+          64.16825903579593,
+          64.61046310141683,
+          64.65822132304311,
+          64.59072371944785,
+          64.70721634104848,
+          64.65136585757136,
+          64.61498560383916
+        ],
+        "tokens_per_second": 15843.25678605838
+      },
+      "status": "ok"
+    },
+    "tensorly_torch": {
+      "backend_metadata": {
+        "factorization": "BlockTT",
+        "implementation": "factorized",
+        "name": "tensorly_torch",
+        "options": {},
+        "version": "0.5.0"
+      },
+      "errors_vs_first_backend": {
+        "core_gradient_max_abs": [
+          0.0001220703125,
+          4.57763671875e-05,
+          3.0517578125e-05
+        ],
+        "input_gradient_max_abs": 5.960464477539063e-08,
+        "numerical_pass": true,
+        "output_max_abs": 0.0625,
+        "output_relative_l2": 0.004012130666524172
+      },
+      "forward": {
+        "max_ms": 1.0303319431841373,
+        "mean_ms": 0.9484866168349981,
+        "median_ms": 0.9325430728495121,
+        "min_ms": 0.9069112129509449,
+        "peak_allocated_bytes": 127336448,
+        "peak_reserved_bytes": 157286400,
+        "samples_ms": [
+          1.0303319431841373,
+          0.9241090156137943,
+          0.9568170644342899,
+          0.9568012319505215,
+          0.9369361214339733,
+          0.9281500242650509,
+          0.9069112129509449,
+          0.9126877412199974,
+          1.0175621137022972,
+          0.9145596995949745
+        ],
+        "tokens_per_second": 1098072.6036289444
+      },
+      "forward_backward": {
+        "max_ms": 2.158503048121929,
+        "mean_ms": 2.0931214094161987,
+        "median_ms": 2.0870803855359554,
+        "min_ms": 2.0677288994193077,
+        "peak_allocated_bytes": 156697600,
+        "peak_reserved_bytes": 224395264,
+        "samples_ms": [
+          2.084959764033556,
+          2.158503048121929,
+          2.0933598279953003,
+          2.0677288994193077,
+          2.099107950925827,
+          2.077185083180666,
+          2.110274974256754,
+          2.089201007038355,
+          2.0806826651096344,
+          2.070210874080658
+        ],
+        "tokens_per_second": 490637.54664008314
+      },
+      "status": "ok"
+    },
+    "torchtt": {
+      "backend_metadata": {
+        "implementation": "LinearLayerTT",
+        "name": "torchtt",
+        "options": {},
+        "version": "0.4.0"
+      },
+      "errors_vs_first_backend": {
+        "core_gradient_max_abs": [
+          3.0517578125e-05,
+          2.6702880859375e-05,
+          1.1444091796875e-05
+        ],
+        "input_gradient_max_abs": 5.960464477539063e-08,
+        "numerical_pass": true,
+        "output_max_abs": 0.0625,
+        "output_relative_l2": 0.004007180221378803
+      },
+      "forward": {
+        "max_ms": 20.73668921366334,
+        "mean_ms": 20.54850826971233,
+        "median_ms": 20.539170131087303,
+        "min_ms": 20.44930588454008,
+        "peak_allocated_bytes": 83763200,
+        "peak_reserved_bytes": 115343360,
+        "samples_ms": [
+          20.484272856265306,
+          20.73668921366334,
+          20.474731922149658,
+          20.512362010776997,
+          20.504449028521776,
+          20.61560796573758,
+          20.44930588454008,
+          20.56597825139761,
+          20.572705194354057,
+          20.568980369716883
+        ],
+        "tokens_per_second": 49855.95783395906
+      },
+      "forward_backward": {
+        "max_ms": 74.16965486481786,
+        "mean_ms": 70.7751055713743,
+        "median_ms": 70.53886423818767,
+        "min_ms": 69.28283488377929,
+        "peak_allocated_bytes": 2329355264,
+        "peak_reserved_bytes": 2822766592,
+        "samples_ms": [
+          69.28283488377929,
+          70.15434419736266,
+          70.79085428267717,
+          71.16330415010452,
+          70.7148970104754,
+          74.16965486481786,
+          70.47243462875485,
+          70.60529384762049,
+          70.20020391792059,
+          70.19723393023014
+        ],
+        "tokens_per_second": 14516.82006875348
+      },
+      "status": "ok"
+    }
+  }
+}

@@ -106,10 +106,14 @@ def decompose_targets(
                         "token_chunk_size": target.token_chunk_size,
                     },
                 )
-            reconstructed = reconstruct_matrix(
-                [core.to(config.compute_dtype) for core in cores], target.spec
-            )
             reference = module.weight.detach().to(config.compute_dtype)
+            reconstructed = reconstruct_matrix(
+                [
+                    core.to(device=reference.device, dtype=config.compute_dtype)
+                    for core in cores
+                ],
+                target.spec,
+            )
             relative_error = float(
                 torch.linalg.vector_norm(reconstructed - reference)
                 / torch.linalg.vector_norm(reference)

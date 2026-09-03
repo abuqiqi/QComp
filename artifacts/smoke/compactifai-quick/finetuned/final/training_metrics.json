@@ -1,0 +1,34 @@
+{
+  "first_training_loss": 2.933497428894043,
+  "global_step": 1,
+  "last_training_loss": 2.933497428894043,
+  "loss_history": [
+    {
+      "learning_rate": 0.0,
+      "loss": 2.933497428894043,
+      "step": 1
+    }
+  ],
+  "mean_training_loss": 2.933497428894043,
+  "min_training_loss": 2.933497428894043,
+  "model_gradient_checkpointing": true,
+  "optimizer_steps_this_run": 1,
+  "peak_cuda_allocated_bytes": 16841263104,
+  "resume_checkpoint": "artifacts/smoke/compactifai-quick/finetuned/checkpoint-1",
+  "resumed_from": null,
+  "total_model_parameters": 8176366592,
+  "trainable_tt_parameters": 2408448,
+  "training_seconds_this_run": 0.6526647848077118,
+  "training_tokens_seen": 128,
+  "training_tokens_this_run": 128,
+  "tt_activation_checkpointing": true,
+  "tt_backends": {
+    "model.layers.35.self_attn.q_proj": {
+      "name": "native",
+      "version": "2"
+    }
+  },
+  "tt_module_paths": [
+    "model.layers.35.self_attn.q_proj"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "task": "triviaqa",
+  "metrics": [{"name": "exact_match,remove_whitespace", "direction": "higher"}],
+  "limit": null,
+  "batch_size": 8,
+  "max_length": 4096,
+  "num_fewshot": 0,
+  "apply_chat_template": false,
+  "bootstrap_iters": 0,
+  "seed": 42
+}

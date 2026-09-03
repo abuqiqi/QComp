@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 import random
 import shutil
+import time
 import uuid
 from contextlib import nullcontext
 from pathlib import Path
@@ -150,7 +151,7 @@ def finetune_causal_lm(
             expected_config=config,
             expected_metadata=checkpoint_metadata,
         )
-    if state.global_step >= planned_steps:
+    if state.global_step > planned_steps:
         raise ValueError(
             f"resume step {state.global_step} reached planned steps {planned_steps}"
         )
@@ -162,8 +163,16 @@ def finetune_causal_lm(
         torch.cuda.reset_peak_memory_stats(device)
     sampler = getattr(train_dataloader, "sampler", None)
     losses: list[float] = []
-    stopped = False
+    optimizer_step_losses: list[float] = []
+    loss_history: list[dict[str, float | int]] = []
+    started_at = time.monotonic()
+    initial_global_step = state.global_step
+    initial_tokens_seen = state.tokens_seen
+    tokens_seen = state.tokens_seen
+    stopped = state.global_step == planned_steps
     for epoch in range(state.epoch, epochs):
+        if stopped:
+            break
         if hasattr(sampler, "set_epoch"):
             sampler.set_epoch(epoch)
         for batch_index, raw_batch in enumerate(train_dataloader):
@@ -181,6 +190,12 @@ def finetune_causal_lm(
                 key: value.to(device) if isinstance(value, Tensor) else value
                 for key, value in raw_batch.items()
             }
+            attention_mask = batch.get("attention_mask")
+            tokens_seen += int(
+                attention_mask.sum().item()
+                if isinstance(attention_mask, Tensor)
+                else batch["input_ids"].numel()
+            )
             autocast = (
                 torch.autocast("cuda", dtype=torch.bfloat16)
                 if device.type == "cuda" and config.bf16_autocast
@@ -203,10 +218,39 @@ def finetune_causal_lm(
             next_epoch, next_batch = epoch, batch_index + 1
             if next_batch == len(train_dataloader):
                 next_epoch, next_batch = epoch + 1, 0
-            state = TTTrainingState(state.global_step + 1, next_epoch, next_batch)
-            if state.global_step % config.logging_steps == 0:
+            state = TTTrainingState(
+                state.global_step + 1, next_epoch, next_batch, tokens_seen
+            )
+            if (
+                device.type == "cuda"
+                and initial_global_step == 0
+                and state.global_step == 1
+                and config.first_step_peak_memory_limit_gib is not None
+            ):
+                peak_gib = torch.cuda.max_memory_allocated(device) / 1024**3
+                if peak_gib >= config.first_step_peak_memory_limit_gib:
+                    raise RuntimeError(
+                        f"first-step smoke exceeded memory limit: {peak_gib:.2f} GiB"
+                    )
                 print(
-                    f"step={state.global_step} loss={sum(losses[-config.logging_steps:]) / len(losses[-config.logging_steps:]):.6f} lr={scheduler.get_last_lr()[0]:.3e}",
+                    f"first-step smoke passed: finite loss, peak={peak_gib:.2f} GiB",
+                    flush=True,
+                )
+            step_loss = sum(losses[-window_size:]) / window_size
+            optimizer_step_losses.append(step_loss)
+            if state.global_step % config.logging_steps == 0:
+                logged_loss = sum(optimizer_step_losses[-config.logging_steps :]) / len(
+                    optimizer_step_losses[-config.logging_steps :]
+                )
+                loss_history.append(
+                    {
+                        "step": state.global_step,
+                        "loss": logged_loss,
+                        "learning_rate": scheduler.get_last_lr()[0],
+                    }
+                )
+                print(
+                    f"step={state.global_step} loss={logged_loss:.6f} lr={scheduler.get_last_lr()[0]:.3e}",
                     flush=True,
                 )
             if config.save_steps and state.global_step % config.save_steps == 0:
@@ -241,8 +285,15 @@ def finetune_causal_lm(
     temporary = output / f".final.tmp-{uuid.uuid4().hex}"
     metrics = {
         "global_step": state.global_step,
+        "optimizer_steps_this_run": state.global_step - initial_global_step,
+        "training_tokens_seen": state.tokens_seen,
+        "training_tokens_this_run": state.tokens_seen - initial_tokens_seen,
+        "training_seconds_this_run": time.monotonic() - started_at,
         "mean_training_loss": sum(losses) / len(losses) if losses else None,
+        "first_training_loss": losses[0] if losses else None,
+        "min_training_loss": min(losses) if losses else None,
         "last_training_loss": losses[-1] if losses else None,
+        "loss_history": loss_history,
         "trainable_tt_parameters": summary.trainable_parameters,
         "total_model_parameters": summary.total_parameters,
         "tt_module_paths": list(summary.module_paths),

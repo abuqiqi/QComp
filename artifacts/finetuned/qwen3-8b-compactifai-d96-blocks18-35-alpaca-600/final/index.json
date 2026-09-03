@@ -1,0 +1,550 @@
+{
+  "format": "qwen3-tn-tt-module-set-v1",
+  "metadata": {
+    "global_step": 600
+  },
+  "model_path": "/infini-data/Qwen3-8B",
+  "modules": [
+    {
+      "checkpoint": "modules/model__layers__18__mlp__gate_proj--b259d2eb8e",
+      "cores_sha256": "53419706fc5928403dc1d8205a062db4a6c810bb32eb49f83ab27807f22b38a8",
+      "module_path": "model.layers.18.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__mlp__up_proj--d61b3a95b0",
+      "cores_sha256": "a5cde3cccb7bcf6df2c8e39637170c3645751b77e07fec65b90891e73d6d6108",
+      "module_path": "model.layers.18.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__k_proj--8f7ffeabfe",
+      "cores_sha256": "dd30c5248ed5cc1be49c840974dd34b0bbb1f407453381705fe1de378f3e56ab",
+      "module_path": "model.layers.18.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__o_proj--1a383e1af5",
+      "cores_sha256": "244b6ac171482acf4db7ba2359508fc4577f50a39a4643990733e1121c9c86ce",
+      "module_path": "model.layers.18.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__q_proj--f56fed4abe",
+      "cores_sha256": "9fa84259772e197c5739c9c0a8f1a6b4e12218dbfdaa7ff245d5cae7dd91ec57",
+      "module_path": "model.layers.18.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__18__self_attn__v_proj--00f8289164",
+      "cores_sha256": "99cb3ebe38357f11789b9247390321399d7fa153c48b048fa1937c3cf6eb2d87",
+      "module_path": "model.layers.18.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__mlp__gate_proj--805ae1946f",
+      "cores_sha256": "fe50dab5ca8de002881745240f33f33d7e354002cd857f248fc7e05fc7487fae",
+      "module_path": "model.layers.19.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__mlp__up_proj--14c114db8e",
+      "cores_sha256": "d73fcffb19ee02f26309cad1768e05854b78b44da071f7231c007ee5bf1b29a6",
+      "module_path": "model.layers.19.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__k_proj--63c763cd70",
+      "cores_sha256": "97d656fa3a611a0cbbbfe40c6c90788110feab495741e973aa1b87727f8e9175",
+      "module_path": "model.layers.19.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__o_proj--5985ce3190",
+      "cores_sha256": "71df6c501bee64fb5b52c9a1c4d82d7958d33ef6ace7fec3400bc7c9461cafff",
+      "module_path": "model.layers.19.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__q_proj--18f470ecb8",
+      "cores_sha256": "864185357d5049d3c1616c9eba37eb10ac914bbac9aca0bee87af37140622888",
+      "module_path": "model.layers.19.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__19__self_attn__v_proj--b6bf065a46",
+      "cores_sha256": "f4a093ea80b99897f6998e5e56bdc89267e745766ae91543d3f29484009b6e92",
+      "module_path": "model.layers.19.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__mlp__gate_proj--4b777dfaac",
+      "cores_sha256": "23a0106bfe3ae8daa8d8f8fa9c8df229ea6e99662518c543395bdab10700a853",
+      "module_path": "model.layers.20.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__mlp__up_proj--da2b309b46",
+      "cores_sha256": "8dcd6aaaa2c1a839179da17791e7c111043d39b975411d4d5c38bf50359c1f99",
+      "module_path": "model.layers.20.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__k_proj--c4fe020eb8",
+      "cores_sha256": "d15a88f1ad42a0725d23d9d34689c4a8ca139667b37f81eebd601718526f38d9",
+      "module_path": "model.layers.20.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__o_proj--89cdce70cf",
+      "cores_sha256": "d74061d14e7fecb76d3d00a9ef92896cd9ffdbfe55d5af264c58e86d4c4e7071",
+      "module_path": "model.layers.20.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__q_proj--ec15a09a3b",
+      "cores_sha256": "ffefb61c4858f10a02c1396e1e6cb72068b3db6d73e28544b72a7d09b3c3c171",
+      "module_path": "model.layers.20.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__20__self_attn__v_proj--fa0ecc8ab3",
+      "cores_sha256": "6cf5d2a9e343db3464e20c5fc10c92885181ee569b12af20623fb48eea9da06d",
+      "module_path": "model.layers.20.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__mlp__gate_proj--d0fdf24cdf",
+      "cores_sha256": "44374c54be7116572e9f6cde97b997799eeb46d45d95060285e57eba034221d7",
+      "module_path": "model.layers.21.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__mlp__up_proj--50983810e0",
+      "cores_sha256": "50fc122234eb23e518dab310fea2a03777a7077116423ec7074a294bb432343f",
+      "module_path": "model.layers.21.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__k_proj--a8b4b2001c",
+      "cores_sha256": "aea9df0b389b4a7118536bbaef7e24e3ba4265ee40a64117880266f389b34d19",
+      "module_path": "model.layers.21.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__o_proj--1ccdf938b1",
+      "cores_sha256": "bde4dfa62230eaba15e879d748792b7f9cd5406f838a255c4c1c1daa68daa45e",
+      "module_path": "model.layers.21.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__q_proj--6aab39feeb",
+      "cores_sha256": "9dbc6333bb162e1db3cf0e32e5e146b43107c73f0b7c0ccbf2f08eb0e07894f7",
+      "module_path": "model.layers.21.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__21__self_attn__v_proj--898f74e62a",
+      "cores_sha256": "c7655e048b61cfc4b39a8dfa33eea02919a8e717b8603d89ca79a9ad0564f668",
+      "module_path": "model.layers.21.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__mlp__gate_proj--8192d69f86",
+      "cores_sha256": "d0f3b476069a91182260ff3f6ef0d461b36cf6ba3b696a2873f94d4b80fae1af",
+      "module_path": "model.layers.22.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__mlp__up_proj--08e512ec3d",
+      "cores_sha256": "e87196a2ea72e23027ac385ab0c0ccda5fa66f3d512a44c5eb9b458ce7467a99",
+      "module_path": "model.layers.22.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__k_proj--48d246ec8c",
+      "cores_sha256": "cdb1c597a4c20aba7ca911921b5bc0865409e896b1e26af106be9f45265b1854",
+      "module_path": "model.layers.22.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__o_proj--6b8cc8f767",
+      "cores_sha256": "08df163add4ae09b4a71b302b08583b48eafd39eaf31f4c8836a12c9ccc06888",
+      "module_path": "model.layers.22.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__q_proj--f4e1396e7d",
+      "cores_sha256": "a7f7566463206333968e4ac404a0c3b805322b9e21d19dcaf1d2e39d51db5e09",
+      "module_path": "model.layers.22.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__22__self_attn__v_proj--8c3618c776",
+      "cores_sha256": "60a911ea730079b83ff445a7f4657fc6edfe9dfabe51a62e2b3ce36350849a26",
+      "module_path": "model.layers.22.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__mlp__gate_proj--032c86a201",
+      "cores_sha256": "ef364558520ab3a9ff2cd9f243c491139265f554983a5a009b33a57237e35019",
+      "module_path": "model.layers.23.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__mlp__up_proj--44a24dfa2a",
+      "cores_sha256": "90334fa170a699feda971a34f6fbce76ff2daaf2e2f414c937ec445fb3696c97",
+      "module_path": "model.layers.23.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__k_proj--4ff0564627",
+      "cores_sha256": "28a9470a529322ce34d703cc50ee322e887d85d716a37ffab4d9f8dd5170dbc0",
+      "module_path": "model.layers.23.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__o_proj--456ee5dbc0",
+      "cores_sha256": "568ce950b4d8b9ee3bc39dd10e31df168a633d2557a55e80f96148f7b635929a",
+      "module_path": "model.layers.23.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__q_proj--12f5c2af0f",
+      "cores_sha256": "2cad76b469fc992cddaec7843066be94187b8dc1d86b11703ea702332f1f9b08",
+      "module_path": "model.layers.23.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__23__self_attn__v_proj--d20fbdbdaf",
+      "cores_sha256": "6cf1f8cdf1449a1387a0937e1d721c6f12ead72fffe30dad903fa1b7d4dbf378",
+      "module_path": "model.layers.23.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__mlp__gate_proj--754a896a39",
+      "cores_sha256": "85d0d92b1b815c39809480b513abb6c35fd9b105d20496892037059b7373a406",
+      "module_path": "model.layers.24.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__mlp__up_proj--c551aefec4",
+      "cores_sha256": "cbd5d111bd8bc09105771d21b320db43146dde370ea7066c9ec48d8197131fdf",
+      "module_path": "model.layers.24.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__k_proj--dd6581f8db",
+      "cores_sha256": "fe6d4c12841ac2fc14deed416714c47c2bdd23bfc2a4a8ae08200773b600912d",
+      "module_path": "model.layers.24.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__o_proj--4c0444cd00",
+      "cores_sha256": "29da77224252409b715831aa4502f3e1f9a7b671333d0ba8cbf4281a6ef61a02",
+      "module_path": "model.layers.24.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__q_proj--108fdd9fd2",
+      "cores_sha256": "9b9eeb9f0c5bcf52243958288461bbe6c398a30c2da62a6869d0f1e67f81abc6",
+      "module_path": "model.layers.24.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__24__self_attn__v_proj--249a2b1b3d",
+      "cores_sha256": "2911a082d22500a5ec84b10bd11b50f0237a7fd5d675fbaa76d4201ad742c06e",
+      "module_path": "model.layers.24.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__mlp__gate_proj--a2af8273e1",
+      "cores_sha256": "8f5246a9ce2d7a250b591e6cd652c1c572cd024057d0d6d8794c93596ce5830a",
+      "module_path": "model.layers.25.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__mlp__up_proj--f28e22ec71",
+      "cores_sha256": "1ae360b46eef539d6e4036791f39cfd3b2ffdad7e26f76a4d908adef0009b5d2",
+      "module_path": "model.layers.25.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__k_proj--8b868e2280",
+      "cores_sha256": "604845218749f67400cfca257e7e464eb98d56937fdc36afbbe7302a5923dc26",
+      "module_path": "model.layers.25.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__o_proj--e584c91cb6",
+      "cores_sha256": "63d5d9fed45f7bb0d878bcaf1a3eb06daba0bc306614da40814590ead307f3ad",
+      "module_path": "model.layers.25.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__q_proj--60ec364384",
+      "cores_sha256": "758a61d803c6d7dd1fcfea71bf8f212827e9210e2c937477afa37508e92f1f58",
+      "module_path": "model.layers.25.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__25__self_attn__v_proj--463e1cb653",
+      "cores_sha256": "7fe6f5bf7b6527f1c842d9be2ae1c050463299fc14533adf3c609250aa11be14",
+      "module_path": "model.layers.25.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__mlp__gate_proj--57ea318ced",
+      "cores_sha256": "64c347932d7e664492b6073052b1bc84a067b38eda326e9088fbf474da482c70",
+      "module_path": "model.layers.26.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__mlp__up_proj--77d099da14",
+      "cores_sha256": "2d304032562137ab562e6fbca8a23851138e103c0eb056431b795a5455018671",
+      "module_path": "model.layers.26.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__k_proj--d7772d4540",
+      "cores_sha256": "7455e378f114222f8fd1d241f230ff230b0b857cee5f012d569a562bcf7af509",
+      "module_path": "model.layers.26.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__o_proj--a8eb79faca",
+      "cores_sha256": "63163c0dbc64aee24f44a0812d6e721698465301f433262c985a8f242263c2b0",
+      "module_path": "model.layers.26.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__q_proj--51e9363e1f",
+      "cores_sha256": "4ad3920f75088985632469272e29e7e4ed55268bf3b1958c4e12a8a0d9cac99b",
+      "module_path": "model.layers.26.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__26__self_attn__v_proj--5f157a9e74",
+      "cores_sha256": "85f5169944d091a311c6ef17d4ef131f611dbbf847ece6ca7736029a064bc787",
+      "module_path": "model.layers.26.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__mlp__gate_proj--e4e996f7bc",
+      "cores_sha256": "acad4769dd2f0cfabd31d4b1592691f53e075f1c193d1c9275c7ada8fbaedc2b",
+      "module_path": "model.layers.27.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__mlp__up_proj--3be0094b11",
+      "cores_sha256": "3fea020fc01cb2754fcee278b75a30da8e1b097858e90eb3a195579676bbb587",
+      "module_path": "model.layers.27.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__k_proj--b03a6f546e",
+      "cores_sha256": "9f874eb6a5d198a0ea6a00c31aeff4ae2a42ca6499a0c2a3d8390bc40ef07628",
+      "module_path": "model.layers.27.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__o_proj--f63e456668",
+      "cores_sha256": "58d20529214fa143413c7d585e3bf969f67b3e310bb721f4e77c1ff120dcf345",
+      "module_path": "model.layers.27.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__q_proj--b79b124017",
+      "cores_sha256": "c33ea4d6214e460a4457e3cbc987d9f42bc6054159e073de89d60975aeb84d36",
+      "module_path": "model.layers.27.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__27__self_attn__v_proj--8275332c3e",
+      "cores_sha256": "86b8d9495f16f4f6d9b07ba4f08c48a4b87309a2bd3ea2333c66b207adee712c",
+      "module_path": "model.layers.27.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__mlp__gate_proj--87433cb31b",
+      "cores_sha256": "12290fd4545e07852d244fe405f01c77088d28a1b08feea65595ea035537b448",
+      "module_path": "model.layers.28.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__mlp__up_proj--b4d9c5bc0b",
+      "cores_sha256": "cd2ee3b7f68eb410b4c064d3e57d49e181622c1649466c4852c94f7f5803f6f7",
+      "module_path": "model.layers.28.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__k_proj--d87affbaa9",
+      "cores_sha256": "a8a7ff91ffbd8dbe1c3f0d4e458b42fe0483f07f67add6a9b1819bc573edd87b",
+      "module_path": "model.layers.28.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__o_proj--397bef3d73",
+      "cores_sha256": "882ace926f7a46bf15fcbbece4e0d7663a907aa25323e6c9ced352bf33e91282",
+      "module_path": "model.layers.28.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__q_proj--97ab44f4d4",
+      "cores_sha256": "c3c3cced5e53c3a84a527f3a051b6acaad3234c14e9d85b397cb8a57247aa727",
+      "module_path": "model.layers.28.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__28__self_attn__v_proj--36a3741af0",
+      "cores_sha256": "fe9b8559a7fde9bf5c19aab78eab5fcea87b70f5b7bf547187d84795ecbe6aa8",
+      "module_path": "model.layers.28.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__mlp__gate_proj--6443906b32",
+      "cores_sha256": "7ca592b33546de8279fdc89b21f02781d138b9f1ae250f7e65af1f6a17b7603d",
+      "module_path": "model.layers.29.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__mlp__up_proj--7ed21ffa9f",
+      "cores_sha256": "e8e0f54e805b78e750410231435eed38739fcf725ff22d5fe19a9f5373b0db9b",
+      "module_path": "model.layers.29.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__k_proj--b7ecadad87",
+      "cores_sha256": "9465d4a2a5561ce0a1583d8765a1e9734e791aa6c18cf68341f413408963ed0c",
+      "module_path": "model.layers.29.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__o_proj--d14c992b01",
+      "cores_sha256": "1f9365dbfa840e1bec04a435a3f08ee3e4bbdc4c6bb0b56d440ac6858afd3bd6",
+      "module_path": "model.layers.29.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__q_proj--2f4dee9784",
+      "cores_sha256": "7a6a495617192b6642dd39e530ee19c899414324f68745186bb10f6b260620e0",
+      "module_path": "model.layers.29.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__29__self_attn__v_proj--02139f854d",
+      "cores_sha256": "f18d0e4798da0b6982a58a39fd95d7227cd31df99880931a382d1c5390fc37a8",
+      "module_path": "model.layers.29.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__mlp__gate_proj--b16be6df94",
+      "cores_sha256": "da275032c494e6ac171ab06ead4b7ad48b05a8d3bb4141d11ff7951656cb619f",
+      "module_path": "model.layers.30.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__mlp__up_proj--7fb1159624",
+      "cores_sha256": "3d71f8a5283379fb7ed5a9b8de4a67fb512492b55bf9dddede594be28e010e05",
+      "module_path": "model.layers.30.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__k_proj--a806368cde",
+      "cores_sha256": "1bbe00b657ade69717f392f9b5410ee56103eeceeee375110aa0fb92a72e4530",
+      "module_path": "model.layers.30.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__o_proj--6c730721f1",
+      "cores_sha256": "0e1f422727634266a70d1c55e8efe00e4b5290b4c2571d390e884811b57a61b1",
+      "module_path": "model.layers.30.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__q_proj--9d6f409ccb",
+      "cores_sha256": "ab8a09a94592274d3aca8d3e7340d357399de589dbe6cf5a37935f247f46c211",
+      "module_path": "model.layers.30.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__30__self_attn__v_proj--3e82c1bfe1",
+      "cores_sha256": "a8b7865a81d62b0908c0bc7f75193c002bf98dab3ab309c23b22be56b1b18763",
+      "module_path": "model.layers.30.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__mlp__gate_proj--aeaa769c09",
+      "cores_sha256": "fb6b7a782cf37fcddd9b187bca794ad93a73fca8d592d941310a9a35f0d65ffa",
+      "module_path": "model.layers.31.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__mlp__up_proj--a6de755f8b",
+      "cores_sha256": "f29befecd9b75e269b6de4d0c8a0c4d5ee4f45e436484898711405cc0c0be9f3",
+      "module_path": "model.layers.31.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__k_proj--4273eca955",
+      "cores_sha256": "6eb147477a6499efc9d173ab11f244569d260ca7e7c42856c8e0ef584c3fca30",
+      "module_path": "model.layers.31.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__o_proj--9ff2bfe908",
+      "cores_sha256": "802298eb10715d141aa75bf7122bfe493bf5586645a86472403395c68e9c87c1",
+      "module_path": "model.layers.31.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__q_proj--5ef181ebb9",
+      "cores_sha256": "3e6ccd32d9a1d23c29d299a814a9329a45c8cad16cdb95dc109e5f9d544ba278",
+      "module_path": "model.layers.31.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__31__self_attn__v_proj--0a710dfc0e",
+      "cores_sha256": "8dac5a805aa3386c3b76298131ace8ef5594a487c5463eb12cddef6c02adeb9c",
+      "module_path": "model.layers.31.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__mlp__gate_proj--f0abf76af4",
+      "cores_sha256": "4fe7d864265acee6d61f81b4ab92e9657999e4ce2767dde881386d7de788d40f",
+      "module_path": "model.layers.32.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__mlp__up_proj--f453035625",
+      "cores_sha256": "5cc7a25ce44354001858a37ab8254111f26ec6c987004030e01bafb1b640c1a8",
+      "module_path": "model.layers.32.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__k_proj--89cb575268",
+      "cores_sha256": "b835b8c0a7d9d19e84de53c03f38dab0cb15549a5e6cdcc7f56e74ca96a132c0",
+      "module_path": "model.layers.32.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__o_proj--8f97c882a6",
+      "cores_sha256": "c1ee272e47a8d13dd6173ef10686200b8346f8446deb928de9958dbe2ea27c43",
+      "module_path": "model.layers.32.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__q_proj--2f8d941083",
+      "cores_sha256": "e2681e65099dfd32358c24eb6997af82599bcd3806c1aff8a7cdfea60590b6df",
+      "module_path": "model.layers.32.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__32__self_attn__v_proj--7d457d772b",
+      "cores_sha256": "27be65fe5dc35c776afe624e0614f19ae9f1e27eea46dd8ea6782d116da33b66",
+      "module_path": "model.layers.32.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__mlp__gate_proj--845e6965a2",
+      "cores_sha256": "44b93e84510aee48a1ca229b26043ee2013e221dc1183ae5af738aaa0e999b74",
+      "module_path": "model.layers.33.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__mlp__up_proj--66f2c0509b",
+      "cores_sha256": "83fcd08a0d1c4b3d80abf1e37f57fff0eeb2a48d39d8c0f22a59b2eb5181787a",
+      "module_path": "model.layers.33.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__k_proj--37b37a03f2",
+      "cores_sha256": "b955f5ed33b8edeededa00ef8a59c3cd0b59363a9142b475f5e522218da6d6d6",
+      "module_path": "model.layers.33.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__o_proj--5fc4825d1e",
+      "cores_sha256": "d2f2d52023ce0dac98cfb633f68b8a47db1953b8a5815f432692d720cdbe896c",
+      "module_path": "model.layers.33.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__q_proj--2b7b3c7d1f",
+      "cores_sha256": "453aec08a5bf9f5b908f685fdd7b498c5cb8a4da7384435184f4e02cc10691aa",
+      "module_path": "model.layers.33.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__33__self_attn__v_proj--68eb7d536f",
+      "cores_sha256": "7e1dfed03291579eb31bf239e647af4e251acd3e718dfdce646ae6ab6e2c5901",
+      "module_path": "model.layers.33.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__mlp__gate_proj--e58f9b1009",
+      "cores_sha256": "67daff13c7b4fff8c4b2c46b4c6898723718566ee474d77def1cd0ad4db00c11",
+      "module_path": "model.layers.34.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__mlp__up_proj--0feb0fb0f5",
+      "cores_sha256": "b86f70b90843cdc5326631bf9b7ff658820051ed0a33200d0f87ea99e954e9b6",
+      "module_path": "model.layers.34.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__k_proj--10d7bf019e",
+      "cores_sha256": "abd9e44fd9ae9b820bed821f4102ff74a6252cb4f55331a2676dc83bfe531dee",
+      "module_path": "model.layers.34.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__o_proj--550b312e32",
+      "cores_sha256": "91fc8913ae869a8abc803414fed009b04dcf09cfdd4ac0e3d55e9bb6e2c9a681",
+      "module_path": "model.layers.34.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__q_proj--d183d4348a",
+      "cores_sha256": "8556f5c02f00e9cc897f64c5c9b0b95831ba962b8e72a02fffbea0c76ebb6157",
+      "module_path": "model.layers.34.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__34__self_attn__v_proj--6b12bbabfe",
+      "cores_sha256": "306c2b7baf3654825dd253d993195d78377d1e5cfb32688ab9cf93e13e496450",
+      "module_path": "model.layers.34.self_attn.v_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__mlp__gate_proj--90c0403c24",
+      "cores_sha256": "581bd2c8d5e4b8f3a8bdb95f1456b31577383d5d99ff34e2d61c8fb94411cf73",
+      "module_path": "model.layers.35.mlp.gate_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__mlp__up_proj--1ef90557d1",
+      "cores_sha256": "85e539087bef261ab2cb2dac86a5f3982ac45d3c40a3256090bd5d54ce4b443a",
+      "module_path": "model.layers.35.mlp.up_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__k_proj--e4b9c681d8",
+      "cores_sha256": "69953bd9ee2c29880c0ff09047b39c0f9ae33ca1ea976068d31da4a6072af792",
+      "module_path": "model.layers.35.self_attn.k_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__o_proj--efcaf069fc",
+      "cores_sha256": "79b03eb34150b26246589f7b5ffff5774e424d6ae2bcee1b9dbb85e9a02fc770",
+      "module_path": "model.layers.35.self_attn.o_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__q_proj--be726dcc26",
+      "cores_sha256": "0c54b4ac837e5017052fac2e0663d0f1b64399130ba7f95d6da3adb385d1a5d6",
+      "module_path": "model.layers.35.self_attn.q_proj"
+    },
+    {
+      "checkpoint": "modules/model__layers__35__self_attn__v_proj--8ce799ba65",
+      "cores_sha256": "0e43fdaa3bafed4a5fb6e64b142203c7b15042c930f961a9bc566288de45a350",
+      "module_path": "model.layers.35.self_attn.v_proj"
+    }
+  ],
+  "purpose": "tt-finetuned"
+}

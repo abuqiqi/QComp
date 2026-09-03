@@ -1,0 +1,20 @@
+{
+  "format": "qwen3-tn-decomposition-result-v1",
+  "module_set": "artifacts/smoke/compactifai-quick/decomposition/index.json",
+  "targets": {
+    "model.layers.35.self_attn.q_proj": {
+      "source": "decomposition",
+      "cache_key": "339723da2df756c78d3a43b26b2247a3a08952e91f050578ad4a58c0fc123a3c",
+      "weight_relative_l2": 0.9011738896369934,
+      "dense_parameters": 16777216,
+      "tt_parameters": 2408448,
+      "compression_ratio": 6.965986394557823
+    }
+  },
+  "aggregate": {
+    "target_count": 1,
+    "dense_parameters": 16777216,
+    "tt_parameters": 2408448,
+    "compression_ratio": 6.965986394557823
+  }
+}

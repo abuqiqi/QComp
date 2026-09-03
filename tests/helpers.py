@@ -42,7 +42,14 @@ class TinyCausalLM(nn.Module):
     def gradient_checkpointing_enable(self, *, gradient_checkpointing_kwargs):
         self.gc_kwargs = gradient_checkpointing_kwargs
 
-    def forward(self, input_ids, labels=None, **_):
+    def forward(
+        self,
+        input_ids,
+        labels=None,
+        past_key_values=None,
+        use_cache=False,
+        **_,
+    ):
         hidden = torch.tanh(self.backbone.block.proj(self.embed(input_ids)))
         logits = self.head(hidden)
         loss = (
@@ -52,7 +59,12 @@ class TinyCausalLM(nn.Module):
             if labels is not None
             else None
         )
-        return SimpleNamespace(loss=loss, logits=logits)
+        cache = past_key_values if past_key_values is not None else (input_ids[:, :1],)
+        return SimpleNamespace(
+            loss=loss,
+            logits=logits,
+            past_key_values=cache if use_cache else None,
+        )
 
 
 def make_module_set(

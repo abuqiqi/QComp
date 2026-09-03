@@ -1,0 +1,51 @@
+{
+  "backend": "native",
+  "comparison": {
+    "baseline": "baseline",
+    "compressed": "mpo",
+    "retrained": "retrained_mpo"
+  },
+  "comparisons": [
+    {
+      "baseline": 0.5,
+      "compressed": 0.5,
+      "compressed_delta": 0.0,
+      "direction": "higher",
+      "healing_gain": -0.3125,
+      "lm_eval_task": "hellaswag",
+      "metric": "acc_norm,none",
+      "recovery_fraction": null,
+      "retrained": 0.1875,
+      "retrained_delta": -0.3125,
+      "task": "hellaswag_smoke"
+    }
+  ],
+  "complete": true,
+  "completed_at": "2026-08-28T15:52:02+00:00",
+  "completed_evaluations": [
+    "baseline/hellaswag_smoke",
+    "mpo/hellaswag_smoke",
+    "retrained_mpo/hellaswag_smoke"
+  ],
+  "expected_evaluations": 3,
+  "format": "qwen3-tn-evaluation-suite-summary-v1",
+  "model_path": "/infini-data/Qwen3-8B",
+  "scores": {
+    "baseline": {
+      "hellaswag_smoke": {
+        "acc_norm,none": 0.5
+      }
+    },
+    "mpo": {
+      "hellaswag_smoke": {
+        "acc_norm,none": 0.5
+      }
+    },
+    "retrained_mpo": {
+      "hellaswag_smoke": {
+        "acc_norm,none": 0.1875
+      }
+    }
+  },
+  "started_at": "2026-08-28T15:50:56+00:00"
+}
