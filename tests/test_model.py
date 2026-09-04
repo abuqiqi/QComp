@@ -2,23 +2,29 @@
 
 本模块使用小型 PyTorch 模型连接 model、backend 和 nn 三层，确认已经构造的张量
 网络模型层可以被批量发现并按路径安装，保持完整模型 forward，并恢复为同一个原始
-Linear。
+Linear。模型加载测试使用假的 Transformers 模块验证通用接口，不访问网络或下载权重。
 
 主要内容：
 - ``ToyModel``：包含嵌套无 bias Linear 的最小测试模型。
-- ``ModelTests``：覆盖层列出、查找、替换、推理、恢复和 bias 边界。
+- ``ModelTests``：覆盖模型加载、层操作和输入边界。
 """
 
+import sys
 import unittest
+from types import ModuleType
+from unittest.mock import MagicMock, patch
 
 import torch
 from torch import Tensor, nn
 
 from qcomp import (
+    CausalLMResources,
     MPOSpec,
+    ModelLoadConfig,
     find_linear,
     get_backend,
     list_linears,
+    load_causal_lm,
     replace_linear,
     restore_linear,
 )
@@ -52,6 +58,58 @@ class ToyModel(nn.Module):
 
 class ModelTests(unittest.TestCase):
     """验证模型中单个 Linear 的可逆替换。"""
+
+    def test_load_causal_lm_uses_transformers_auto_classes(self) -> None:
+        """加载通用模型和 tokenizer，并传递设备、dtype 与远程代码配置。"""
+
+        loaded_model = ToyModel()
+        loaded_tokenizer = object()
+        auto_model = MagicMock()
+        auto_model.from_pretrained.return_value = loaded_model
+        auto_tokenizer = MagicMock()
+        auto_tokenizer.from_pretrained.return_value = loaded_tokenizer
+        transformers = ModuleType("transformers")
+        transformers.AutoModelForCausalLM = auto_model
+        transformers.AutoTokenizer = auto_tokenizer
+
+        with patch.dict(sys.modules, {"transformers": transformers}):
+            resources = load_causal_lm(
+                ModelLoadConfig(
+                    model_name_or_path="/models/example",
+                    device="cpu",
+                    dtype=torch.float32,
+                    trust_remote_code=True,
+                )
+            )
+
+        self.assertIsInstance(resources, CausalLMResources)
+        self.assertIs(resources.model, loaded_model)
+        self.assertIs(resources.tokenizer, loaded_tokenizer)
+        auto_tokenizer.from_pretrained.assert_called_once_with(
+            "/models/example",
+            trust_remote_code=True,
+        )
+        auto_model.from_pretrained.assert_called_once_with(
+            "/models/example",
+            torch_dtype=torch.float32,
+            trust_remote_code=True,
+        )
+        self.assertEqual(next(loaded_model.parameters()).device.type, "cpu")
+
+    def test_model_load_config_validates_source_and_device(self) -> None:
+        """拒绝空模型来源以及当前环境中不可用的 CUDA 设备。"""
+
+        with self.assertRaisesRegex(ValueError, "must not be empty"):
+            ModelLoadConfig(model_name_or_path="")
+
+        with patch("torch.cuda.is_available", return_value=False):
+            with self.assertRaisesRegex(RuntimeError, "unavailable"):
+                load_causal_lm(
+                    ModelLoadConfig(
+                        model_name_or_path="/models/example",
+                        device="cuda:0",
+                    )
+                )
 
     def test_list_linears_returns_only_no_bias_layers(self) -> None:
         """按模块路径列出无 bias Linear，并跳过带 bias 的层。"""

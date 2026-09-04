@@ -12,11 +12,20 @@ from unittest.mock import Mock, patch
 
 import torch
 
-from qcomp import MPOSpec, get_backend, list_backends
+from qcomp import (
+    CompressionPlan,
+    CompressionTarget,
+    MPOSpec,
+    compress_model,
+    get_backend,
+    list_backends,
+    restore_compressed_model,
+)
 from qcomp.backends import BackendCapabilities
 from qcomp.backends.native.mpo import NativeMPOLinear
 from qcomp.evaluation import (
     compression_metrics,
+    model_compression_metrics,
     time_decomposition,
     time_inference,
     time_training_step,
@@ -49,6 +58,46 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(result.compressed_tensor_bytes, 256)
         self.assertEqual(result.tensor_size_compression_ratio, 0.5)
         self.assertLess(result.relative_error, 1e-12)
+
+    def test_model_compression_metrics_include_unchanged_parameters(self) -> None:
+        """使用 canonical artifact 统计目标层和未压缩参数的完整模型规模。"""
+
+        model = torch.nn.ModuleDict(
+            {
+                "target": torch.nn.Linear(4, 4, bias=False),
+                "untouched": torch.nn.Linear(4, 2, bias=False),
+            }
+        ).to(torch.float64)
+        plan = CompressionPlan(
+            representation="mpo",
+            targets=(
+                CompressionTarget(
+                    "target",
+                    MPOSpec.full_rank((2, 2), (2, 2)),
+                ),
+            ),
+        )
+        result = compress_model(
+            model,
+            plan,
+            decomposition_backend=self.backend,
+            execution_backend=self.backend,
+            trainable=False,
+        )
+
+        metrics = model_compression_metrics(model, result)
+
+        self.assertEqual(metrics.dense_parameters, 24)
+        self.assertEqual(metrics.compressed_parameters, 40)
+        self.assertEqual(metrics.compression_ratio, 0.6)
+        self.assertEqual(metrics.dense_tensor_bytes, 192)
+        self.assertEqual(metrics.compressed_tensor_bytes, 320)
+        self.assertEqual(metrics.tensor_size_compression_ratio, 0.6)
+        self.assertEqual(metrics.compressed_layers, 1)
+
+        restore_compressed_model(model, result)
+        with self.assertRaisesRegex(ValueError, "not installed"):
+            model_compression_metrics(model, result)
 
     def test_tensor_byte_metrics_respect_dtype(self) -> None:
         """使用张量数据类型计算实际张量字节数。"""
