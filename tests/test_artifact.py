@@ -14,6 +14,7 @@ import unittest
 import torch
 
 from qcomp import (
+    ArtifactPaths,
     TensorNetworkArtifact,
     load_artifact,
     reconstruct_tensor,
@@ -40,6 +41,31 @@ class ArtifactTests(unittest.TestCase):
         self.assertEqual(loaded.representation, "example")
         self.assertEqual(loaded.metadata, {"shape": [2, 2]})
         torch.testing.assert_close(loaded.tensors["factor"], artifact.tensors["factor"])
+
+    def test_artifact_paths_create_standard_directories(self) -> None:
+        """在自定义根目录下创建全部标准实验产物目录。"""
+
+        default_paths = ArtifactPaths()
+        self.assertEqual(default_paths.root, Path("artifacts"))
+        self.assertEqual(default_paths.evaluations, Path("artifacts/evaluations"))
+
+        with TemporaryDirectory() as directory:
+            paths = ArtifactPaths(Path(directory) / "outputs")
+            paths.create_directories()
+
+            self.assertEqual(paths.datasets, paths.root / "datasets")
+            self.assertEqual(paths.cache, paths.root / "cache")
+            self.assertEqual(paths.decompositions, paths.root / "decompositions")
+            self.assertEqual(paths.checkpoints, paths.root / "checkpoints")
+            self.assertEqual(paths.evaluations, paths.root / "evaluations")
+            for path in (
+                paths.datasets,
+                paths.cache,
+                paths.decompositions,
+                paths.checkpoints,
+                paths.evaluations,
+            ):
+                self.assertTrue(path.is_dir())
 
     def test_move_all_artifact_tensors(self) -> None:
         """转换全部命名张量，同时保持结构元数据不变。"""

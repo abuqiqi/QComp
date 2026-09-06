@@ -1,8 +1,12 @@
-# Backends 代码结构
+# backends
 
-`backends` 负责把具体计算库适配到具体张量网络表示。它接收 representations 层定义的
-结构配置或 artifact，并返回 `nn` 层约定的可执行 PyTorch 模块；它不重新定义 MPO
-格式，也不负责模型替换、训练流程、评测或 artifact 持久化。
+`backends` 把不同的张量网络计算库统一包装成两个标准接口：
+
+- __分解__：接收稠密权重和 representations 层定义的张量网络结构配置，调用具体计算库的分解算法，输出规范张量网络 artifact。
+- __构造可执行层__：接收张量网络 artifact，构造并返回 `nn` 层约定的可执行 PyTorch 模块。
+
+上层代码只跟 `TensorNetworkBackend` 打交道，不必关心底层用的是哪个库。
+
 
 ## 目录结构
 
@@ -20,21 +24,18 @@ backends/
     └── mpo.py              # cuTensorNet + MPO
 ```
 
-目录的第一维是计算库 Provider，文件名是张量网络表示。以后只有实现了真实组合时才
-新增文件，例如 `tensorly/tucker.py`；未实现的组合不注册，也不提供 fallback。
+目录的第一维是计算库 Provider，文件名是张量网络表示。以后只有实现了真实组合时才新增文件；未实现的组合不注册，也不提供 fallback。
 
 日常调用只需要两个查询函数：
 
-- `get_backend`：根据 Provider 和表示创建适配器，并在此时加载可选依赖。
+- `get_backend`：根据 Provider 和表示延迟导入 qcomp 适配模块并创建适配器；第三方计算库在实际分解或 Linear 构造时导入。
 - `list_backends`：批量评测时，列出指定表示已经注册的 Provider。
 
-`TensorNetworkBackend`、`BackendCapabilities` 和 `BackendProbe` 是实现或批量检查后端时
-使用的类型，基础调用不需要直接创建它们。
+`TensorNetworkBackend`、`BackendCapabilities` 和 `BackendProbe` 是实现或批量检查后端时使用的类型，基础调用不需要直接创建它们。
 
 ## Backend 与 Linear 的关系
 
-Backend 是可以复用的工厂，不保存某个模型层的 cores。Linear 是放入模型的
-`torch.nn.Module`，每个实例独立持有自己的参数和运行资源。
+Backend 是可以复用的工厂，不保存某个模型层的 cores。Linear 是放入模型的 `torch.nn.Module`，每个实例独立持有自己的参数和运行资源。
 
 ```text
 一个 CuTensorNetMPOBackend
@@ -43,8 +44,7 @@ Backend 是可以复用的工厂，不保存某个模型层的 cores。Linear �
 └── 构造 CuTensorNetMPOLinear（v_proj 的 cores 和收缩计划）
 ```
 
-Backend 构造完成后不拥有这些 Linear；模型负责保存 Linear，Linear 自己负责导出最新
-artifact 和释放运行资源。
+Backend 构造完成后不拥有这些 Linear；模型负责保存 Linear，Linear 自己负责导出最新 artifact 和释放运行资源。
 
 ## 当前支持能力
 
@@ -81,18 +81,13 @@ updated_mpo_artifact = linear.export_artifact()
 linear.close()
 ```
 
-`mpo_artifact` 是不同后端之间交换 MPO 数据的规范形式。把 `provider` 改为
-`tensorly` 或 `torchtt` 时，整体调用流程保持不变。`cutensornet` 不提供分解，需要
-接收其他后端生成或从磁盘加载的 artifact，并在 CUDA 设备上构造仅推理 Linear。
+`mpo_artifact` 是不同后端之间交换 MPO 数据的规范形式。把 `provider` 改为 `tensorly` 或 `torchtt` 时，整体调用流程保持不变。`cutensornet` 不提供分解，需要接收其他后端生成或从磁盘加载的 artifact，并在 CUDA 设备上构造仅推理 Linear。
 
-直接调用后端不支持的操作不会切换到其他后端。基类会抛出 `NotImplementedError`，
-例如 `CuTensorNetMPOBackend.decompose()` 的错误信息为
-`cutensornet/mpo does not support decomposition`。
+直接调用后端不支持的操作不会切换到其他后端。基类会抛出 `NotImplementedError`，例如 `CuTensorNetMPOBackend.decompose()` 的错误信息为 `cutensornet/mpo does not support decomposition`。
 
 ## 批量评测多个后端
 
-批量评测时可以使用 `list_backends()`、`capabilities` 和 `probe()`。下面的代码
-接续基础示例中的 `weight` 和 `spec`：
+批量评测时可以使用 `list_backends()`、`capabilities` 和 `probe()`。下面的代码接续基础示例中的 `weight` 和 `spec`：
 
 ```python
 from qcomp import get_backend, list_backends
@@ -106,14 +101,11 @@ for provider in list_backends("mpo"):
         mpo_artifact = backend.decompose(weight, spec)
 ```
 
-`capabilities` 描述后端自身支持哪些操作，与当前机器无关。`probe()` 检查依赖和硬件
-在当前环境中是否可用，并在不可用时给出原因。因此，一个后端可以支持推理，但因为
-当前机器缺少依赖而暂时不可用。
+`capabilities` 描述后端自身支持哪些操作，与当前机器无关。`probe()` 检查依赖和硬件在当前环境中是否可用，并在不可用时给出原因。因此，一个后端可以支持推理，但因为当前机器缺少依赖而暂时不可用。
 
 ## 新增计算后端
 
-新增计算库 Provider 时，只实现它真实支持的张量网络表示。假设要增加 `newlib` 的 MPO
-支持，目录为：
+新增计算库 Provider 时，只实现它真实支持的张量网络表示。假设要增加 `newlib` 的 MPO 支持，目录为：
 
 ```text
 backends/
@@ -139,8 +131,7 @@ from ...representations import make_mpo_artifact
 mpo_artifact = make_mpo_artifact(spec, cores)
 ```
 
-模型层构造时使用 `parse_mpo_artifact()` 读取相同格式。可选依赖在模块函数或对象构造
-阶段导入，不在 `qcomp` 顶层导入。
+模型层构造时使用 `parse_mpo_artifact()` 读取相同格式。可选依赖在模块函数或对象构造阶段导入，不在 `qcomp` 顶层导入。
 
 实现完成后，在 `registry.py` 注册真实组合：
 
@@ -151,13 +142,11 @@ _BACKENDS = {
 }
 ```
 
-对应测试至少覆盖 registry 查询、依赖延迟加载、capabilities、数值一致性，以及该后端
-实际支持的分解、训练和推理路径。
+对应测试至少覆盖 registry 查询、依赖延迟加载、capabilities、数值一致性，以及该后端实际支持的分解、训练和推理路径。
 
 ## 新增张量网络表示类型
 
-这里的“表示类型”指 MPO、Tucker、CP 等数学结构，不是 `torch.float16` 或
-`torch.float32`。以新增 Tucker 为例，按下面的依赖顺序实现：
+这里的“表示类型”指 MPO、Tucker、CP 等数学结构，不是 `torch.float16` 或 `torch.float32`。以新增 Tucker 为例，按下面的依赖顺序实现：
 
 1. 在 `representations/tucker.py` 定义 `TuckerSpec`、张量布局校验、artifact 构造与
    解析函数，以及 `reconstruct_tucker()`。artifact 的 `representation` 使用
@@ -187,5 +176,6 @@ _BACKENDS = {
 修改通用 backend 接口。等多种表示之间出现真实、稳定的 spec 共性后，再决定是否提取
 共享 Protocol。
 
-如果“数据类型”是指 `torch.dtype`，则不需要新增目录或 registry 项。artifact 中的
-tensors 会保留 dtype，各后端只需按照所依赖计算库的实际能力处理对应 dtype 和设备。
+如果“数据类型”是指 `torch.dtype`，则不需要新增 Provider 目录或 registry 项。
+artifact 中的 tensors 会保留 dtype；需要以不同于模型权重的浮点类型执行分解时，
+调用方在公共压缩接口中设置 `decomposition_dtype`，见 [workflows](../workflows/README.md)。

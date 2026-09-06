@@ -19,12 +19,14 @@ tokenizer，并提供模型结构操作。Transformers 仅在调用加载函数�
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import torch
 from torch import nn
 
 from .nn import TensorNetworkLinear
+from .runtime import configure_runtime
 
 if TYPE_CHECKING:
     from transformers import PreTrainedTokenizerBase
@@ -34,7 +36,7 @@ if TYPE_CHECKING:
 class ModelLoadConfig:
     """定义 Hugging Face Causal LM 的单设备加载配置。"""
 
-    model_name_or_path: str
+    model_name_or_path: str | None = None
     device: str = "cuda:0"
     dtype: torch.dtype = torch.bfloat16
     trust_remote_code: bool = False
@@ -46,7 +48,7 @@ class ModelLoadConfig:
             ValueError: 模型名称或路径为空时抛出。
         """
 
-        if not self.model_name_or_path:
+        if self.model_name_or_path is not None and not self.model_name_or_path:
             raise ValueError("model_name_or_path must not be empty")
 
 
@@ -58,11 +60,16 @@ class CausalLMResources:
     tokenizer: PreTrainedTokenizerBase
 
 
-def load_causal_lm(config: ModelLoadConfig) -> CausalLMResources:
+def load_causal_lm(
+    config: ModelLoadConfig | None = None,
+    *,
+    runtime_config_path: str | Path | None = None,
+) -> CausalLMResources:
     """通过 Transformers 通用接口加载单设备 Causal LM 和 tokenizer。
 
     参数：
-        config: 模型来源、目标设备、数据类型和远程代码配置。
+        config: 可选模型来源、目标设备、数据类型和远程代码配置。
+        runtime_config_path: 可选 runtime TOML；省略时读取项目默认配置。
 
     返回：
         已经移动到目标设备的模型及其 tokenizer。
@@ -72,20 +79,25 @@ def load_causal_lm(config: ModelLoadConfig) -> CausalLMResources:
         ModuleNotFoundError: 当前环境没有安装 Transformers 时抛出。
     """
 
-    device = torch.device(config.device)
+    runtime = configure_runtime(runtime_config_path)
+    load_config = config or ModelLoadConfig()
+    device = torch.device(load_config.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA model loading requested but CUDA is unavailable")
 
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
+    model_source = load_config.model_name_or_path or runtime.model_name_or_path
     tokenizer = AutoTokenizer.from_pretrained(
-        config.model_name_or_path,
-        trust_remote_code=config.trust_remote_code,
+        model_source,
+        trust_remote_code=load_config.trust_remote_code,
+        local_files_only=runtime.offline,
     )
     model = AutoModelForCausalLM.from_pretrained(
-        config.model_name_or_path,
-        torch_dtype=config.dtype,
-        trust_remote_code=config.trust_remote_code,
+        model_source,
+        torch_dtype=load_config.dtype,
+        trust_remote_code=load_config.trust_remote_code,
+        local_files_only=runtime.offline,
     )
     model.to(device)
     return CausalLMResources(model=model, tokenizer=tokenizer)

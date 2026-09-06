@@ -1,12 +1,13 @@
-# Evaluation 代码结构
+# evaluation
 
 `evaluation` 负责统一测量压缩结果和计算过程，不实现张量分解或模型层收缩。它接收
 representations 层定义的通用 artifact、workflows 层产生的模型压缩结果和 backends
 层提供的运行能力，输出可以直接记录、比较和汇总的指标。
 
-当前实现包含单个无 bias Linear 的压缩与性能评测、完整 Causal LM 的平均 loss 和
-perplexity 评测，以及基于 lm-eval 的 MMLU 总体 accuracy 评测。完整模型性能和 CUDA
-显存评测后续接入。
+当前实现包含单张量与完整模型的压缩指标、单个无 bias Linear 的独立性能 benchmark，以及基于 lm-eval 的
+通用标准 benchmark 评测。完整模型正常
+生成的时间、吞吐和 PyTorch CUDA 峰值显存由 `workflows/inference.py` 在真实推理过程
+中记录。
 
 ## 目录结构
 
@@ -14,9 +15,9 @@ perplexity 评测，以及基于 lm-eval 的 MMLU 总体 accuracy 评测。完�
 evaluation/
 ├── __init__.py       # 导出公开评测接口
 ├── compression.py    # 参数量、压缩率和重建误差
-├── mmlu.py           # 基于 lm-eval 的 MMLU accuracy
+├── lm_eval.py        # 通用 lm-eval task/group evaluator
+├── metrics.py        # 常用评测指标的优化方向
 ├── performance.py    # 分解、推理和训练 step 计时
-├── quality.py        # Causal LM 平均 loss 和 perplexity
 └── task.py           # 通用评测任务和动态结果
 ```
 
@@ -28,9 +29,10 @@ evaluation/
 - `model_compression_metrics`：统计压缩目标和全部未压缩模型参数。
 - `EvaluationTask`：用 `requested_metrics` 描述任务需要计算的指标名称。
 - `EvaluationResult`：保存任务、动态 metrics、样本数和可选 token 数。
-- `evaluate_causal_lm`：按照任务请求的 metrics 评测完整 Causal LM。
-- `MMLUEvaluationConfig`：定义 MMLU 执行参数，并通过 `task` 属性提供通用任务描述。
-- `evaluate_mmlu`：通过 lm-eval 评测 MMLU 并返回总体 accuracy。
+- `LMEvalConfig`：定义任一 lm-eval task 或 group 的执行参数。
+- `LMEvalEvaluator`：加载一次 task，并重复评测不同模型状态，动态返回 task metrics。
+- `MetricDirection`：限定指标是数值越高还是越低越好。
+- `metric_direction`、`resolve_metric_directions`：查询常用指标方向。
 - `TimingResult`：保存多次计时样本，并提供平均值和中位数。
 - `time_decomposition`：测量 backend 分解稠密权重的时间。
 - `time_inference`：临时构造 Linear 并测量 forward 时间。
@@ -98,7 +100,7 @@ tn_artifact.representation
 ## 模型级压缩指标
 
 `model_compression_metrics()` 接收仍安装着压缩层的模型和 `compress_model()` 返回的
-结果。未压缩部分从模型参数统计，目标层使用原始 Linear 和 canonical artifacts：
+结果（下例的 `model` 和 `compression_result` 由该调用提供）。未压缩部分从模型参数统计，目标层使用原始 Linear 和 canonical artifacts：
 
 ```python
 from qcomp.evaluation import model_compression_metrics
@@ -115,80 +117,70 @@ print(metrics.compressed_layers)
 这种口径包含 embedding、LayerNorm 和未压缩 Linear 等全部模型参数，同时避免执行
 backend 的内部对象影响压缩率。模型恢复后不再使用对应结果计算指标。
 
-## 评测任务与 Causal LM 质量
+## 指标方向
 
-`EvaluationTask` 决定使用哪个数据集、split、预处理配置和 requested metrics。
-具体 evaluator 只计算自己支持的指标，并返回统一的 `EvaluationResult`：
-
-```python
-from qcomp.evaluation import EvaluationTask, evaluate_causal_lm
-
-task = EvaluationTask(
-    name="wikitext-perplexity",
-    dataset="wikitext-2-raw-v1",
-    split="test",
-    preprocessing="causal-lm-blocks-2048",
-    requested_metrics=("loss", "perplexity"),
-)
-result = evaluate_causal_lm(
-    model,
-    evaluation_dataloader,
-    task,
-    device="cuda:0",
-)
-
-print(result.task.dataset)
-print(result.metrics["loss"])
-print(result.metrics["perplexity"])
-print(result.evaluated_examples)
-print(result.evaluated_tokens)
-```
-
-`evaluate_causal_lm()` 接收已经 tokenize 且包含 `labels` 的 DataLoader，按照移位后
-不等于 `-100` 的 labels 数量汇总平均 loss；perplexity 等于该 loss 的指数。调用
-期间模型处于 inference mode，结束或发生异常后恢复原来的 train/eval 状态。
-
-`EvaluationTask.requested_metrics` 保存准备计算的指标名称；
-`EvaluationResult.metrics` 保存实际计算出的指标值。同一个数据集可以建立不同的
-`EvaluationTask`，分别请求不同指标；data 层根据任务信息构造 DataLoader。
-
-## MMLU accuracy
-
-`evaluate_mmlu()` 将已经加载的模型和 tokenizer 包装为 lm-eval 的 HFLM。lm-eval
-负责 MMLU 数据读取、few-shot prompt、四个选项的概率评分和总体 accuracy 汇总：
+`metrics.py` 统一保存常用指标的优化方向，不维护 task 到主指标的映射。调用方选择
+需要比较的指标，再把解析结果传给 sensitivity workflow：
 
 ```python
-from qcomp.evaluation import MMLUEvaluationConfig, evaluate_mmlu
+from qcomp.evaluation import metric_direction, resolve_metric_directions
 
-config = MMLUEvaluationConfig(
-    num_fewshot=5,
-    batch_size=8,
-    max_length=4096,
-    limit=10,
-    seed=42,
+assert metric_direction("acc") == "higher"
+directions = resolve_metric_directions(("acc", "word_perplexity"))
+```
+
+当前注册 accuracy、exact match、F1、loss、perplexity 和 bits-per-byte 等常用名称。
+未知指标会明确报错，避免静默采用错误方向。
+
+## lm-eval 标准 benchmark
+
+`LMEvalEvaluator` 将模型和 tokenizer 包装为 lm-eval 的 HFLM。task 名称不绑定到
+qcomp 类：MMLU、HellaSwag、BoolQ、GSM8K 等 lm-eval 已注册 task 或 group 都复用同一个
+evaluator，只由 task 定义 prompt、request、filter 和 metrics。
+
+先使用 `load_causal_lm()` 取得 `resources`，再构造 evaluator：
+
+```python
+from qcomp import load_causal_lm
+from qcomp.evaluation import LMEvalConfig, LMEvalEvaluator
+
+resources = load_causal_lm()
+model, tokenizer = resources.model, resources.tokenizer
+
+evaluator = LMEvalEvaluator(
+    tokenizer,
+    LMEvalConfig(
+        task="mmlu",
+        num_fewshot=5,
+        batch_size=8,
+        max_length=4096,
+        limit=10,
+        seed=42,
+    ),
 )
-result = evaluate_mmlu(model, tokenizer, config)
+result = evaluator(model)
 
-print(result.metrics["accuracy"])
+print(result.metrics)
 print(result.evaluated_examples)
-print(result.task == config.task)
 ```
 
-当前机器已有的 MMLU 缓存可以直接复用：
+第一次调用会加载 lm-eval 的 task/group 定义，数据读取使用 `config/runtime.toml` 配置的 Hugging Face cache，
+并启用 lm-eval request cache；后续调用复用相同 task 和已缓存 request，只重新评测当前
+模型状态。默认 TOML 设置
+`offline = true`，因此不会检查 Hub；若确实要允许联网，使用另一份明确设置
+`offline = false` 的 runtime TOML。
 
-```bash
-export HF_HOME=/home/xls/workspace/datasets/huggingface
-export HF_DATASETS_CACHE="$HF_HOME/datasets"
-```
+这里不传入 `qcomp.data` 构造的训练 DataLoader。lm-eval 自己负责标准 benchmark 的
+数据、prompt、few-shot、request batching、答案 filter 和 metric 聚合。评测期间模型
+切换到 eval mode，完成或异常时恢复原状态。
 
-`limit` 接受正整数或 (0, 1) 内的样本比例，并分别作用于每个 MMLU 学科子任务。
-敏感性分析可以先设置较小的 limit 验证流程，再使用完整 test split。评测期间模型
-切换到 eval mode，结束或异常时恢复原状态。
+`limit` 接受正整数、(0, 1) 内的样本比例或 `None`（不限制）；`num_fewshot=None` 使用 task 默认值。结果指标名由 lm-eval 动态转换，例如
+`acc,none` 变为 `acc`，无需为每个数据集新增 evaluator 文件。
 
 ## 单层性能计时
 
-计时函数由 evaluation 创建临时 Linear、控制 warmup 和重复次数，并在 CUDA 操作前后
-同步设备。测量结束后会自动调用 `linear.close()` 释放后端运行资源。
+计时函数由 evaluation 控制 warmup 和重复次数，并在 CUDA 操作前后同步设备。
+推理和训练 step 测量结束后会自动调用 `linear.close()` 释放临时 Linear 的后端资源。
 
 ```python
 import torch
@@ -212,6 +204,8 @@ inference = time_inference(backend, tn_artifact, inputs)
 training = time_training_step(backend, tn_artifact, inputs, targets)
 ```
 
+`time_decomposition()` 不构造 Linear；只有推理和训练 step 计时会创建并关闭临时 Linear。
+
 三个函数的计时边界为：
 
 | 函数 | 计入时间 | 不计入时间 |
@@ -230,21 +224,24 @@ artifact、输入、warmup 和 repeats。
 
 ```python
 from qcomp import get_backend, list_backends
+from qcomp.evaluation import time_inference
 
 for provider in list_backends("mpo"):
     backend = get_backend(provider, "mpo")
     if not backend.probe().available:
         continue
     if backend.capabilities.inference:
-        result = time_inference(backend, tn_artifact, inputs)
+        runtime_inputs = inputs.to("cuda" if provider == "cutensornet" else inputs.device)
+        result = time_inference(backend, tn_artifact, runtime_inputs)
 ```
 
 `capabilities` 表示后端支持哪些操作，`probe()` 表示依赖和硬件在当前环境中是否可用。
 计时函数不会自动切换 backend，也不提供 fallback。
 
-## CUDA 显存评测
+## CUDA 显存边界
 
-CUDA 显存评测尚未实现。后续将沿用计时函数的执行边界，分别测量：
+`infer_causal_lm()` 已记录一次真实完整模型生成的 PyTorch peak allocated/reserved
+显存。后续独立 backend benchmark 将沿用计时函数的执行边界，分别测量：
 
 - 分解峰值显存；
 - Linear 构造后的驻留显存；
@@ -256,6 +253,6 @@ PyTorch allocator 指标和进程总 GPU 显存需要分开记录。后者用于
 
 ## 完整模型后续评测
 
-Causal LM 的 loss 和 perplexity 已由 `evaluate_causal_lm()` 提供。后续完整模型
-评测继续增加推理吞吐、训练 step、峰值显存、任务 accuracy 和报告汇总；这些功能
-仍由 evaluation 管理，不进入具体 backend。
+标准模型质量由 `LMEvalEvaluator` 评测，正常 inference workflow 返回真实生成吞吐和
+PyTorch 峰值显存。后续完整模型 benchmark 继续增加重复生成、训练 step、进程级峰值
+显存和跨阶段报告汇总；这些功能仍由 evaluation 管理，不进入具体 backend。

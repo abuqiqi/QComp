@@ -69,10 +69,10 @@ class EvaluationTests(unittest.TestCase):
             }
         ).to(torch.float64)
         plan = CompressionPlan(
-            representation="mpo",
             targets=(
                 CompressionTarget(
                     "target",
+                    "mpo",
                     MPOSpec.full_rank((2, 2), (2, 2)),
                 ),
             ),
@@ -80,8 +80,8 @@ class EvaluationTests(unittest.TestCase):
         result = compress_model(
             model,
             plan,
-            decomposition_backend=self.backend,
-            execution_backend=self.backend,
+            decomposition_backends={"mpo": self.backend},
+            execution_backends={"mpo": self.backend},
             trainable=False,
         )
 

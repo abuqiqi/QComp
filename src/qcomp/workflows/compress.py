@@ -21,6 +21,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
+import torch
 from torch import nn
 
 from ..backends import TensorNetworkBackend
@@ -96,6 +97,7 @@ def compress_linear(
     decomposition_backend: TensorNetworkBackend[SpecT],
     execution_backend: TensorNetworkBackend[Any],
     trainable: bool,
+    decomposition_dtype: torch.dtype | None = None,
 ) -> LinearCompressionResult:
     """分解目标 Linear，并安装执行后端构造的压缩模型层。
 
@@ -106,13 +108,24 @@ def compress_linear(
         decomposition_backend: 将稠密权重分解为 artifact 的后端。
         execution_backend: 根据 artifact 构造压缩模型层的后端。
         trainable: 压缩模型层的参数是否参与训练。
+        decomposition_dtype: 可选分解浮点类型；省略时使用原权重类型，结果恢复为原层类型。
 
     返回：
         包含通用 artifact 和模型替换记录的单层压缩结果。
     """
 
+    if decomposition_dtype is not None and not decomposition_dtype.is_floating_point:
+        raise ValueError("decomposition_dtype must be floating-point")
     linear = find_linear(model, target)
-    tn_artifact = decomposition_backend.decompose(linear.weight.detach(), spec)
+    weight = linear.weight.detach()
+    decomposition_weight = (
+        weight.to(dtype=decomposition_dtype)
+        if decomposition_dtype is not None
+        else weight
+    )
+    tn_artifact = decomposition_backend.decompose(decomposition_weight, spec)
+    if decomposition_dtype is not None:
+        tn_artifact = tn_artifact.to(device=weight.device, dtype=weight.dtype)
     compressed = execution_backend.build_linear(
         tn_artifact,
         trainable=trainable,
@@ -128,6 +141,7 @@ def compress_model(
     decomposition_backends: Mapping[str, TensorNetworkBackend[Any]],
     execution_backends: Mapping[str, TensorNetworkBackend[Any]],
     trainable: bool,
+    decomposition_dtype: torch.dtype | None = None,
 ) -> ModelCompressionResult:
     """按照压缩计划分解并替换多个 Linear。
 
@@ -137,6 +151,7 @@ def compress_model(
         decomposition_backends: 按表示名称提供分解后端的映射。
         execution_backends: 按表示名称提供执行后端的映射。
         trainable: 所有压缩模型层的参数是否参与训练。
+        decomposition_dtype: 各层分解使用的可选浮点类型；结果恢复为各层原始类型。
 
     返回：
         与计划目标顺序一致的逐层压缩结果。
@@ -182,6 +197,7 @@ def compress_model(
                     ],
                     execution_backend=execution_backends[target.representation],
                     trainable=trainable,
+                    decomposition_dtype=decomposition_dtype,
                 )
             )
     except Exception:

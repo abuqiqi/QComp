@@ -1,6 +1,6 @@
-# `representations` 代码结构
+# representations
 
-`qcomp.representations` 定义张量网络结构的数据格式和与计算库无关的数学操作。
+`representations` 定义张量网络结构的数据格式和与计算库无关的数学操作。
 不同 backend 将分解结果转换成这里规定的统一格式；`nn`、`evaluation` 和 `storage`
 只依赖该格式，不需要了解结果来自 TensorLy、torchTT 或其他计算库。
 

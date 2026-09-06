@@ -1,0 +1,7 @@
+[model]
+name_or_path = "../../models/Qwen3-8B"
+
+[huggingface]
+home = "../../datasets/huggingface"
+datasets_cache = "../../datasets/huggingface/datasets"
+offline = true

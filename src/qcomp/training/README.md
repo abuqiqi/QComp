@@ -41,15 +41,34 @@ finetune_tensor_network_causal_lm()
 
 ## 通用调用
 
+下面用小型 CPU 模型演示完整调用；真实 Causal LM 可使用同一入口和已 tokenize 的 DataLoader。
+
 ```python
+import torch
+from torch import nn
+from torch.utils.data import DataLoader
 from qcomp import CausalLMObjective, TrainingConfig, train_causal_lm
 
+class TinyLM(nn.Module):
+    """提供返回标量 loss 的最小训练模型。"""
+
+    def __init__(self):
+        """创建一个可训练参数。"""
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(1))
+
+    def forward(self, input_ids):
+        """根据输入 input_ids 计算演示损失。"""
+        return {"loss": (input_ids.float() * self.weight).square().mean()}
+
+model = TinyLM()
+train_dataloader = DataLoader([{"input_ids": torch.tensor([1, 2])}])
 result = train_causal_lm(
     model,
     train_dataloader,
-    trainable_parameter_names=("adapter.parameters",),
+    trainable_parameter_names=("weight",),
     objective=CausalLMObjective(),
-    config=TrainingConfig(max_steps=100, device="cuda:0"),
+    config=TrainingConfig(max_steps=2, device="cpu"),
     output_dir="artifacts/checkpoints/run-1",
 )
 ```

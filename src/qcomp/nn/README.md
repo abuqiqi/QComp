@@ -1,6 +1,6 @@
-# `nn` 代码结构
+# nn
 
-`qcomp.nn` 提供张量网络模型层的基类和公共行为。其中最上层的
+`nn` 提供张量网络模型层的基类和公共行为。其中最上层的
 `TensorNetworkLinear` 继承 PyTorch 的 `torch.nn.Module`，因此具体模型层可以直接
 放入 PyTorch 模型并参与训练或推理。
 
@@ -22,7 +22,7 @@ nn/
 
 `base.py` 和 `mpo.py` 两个文件处于不同的抽象层级：
 
-| 文件 | 适用范围 | 负责的内容 | 
+| 文件 | 适用范围 | 负责的内容 |
 |---|---|---|
 | `base.py` | 各种张量网络结构表示 | 定义 `TensorNetworkLinear`，统一 artifact 导出和运行时资源释放接口 |
 | `mpo.py` | 仅 MPO | 处理输入形状、MPO artifact 导出、canonical cores 参数注册 |
@@ -50,7 +50,7 @@ torch.nn.Module                         (PyTorch)
         └── TorchTTMPOLinear           (src/qcomp/backends/torchtt/mpo.py)
 ```
 
-TensorLy、torchTT 等第三方模型层使用自己的容器构造并管理张量网络参数，所以二者直接继承 `MPOLinearBase`。而 native 和 cuTensorNet 的 `Network` 没有这种参数容器，因此二者都由 qcomp 使用 canonical core 布局和 `nn.ParameterList` 保存参数，通过 `CanonicalMPOLinearBase` 复用 artifact 解析、参数注册和导出逻辑。
+TensorLy、torchTT 等第三方模型层使用自己的容器构造并管理张量网络参数，所以二者直接继承 `MPOLinearBase`。native 和 cuTensorNet 没有这种参数容器，因此二者都由 qcomp 使用 canonical core 布局和 `nn.ParameterList` 保存参数，通过 `CanonicalMPOLinearBase` 复用 artifact 解析、参数注册和导出逻辑。
 
 ## 新增张量网络表示
 

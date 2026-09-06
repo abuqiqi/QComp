@@ -88,11 +88,13 @@ class ModelTests(unittest.TestCase):
         auto_tokenizer.from_pretrained.assert_called_once_with(
             "/models/example",
             trust_remote_code=True,
+            local_files_only=True,
         )
         auto_model.from_pretrained.assert_called_once_with(
             "/models/example",
             torch_dtype=torch.float32,
             trust_remote_code=True,
+            local_files_only=True,
         )
         self.assertEqual(next(loaded_model.parameters()).device.type, "cpu")
 
