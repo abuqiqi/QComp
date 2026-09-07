@@ -32,50 +32,42 @@ python scripts/run_qwen3_mmlu_sensitivity.py \
 
 ## 模块架构
 
+按职责分为四组，下面展示模块分组，不表示调用顺序或依赖关系。
+
 ```text
-                        scripts/                         实验入口
-                           │
-                           ▼
-                        workflows/                       流程编排
-          ┌───────────────┼───────────────┐
-          │               │               │
-   sensitivity        compress        finetune · inference
-          │               │               │
-          ▼               ▼               ▼
-  ┌───────┴───────┐  ┌────┴────┐  ┌──────┴──────┐
-  │  model        │  │ backends│  │ training    │
-  │  (加载/替换)   │  │ (分解/  │  │ (训练循环/   │
-  │               │  │  构建)  │  │  checkpoint) │
-  └───────┬───────┘  └┬───┬───┘   └──────┬──────┘
-          │           │   │              │
-          │     ┌─────▼───▼──────┐       │
-          │     │ representations│  ┌────▼────┐
-          │     │ (结构 & artifact)│  │   nn    │
-          │     └───────────────┘  │ (PyTorch│
-          │                         │  模块)  │
-          │                         └────┬────┘
-          │                              │
-   ┌──────▼──────────────────────────────▼──────┐
-   │  evaluation  ·  data  ·  storage  ·  logging  ·  runtime
-   │  (评测)      (数据)   (读写)     (日志)      (配置)
-   └────────────────────────────────────────────┘
+实验入口    scripts
+
+流程编排    workflows
+            敏感性分析 · 压缩 · 微调 · 推理
+
+核心能力    representations    张量网络结构与统一 artifact
+            nn                 压缩层公共接口
+            backends           分解与压缩层实现
+            model              模型加载与层替换
+
+配套能力    data · training · evaluation
+            数据准备、通用训练与评测
+            storage · logging · runtime
+            产物读写、日志与运行配置
 ```
+
+压缩时，workflow 调用分解后端把稠密权重转换为统一 artifact，再由执行后端构建压缩层，最后通过 `model` 安装到模型中。分解后端与执行后端可以分别选择。
 
 ## 模块说明
 
-| 模块 | 职责 | 被谁调用 |
-|------|------|----------|
-| **representations** | 张量网络结构定义（MPO 等）与统一 artifact | backends, evaluation |
-| **nn** | 压缩层的 PyTorch 模块接口 | backends, training |
-| **backends** | 分解 & 构建适配（native / TensorLy / torchTT / cuTensorNet） | workflows |
-| **model** | 加载 Causal LM，列出 / 替换 / 恢复 Linear 层 | workflows |
-| **data** | 训练数据加载（HF / JSONL / 本地）与 DataLoader | workflows.training |
-| **training** | 通用训练循环、可插拔 loss、checkpoint | workflows.finetune |
-| **evaluation** | 压缩指标、lm-eval 评测、推理性能 benchmark | workflows |
-| **workflows** | 敏感性、压缩、微调、推理的完整编排 | scripts |
-| **storage** | artifact 读写与目录管理 | workflows |
-| **logging** | JSON Lines 实验事件记录 | workflows |
-| **runtime** | TOML 配置、离线环境 | 全局 |
+| 模块 | 职责 | 主要调用方 / 使用方 |
+|------|------|--------------------|
+| **representations** | 张量网络结构定义（MPO 等）、数学操作与统一 artifact | backends, nn, evaluation, storage, workflows, scripts |
+| **nn** | 压缩层的 PyTorch 公共接口与基类 | backends, model |
+| **backends** | 分解、构建与具体执行实现（native / TensorLy / torchTT / cuTensorNet；能力因后端而异） | workflows.compress, workflows.sensitivity, evaluation, scripts |
+| **model** | 加载 Causal LM，查找 / 列出 / 替换 / 恢复层 | workflows.compress, workflows.sensitivity, workflows.finetune, scripts |
+| **data** | 数据加载（HF / JSONL / 本地）、文本预处理与 DataLoader 构建 | scripts / 库调用方 |
+| **training** | 通用训练循环、可插拔 loss、checkpoint | workflows.finetune / 库调用方 |
+| **evaluation** | 压缩指标、lm-eval 评测、性能 benchmark | workflows.sensitivity, scripts / 库调用方 |
+| **workflows** | 敏感性、压缩、微调、推理的流程编排 | scripts / 库调用方 |
+| **storage** | artifact 读写与目录管理 | workflows.sensitivity, scripts |
+| **logging** | JSON Lines 实验事件记录 | workflows.sensitivity, scripts |
+| **runtime** | TOML 配置、离线环境 | model, data, evaluation.lm_eval, workflows.sensitivity |
 
 ## 最小示例
 
