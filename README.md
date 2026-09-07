@@ -55,19 +55,19 @@ python scripts/run_qwen3_mmlu_sensitivity.py \
 
 ## 模块说明
 
-| 模块 | 职责 | 主要调用方 / 使用方 |
-|------|------|--------------------|
-| **representations** | 张量网络结构定义（MPO 等）、数学操作与统一 artifact | backends, nn, evaluation, storage, workflows, scripts |
-| **nn** | 压缩层的 PyTorch 公共接口与基类 | backends, model |
-| **backends** | 分解、构建与具体执行实现（native / TensorLy / torchTT / cuTensorNet；能力因后端而异） | workflows.compress, workflows.sensitivity, evaluation, scripts |
-| **model** | 加载 Causal LM，查找 / 列出 / 替换 / 恢复层 | workflows.compress, workflows.sensitivity, workflows.finetune, scripts |
-| **data** | 数据加载（HF / JSONL / 本地）、文本预处理与 DataLoader 构建 | scripts / 库调用方 |
-| **training** | 通用训练循环、可插拔 loss、checkpoint | workflows.finetune / 库调用方 |
-| **evaluation** | 压缩指标、lm-eval 评测、性能 benchmark | workflows.sensitivity, scripts / 库调用方 |
-| **workflows** | 敏感性、压缩、微调、推理的流程编排 | scripts / 库调用方 |
-| **storage** | artifact 读写与目录管理 | workflows.sensitivity, scripts |
-| **logging** | JSON Lines 实验事件记录 | workflows.sensitivity, scripts |
-| **runtime** | TOML 配置、离线环境 | model, data, evaluation.lm_eval, workflows.sensitivity |
+| 模块 | 职责 |
+|------|------|
+| **representations** | 张量网络结构定义（MPO 等）、数学操作与统一 artifact |
+| **nn** | 压缩层的 PyTorch 公共接口与基类 |
+| **backends** | 分解、构建与具体执行实现（native / TensorLy / torchTT / cuTensorNet；能力因后端而异） |
+| **model** | 加载 Causal LM，查找 / 列出 / 替换 / 恢复层 |
+| **data** | 数据加载（HF / JSONL / 本地）、文本预处理与 DataLoader 构建 |
+| **training** | 通用训练循环、可插拔 loss、checkpoint |
+| **evaluation** | 压缩指标、lm-eval 评测、性能 benchmark |
+| **workflows** | 敏感性、压缩、微调、推理的流程编排 |
+| **storage** | artifact 读写与目录管理 |
+| **logging** | JSON Lines 实验事件记录 |
+| **runtime** | TOML 配置、离线环境 |
 
 ## 最小示例
 
