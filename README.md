@@ -20,15 +20,52 @@ python -m pip install -e ".[all]"
 
 ```bash
 # Qwen3 逐层敏感性分析（默认 MMLU，rank 96）
-python scripts/run_qwen3_mmlu_sensitivity.py --limit 1 --max-layers 1
+python scripts/run_qwen3_sensitivity.py --limit 1 --max-layers 1
 #   --limit 1       每个评测 task 只取 1 个样本（快速验证）
 #   --max-layers 1  只分析第 1 层（配合 --start-index 可分段运行）
 
 # 更换评测 task 时需显式指定指标
-python scripts/run_qwen3_mmlu_sensitivity.py \
+python scripts/run_qwen3_sensitivity.py \
   --task gsm8k --metric exact_match_strict_match \
   --limit 1 --max-layers 1
 ```
+
+敏感性脚本在模型加载前创建实验目录，自动保存 `console.log`（终端输出与异常）、`events.jsonl`（结构化记录）和 `report.md`（报告），终端仍同步显示进度。每次运行使用独立时间戳目录；指定 `--output` 时 `console.log` 和默认 `events.jsonl` 跟随报告目录。后台运行 BoolQ 全量，无需指定日志路径：
+
+```bash
+nohup python -u scripts/run_qwen3_sensitivity.py --task boolq --metric acc --num-fewshot 0 --limit none >/dev/null 2>&1 &
+```
+
+使用 `--sample-start-index` 按题目分段（从 0 开始），`--limit` 是从该位置取的题数；`--limit none` 表示测到末尾。它与选择 Linear 模块的 `--start-index` 相互独立。例如先评测 HellaSwag 前 8,000 题，再只评测剩余题目：
+
+```bash
+python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num-fewshot 0 --limit 8000
+python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num-fewshot 0 --sample-start-index 8000 --limit none
+```
+
+非零题目起点仅支持单 task，limit 使用整数或 none，越界起点会报错。分段沿用缓存数据的原始评测顺序；每段分别评测基线和所选 Linear，日志记录题目起点，报告记录实际范围与样本数。两段分别输出结果，暂不自动合并。为了与一次性全量评测使用相同 prompt，分段示例固定 `--num-fewshot 0`；非零 few-shot 的示例抽样可能随分段而变化。
+
+敏感性实验结束后自动生成热力图，横轴为 Transformer 块号，纵轴为七类投影模块。每个比较指标输出一张 `<报告名>-<指标>-heatmap.png`，与 Markdown 报告保存在同一实验目录，并嵌入报告末尾；默认目录为 `artifacts/evaluations/<实验名>/<时间戳>/`，使用 `--output` 时跟随该报告路径。准确率和 exact-match 的掉点乘以 100，以百分点（pp）表示；困惑度等使用原始单位。`--heatmap-max` 默认 10，超出色标范围的格子标真实数值，负值表示改善，未评测格显示灰色。绘图依赖可通过 `python -m pip install -e ".[plotting]"` 安装，`[all]` 也包含此依赖。
+
+已有完整实验可直接补图，无需加载模型；从项目根目录运行：
+
+```bash
+python scripts/run_qwen3_sensitivity.py \
+  --plot-only artifacts/evaluations/qwen3-mmlu-mpo-rank-96/20260905T102434Z/events.jsonl
+```
+
+联合压缩从零起始编号 `25`（含）到最后一个 Transformer block 的全部 attention / MLP proj，并用 Alpaca 只微调 MPO 参数：
+
+```bash
+python scripts/run_alpaca_finetune.py \
+  --start-layer 25 --rank 96 \
+  --num-train-epochs 1 --batch-size 1 --grad-accum-steps 4 \
+  --artifact-root artifacts/qwen3-layer25-rank96
+```
+
+脚本依次评测原模型、联合压缩后的模型和微调后的模型。`--end-layer` 指定不包含的结束 block 编号；省略则到模型末尾。默认使用全部训练文本和全量评测；快速验证可追加 `--max-blocks 8 --eval-limit 1 --eval-batch-size 1`，其中 `max-blocks` 是训练 token block 数量。
+
+产物目录包含三阶段结果 `summary.json`、配置 `experiment_config.json`、日志 `experiment.jsonl`、`decompositions/initial/` 和 `decompositions/finetuned/` 下的逐层 artifact，以及 `checkpoints/` 下的训练状态。产物需配合原始模型和相同执行后端使用。断点续训时，在原命令上追加 `--resume-from <checkpoint路径>`，保持模型、数据、层范围、rank、后端及训练配置一致；续训仍会先评测原模型和初始压缩模型，再由训练接口恢复 checkpoint。
 
 ## 模块架构
 

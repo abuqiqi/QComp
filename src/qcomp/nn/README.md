@@ -1,13 +1,8 @@
 # nn
 
-`nn` 提供张量网络模型层的基类和公共行为。其中最上层的
-`TensorNetworkLinear` 继承 PyTorch 的 `torch.nn.Module`，因此具体模型层可以直接
-放入 PyTorch 模型并参与训练或推理。
+`nn` 提供张量网络模型层的基类和公共行为。其中最上层的 `TensorNetworkLinear` 继承 PyTorch 的 `torch.nn.Module`，因此具体模型层可以直接放入 PyTorch 模型并参与训练或推理。
 
-`nn` 不实现某个计算库的完整模型层。`backends` 中的 `NativeMPOLinear`、
-`TensorLyMPOLinear` 等具体模型层继承这里的基类，并实现各自的张量收缩。模型替换、
-训练和 evaluation 可以通过 `TensorNetworkLinear` 使用这些具体实现，而不依赖某个
-Provider。
+`nn` 不实现某个计算库的完整模型层。`backends` 中的 `NativeMPOLinear`、`TensorLyMPOLinear` 等具体模型层继承这里的基类，并实现各自的张量收缩。模型替换、训练和 evaluation 可以通过 `TensorNetworkLinear` 使用这些具体实现，而不依赖某个 Provider。
 
 当前只实现无 bias 的 MPO Linear。权重分解和计算库选择由 `backends` 负责，张量网络的数据格式和数学定义由 `representations` 负责，本目录不重复这些功能。
 

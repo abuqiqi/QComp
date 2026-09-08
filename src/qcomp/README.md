@@ -1,12 +1,8 @@
 # `qcomp` 源码结构
 
-本目录是 `qcomp` Python 包的源码入口。`runtime.py`、`model.py`、`logging.py` 和 `storage.py`
-提供跨模块使用的通用功能；各子目录分别负责张量网络表示、PyTorch 模型层、计算后端、训练、workflow 和评测。
+本目录是 `qcomp` Python 包的源码入口。`runtime.py`、`model.py`、`logging.py` 和 `storage.py` 提供跨模块使用的通用功能；各子目录分别负责张量网络表示、PyTorch 模型层、计算后端、训练、workflow 和评测。
 
-当前代码支持单个或多个无 bias Linear 的 MPO 分解、混合表示压缩计划、原子模型层
-替换与恢复，并能使用外部 backend 和 evaluator 执行多指标敏感性分析。项目也支持
-通过 `run_sensitivity_experiment()` 自动组装逐层 lm-eval 实验，执行
-Causal LM 正常生成，以及对已经安装一个或多个张量网络层的模型进行微调和断点续训。
+当前代码支持单个或多个无 bias Linear 的 MPO 分解、混合表示压缩计划、原子模型层替换与恢复，并能使用外部 backend 和 evaluator 执行多指标敏感性分析。项目也支持通过 `run_sensitivity_experiment()` 自动组装逐层 lm-eval 实验，执行 Causal LM 正常生成，以及对已经安装一个或多个张量网络层的模型进行微调和断点续训。
 
 ## 目录结构
 
@@ -31,9 +27,7 @@ qcomp/
 
 ### `logging.py`
 
-`log_event(path, event, **fields)` 自动创建父目录，将 UTC 时间、事件名称和
-`fields` 对象序列化为一行 UTF-8 JSON，追加写入后关闭文件。字段使用 JSON 支持的
-类型及有限数值；同一文件保留历次记录，每轮实验可选择独立文件名。
+`log_event(path, event, **fields)` 自动创建父目录，将 UTC 时间、事件名称和 `fields` 对象序列化为一行 UTF-8 JSON，追加写入后关闭文件。字段使用 JSON 支持的类型及有限数值；同一文件保留历次记录，每轮实验可选择独立文件名。
 
 ```python
 from qcomp import SensitivityCaseResult, log_event, sensitivity_case_record
@@ -54,20 +48,15 @@ log_event(
 )
 ```
 
-将 `on_case_result` 传给 `analyze_sensitivity()`，即可在每个 case 恢复模型后记录
-质量指标、退化量、逐层压缩率与误差、模型压缩率及耗时。
+将 `on_case_result` 传给 `analyze_sensitivity()`，即可在每个 case 恢复模型后记录质量指标、退化量、逐层压缩率与误差、模型压缩率及耗时。
 
 ### `runtime.py`
 
-`runtime.py` 读取项目根目录的 `config/runtime.toml`，统一提供模型来源、Hugging Face
-home、datasets cache 和离线模式。`load_runtime_config()` 只解析配置；模型、数据或
-lm-eval 开始 I/O 时调用 `configure_runtime()` 应用当前进程环境。
+`runtime.py` 读取项目根目录的 `config/runtime.toml`，统一提供模型来源、Hugging Face home、datasets cache 和离线模式。`load_runtime_config()` 只解析配置；模型、数据或 lm-eval 开始 I/O 时调用 `configure_runtime()` 应用当前进程环境。
 
 ### `model.py`
 
-`model.py` 使用 Transformers 通用接口加载单设备 Causal LM 和 tokenizer，并
-操作已经加载的 PyTorch 模型结构。省略模型来源时读取项目 `config/runtime.toml`；
-Transformers 在调用加载函数时才会导入。
+`model.py` 使用 Transformers 通用接口加载单设备 Causal LM 和 tokenizer，并操作已经加载的 PyTorch 模型结构。省略模型来源时读取项目 `config/runtime.toml`；Transformers 在调用加载函数时才会导入。
 
 主要公共对象：
 
@@ -97,8 +86,7 @@ tokenizer = resources.tokenizer
 
 ### `storage.py`
 
-`storage.py` 负责持久化 representations 层定义的通用
-`TensorNetworkArtifact`，并根据显式根目录提供标准运行产物路径。
+`storage.py` 负责持久化 representations 层定义的通用 `TensorNetworkArtifact`，并根据显式根目录提供标准运行产物路径。
 
 主要公共对象：
 

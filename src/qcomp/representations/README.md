@@ -1,11 +1,8 @@
 # representations
 
-`representations` 定义张量网络结构的数据格式和与计算库无关的数学操作。
-不同 backend 将分解结果转换成这里规定的统一格式；`nn`、`evaluation` 和 `storage`
-只依赖该格式，不需要了解结果来自 TensorLy、torchTT 或其他计算库。
+`representations` 定义张量网络结构的数据格式和与计算库无关的数学操作。不同 backend 将分解结果转换成这里规定的统一格式；`nn`、`evaluation` 和 `storage` 只依赖该格式，不需要了解结果来自 TensorLy、torchTT 或其他计算库。
 
-当前只实现 MPO。实际分解算法位于 `backends`，本目录负责描述 MPO 结构、校验结果、
-转换 artifact 和重建稠密权重。
+当前只实现 MPO。实际分解算法位于 `backends`，本目录负责描述 MPO 结构、校验结果、转换 artifact 和重建稠密权重。
 
 ## 目录结构
 
@@ -28,8 +25,7 @@ representations/
 
 ## `MPOSpec` 和 `TensorNetworkArtifact` 的区别
 
-`MPOSpec` 是分解前的结构配置，只描述希望得到什么形状的 MPO，不保存实际参数。
-`TensorNetworkArtifact` 是分解后的结果，包含实际 cores 及其结构元数据。
+`MPOSpec` 是分解前的结构配置，只描述希望得到什么形状的 MPO，不保存实际参数。`TensorNetworkArtifact` 是分解后的结果，包含实际 cores 及其结构元数据。
 
 ```text
 MPOSpec
@@ -52,8 +48,7 @@ core layout    = [left_rank, out_mode, in_mode, right_rank]
 
 ## 基础用法
 
-backend 分解得到通用 artifact 后，可以直接使用 representations 层检查其结构或重建
-稠密权重：
+backend 分解得到通用 artifact 后，可以直接使用 representations 层检查其结构或重建稠密权重：
 
 ```python
 import torch

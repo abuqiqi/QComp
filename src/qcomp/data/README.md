@@ -1,10 +1,8 @@
 # data
 
-`data` 负责定位本地训练数据，并把文本文档转换成可直接交给 training 的 PyTorch
-DataLoader。它不定义 benchmark prompt、答案处理或指标；标准评测由 lm-eval 负责。
+`data` 负责定位本地训练数据，并把文本文档转换成可直接交给 training 的 PyTorch DataLoader。它不定义 benchmark prompt、答案处理或指标；标准评测由 lm-eval 负责。
 
-所有 Hugging Face I/O 默认读取项目根目录的 `config/runtime.toml`。当前默认配置严格
-离线，只读取本地 cache；`datasets` 依赖在真正加载数据时才导入。
+所有 Hugging Face I/O 默认读取项目根目录的 `config/runtime.toml`。当前默认配置严格离线，只读取本地 cache；`datasets` 依赖在真正加载数据时才导入。
 
 ## 数据来源
 
@@ -24,8 +22,7 @@ source = HuggingFaceDatasetSource(
 dataset = load_dataset_source(source)
 ```
 
-JSONL 和磁盘 Dataset 使用相同入口。以下代码先创建示例文件和 Dataset 目录，
-来源对象构造时就会检查路径是否存在；相对路径按当前工作目录解析：
+JSONL 和磁盘 Dataset 使用相同入口。以下代码先创建示例文件和 Dataset 目录，来源对象构造时就会检查路径是否存在；相对路径按当前工作目录解析：
 
 ```python
 from pathlib import Path
@@ -43,9 +40,7 @@ DatasetDict 必须指定 split；单个 Dataset 会直接返回。
 
 ## 构造训练 DataLoader
 
-`build_causal_lm_dataloader()` 读取一个明确的文本字段，对每篇文档 tokenize 并追加
-EOS，把连续 token 流切成 block，然后使用 tokenizer 的标准 padding 构造 batch。
-`labels` 是 `input_ids` 的副本，padding 位置为 `-100`。
+`build_causal_lm_dataloader()` 读取一个明确的文本字段，对每篇文档 tokenize 并追加 EOS，把连续 token 流切成 block，然后使用 tokenizer 的标准 padding 构造 batch。`labels` 是 `input_ids` 的副本，padding 位置为 `-100`。
 
 ```python
 from qcomp import (
@@ -76,12 +71,9 @@ dataloader = build_causal_lm_dataloader(
 )
 ```
 
-`max_blocks` 用于部分训练数据准备；达到数量后停止读取和 tokenize 后续记录。
-`drop_remainder=True` 会丢弃最后一个不足 `max_length` 的 block。启用 shuffle 时，
-sampler 使用 `seed + epoch` 生成可复现顺序，供训练循环和断点续训调用。
+`max_blocks` 用于部分训练数据准备；达到数量后停止读取和 tokenize 后续记录。`drop_remainder=True` 会丢弃最后一个不足 `max_length` 的 block。启用 shuffle 时，sampler 使用 `seed + epoch` 生成可复现顺序，供训练循环和断点续训调用。
 
-接续上例，将构造结果交给训练接口。这里选取模型的第一个具名参数进行演示；
-实际实验应明确指定需要更新的参数：
+接续上例，将构造结果交给训练接口。这里选取模型的第一个具名参数进行演示；实际实验应明确指定需要更新的参数：
 
 ```python
 from qcomp import CausalLMObjective, TrainingConfig, train_causal_lm
@@ -96,5 +88,4 @@ result = train_causal_lm(
 )
 ```
 
-lm-eval 使用独立的数据处理边界：它的 task 负责 benchmark 数据、prompt、request
-batching、答案 filter 和 metrics，因此 `LMEvalEvaluator` 不接收训练 DataLoader。
+lm-eval 使用独立的数据处理边界：它的 task 负责 benchmark 数据、prompt、request batching、答案 filter 和 metrics，因此 `LMEvalEvaluator` 不接收训练 DataLoader。
