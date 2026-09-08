@@ -11,7 +11,7 @@
 from __future__ import annotations
 
 import sys
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import Any
 import unittest
 from unittest.mock import Mock, patch
@@ -164,6 +164,67 @@ class LMEvalEvaluatorTests(unittest.TestCase):
         self.assertEqual(result.evaluated_examples, 12)
         self.assertEqual(result.task.preprocessing, "lm-eval-default-shot")
 
+    def test_sample_ranges_do_not_overlap_and_repeat_consistently(self) -> None:
+        """前缀与后续范围覆盖所有题目，重复评测沿用相同索引并绕过缓存。"""
+        task = SimpleNamespace(eval_docs=list(range(10)))
+        calls = []
+
+        def evaluate(**kwargs: Any) -> dict[str, Any]:
+            """记录选择的题目，返回实际评测数量。"""
+            indices = kwargs["samples"]
+            chosen = indices["boolq"] if indices else task.eval_docs[:kwargs["limit"]]
+            calls.append((list(chosen), kwargs))
+            return {
+                "results": {"boolq": {"acc,none": 0.5}},
+                "n-samples": {"boolq": {"effective": len(chosen)}},
+            }
+
+        modules = _install_fake_lm_eval(
+            evaluate, loaded={"tasks": {"boolq": task}},
+            wrapper_calls=[], load_calls=[],
+        )
+        model = nn.Linear(2, 2, bias=False)
+        with patch.dict(sys.modules, modules):
+            LMEvalEvaluator(object(), LMEvalConfig(task="boolq", limit=6))(model)
+            tail = LMEvalEvaluator(
+                object(), LMEvalConfig(task="boolq", sample_start_index=6)
+            )
+            result = tail(model)
+            tail(model)
+            bounded = LMEvalEvaluator(
+                object(), LMEvalConfig(task="boolq", sample_start_index=6, limit=2)
+            )(model)
+            clipped = LMEvalEvaluator(
+                object(), LMEvalConfig(task="boolq", sample_start_index=6, limit=100)
+            )(model)
+        self.assertEqual(calls[0][0] + calls[1][0], list(range(10)))
+        self.assertEqual(calls[1][0], calls[2][0])
+        self.assertEqual(calls[3][0], [6, 7])
+        for _, kwargs in calls[1:]:
+            self.assertIsNone(kwargs["limit"])
+            self.assertFalse(kwargs["cache_requests"])
+        self.assertEqual(result.evaluated_examples, 4)
+        self.assertEqual(bounded.evaluated_examples, 2)
+        self.assertEqual(clipped.evaluated_examples, 4)
+        self.assertIn("samples-6:10", result.task.preprocessing)
+
+    def test_sample_range_rejects_groups_and_out_of_bounds(self) -> None:
+        """拒绝 group 偏移及空范围，避免空索引触发全量评测。"""
+        for loaded, start, message in (
+            ({"groups": {"boolq": object()}}, 1, "single task"),
+            ({"tasks": {"boolq": SimpleNamespace(eval_docs=[1, 2])}}, 2, "outside"),
+        ):
+            evaluate = Mock()
+            modules = _install_fake_lm_eval(
+                evaluate, loaded=loaded, wrapper_calls=[], load_calls=[],
+            )
+            with patch.dict(sys.modules, modules):
+                with self.assertRaisesRegex(ValueError, message):
+                    LMEvalEvaluator(
+                        object(), LMEvalConfig(task="boolq", sample_start_index=start)
+                    )(nn.Linear(2, 2, bias=False))
+            evaluate.assert_not_called()
+
     def test_failure_restores_model_state(self) -> None:
         """lm-eval 抛出异常时仍恢复模型原来的训练状态。"""
 
@@ -190,6 +251,10 @@ class LMEvalEvaluatorTests(unittest.TestCase):
             {"task": "x", "max_length": 0},
             {"task": "x", "limit": 0},
             {"task": "x", "limit": 1.0},
+            {"task": "x", "sample_start_index": -1},
+            {"task": "x", "sample_start_index": True},
+            {"task": "x", "sample_start_index": 1.5},
+            {"task": "x", "sample_start_index": 1, "limit": 0.5},
         )
         for values in invalid:
             with self.subTest(values=values):

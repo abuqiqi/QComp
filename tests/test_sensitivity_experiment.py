@@ -132,6 +132,7 @@ class SensitivityExperimentTests(unittest.TestCase):
             )
             run_dirs = sorted((root / "evaluations/test-task").iterdir())
             self.assertEqual(len(run_dirs), 2)
+            self.assertEqual(result.report_path, run_dirs[0] / "layers-001-001.md")
             records = []
             for run_dir in run_dirs:
                 self.assertRegex(run_dir.name, r"^\d{8}T\d{6}\+0800$")
