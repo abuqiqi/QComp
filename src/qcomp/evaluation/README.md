@@ -165,7 +165,7 @@ print(result.evaluated_examples)
 ```
 
 第一次调用会加载 lm-eval 的 task/group 定义，数据读取使用 `config/runtime.toml` 配置的 Hugging Face cache，
-并启用 lm-eval request cache；后续调用复用相同 task 和已缓存 request，只重新评测当前
+起点为 0 时启用 lm-eval request cache；后续调用复用相同 task 和已缓存 request，只重新评测当前
 模型状态。默认 TOML 设置
 `offline = true`，因此不会检查 Hub；若确实要允许联网，使用另一份明确设置
 `offline = false` 的 runtime TOML。
@@ -176,6 +176,11 @@ print(result.evaluated_examples)
 
 `limit` 接受正整数、(0, 1) 内的样本比例或 `None`（不限制）；`num_fewshot=None` 使用 task 默认值。结果指标名由 lm-eval 动态转换，例如
 `acc,none` 变为 `acc`，无需为每个数据集新增 evaluator 文件。
+
+`sample_start_index` 是从 0 开始的题目起点，默认 0。非零时仅支持单 task，
+`limit` 为从起点读取的正整数题数或 `None`（读到末尾），起点越界会报错。
+该模式通过 lm-eval 的显式样本索引选择题目，禁用不区分样本范围的 request cache；
+返回实际选中题数，`preprocessing` 记录左闭右开的题目范围。
 
 ## 单层性能计时
 

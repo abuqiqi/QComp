@@ -34,6 +34,7 @@ class LMEvalConfig:
     limit: int | float | None = None
     seed: int = 42
     apply_chat_template: bool = False
+    sample_start_index: int = 0
 
     def __post_init__(self) -> None:
         """规范 task 名称并校验执行参数。
@@ -47,6 +48,14 @@ class LMEvalConfig:
         if not task:
             raise ValueError("task must not be empty")
         object.__setattr__(self, "task", task)
+        if (
+            not isinstance(self.sample_start_index, int)
+            or isinstance(self.sample_start_index, bool)
+            or self.sample_start_index < 0
+        ):
+            raise ValueError("sample_start_index must be a non-negative integer")
+        if self.sample_start_index and isinstance(self.limit, float):
+            raise ValueError("sample_start_index requires an integer limit or None")
         if self.num_fewshot is not None and self.num_fewshot < 0:
             raise ValueError("num_fewshot must be non-negative")
         if self.batch_size <= 0 or self.max_length <= 0:
@@ -209,6 +218,7 @@ class LMEvalEvaluator:
         self.runtime_config_path = runtime_config_path
         self._task_manager: Any | None = None
         self._task: Any | None = None
+        self._samples: dict[str, list[int]] | None = None
 
     def _prepare_task(self) -> tuple[Any, Any]:
         """首次从本地缓存加载 task，后续复用同一对象。
@@ -218,6 +228,7 @@ class LMEvalEvaluator:
 
         异常：
             KeyError: TaskManager 没有返回请求名称时抛出。
+            ValueError: 非零题目起点用于 group 或超出评测集时抛出。
         """
 
         if self._task_manager is None:
@@ -231,6 +242,23 @@ class LMEvalEvaluator:
                 task = loaded.get("tasks", {}).get(self.config.task)
             if task is None:
                 raise KeyError(f"lm-eval did not load task {self.config.task!r}")
+            if self.config.sample_start_index:
+                if self.config.task not in loaded.get("tasks", {}):
+                    raise ValueError(
+                        "sample_start_index requires a single task, not a group"
+                    )
+                count = len(task.eval_docs)
+                start = self.config.sample_start_index
+                if start >= count:
+                    raise ValueError(
+                        f"sample_start_index {start} is outside {count} evaluation samples"
+                    )
+                stop = (
+                    count
+                    if self.config.limit is None
+                    else min(count, start + self.config.limit)
+                )
+                self._samples = {self.config.task: list(range(start, stop))}
             self._task_manager = task_manager
             self._task = task
         return self._task_manager, self._task
@@ -271,8 +299,10 @@ class LMEvalEvaluator:
                 tasks=[task],
                 task_manager=task_manager,
                 num_fewshot=self.config.num_fewshot,
-                limit=self.config.limit,
-                cache_requests=True,
+                limit=self.config.limit if self._samples is None else None,
+                samples=self._samples,
+                # lm-eval 的请求缓存键不含 samples，偏移评测须禁用读写以免串题。
+                cache_requests=self._samples is None,
                 bootstrap_iters=0,
                 apply_chat_template=self.config.apply_chat_template,
                 log_samples=False,
@@ -290,16 +320,24 @@ class LMEvalEvaluator:
             raw_result,
             self.config.task,
         )
+        if self._samples is not None and evaluated_examples != len(
+            self._samples[self.config.task]
+        ):
+            raise ValueError("evaluated sample count differs from requested sample range")
         fewshot = (
             "default"
             if self.config.num_fewshot is None
             else str(self.config.num_fewshot)
         )
+        preprocessing = f"lm-eval-{fewshot}-shot"
+        if self._samples is not None:
+            start = self.config.sample_start_index
+            preprocessing += f"-samples-{start}:{start + evaluated_examples}"
         evaluation_task = EvaluationTask(
             name=self.config.task,
             dataset=self.config.task,
             split="lm-eval",
-            preprocessing=f"lm-eval-{fewshot}-shot",
+            preprocessing=preprocessing,
             requested_metrics=tuple(metrics),
         )
         return EvaluationResult(
