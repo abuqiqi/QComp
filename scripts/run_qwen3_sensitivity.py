@@ -36,7 +36,7 @@ from qcomp import (
     run_sensitivity_experiment,
 )
 from qcomp.logging import capture_console
-from qcomp.evaluation import LMEvalConfig
+from qcomp.evaluation import LMEvalConfig, lm_eval_dataset_size
 from qcomp.workflows import sensitivity_case_record
 
 
@@ -126,6 +126,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
+        allow_abbrev=False,
         description="逐层运行 Qwen3-8B MPO 的 lm-eval 敏感性分析。"
     )
     parser.add_argument(
@@ -143,8 +144,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--rank", type=int, default=96)
     parser.add_argument("--decomposition-provider", default="tensorly")
     parser.add_argument("--execution-provider", default="tensorly")
-    parser.add_argument("--start-index", type=int, default=0, help="Linear 模块起始索引。")
-    parser.add_argument("--max-layers", type=int)
+    parser.add_argument(
+        "--start-layer-index", type=int, default=0,
+        help="筛选后的 Linear 模块起始索引（从 0 开始，包含）。",
+    )
+    parser.add_argument(
+        "--max-layers", type=int,
+        help="最多分析的 Linear 模块数量；不是 Transformer block 数量。",
+    )
     parser.add_argument("--task", default="mmlu")
     parser.add_argument(
         "--metric",
@@ -224,7 +231,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         runtime_config=args.runtime_config,
         decomposition_provider=args.decomposition_provider,
         execution_provider=args.execution_provider,
-        start_index=args.start_index,
+        start_layer_index=args.start_layer_index,
         max_layers=args.max_layers,
         artifact_root=args.artifact_root,
         output=args.output,
@@ -264,6 +271,8 @@ def main(argv: Sequence[str] | None = None) -> None:
             metrics=config.metrics,
             report_path=result.report_path,
             vmax=args.heatmap_max,
+            evaluated_examples=result.baseline_evaluation.evaluated_examples,
+            total_examples=result.baseline_evaluation.total_examples,
         )
 
 
@@ -325,6 +334,8 @@ def plot_heatmaps(
     metrics: Sequence[str],
     report_path: Path,
     vmax: float = 10.0,
+    evaluated_examples: int | None = None,
+    total_examples: int | None = None,
 ) -> list[Path]:
     """在 report_path 旁保存各 metrics 的 PNG，并在报告末尾嵌入图片。
 
@@ -334,6 +345,8 @@ def plot_heatmaps(
         metrics: 每个指标生成一张图。
         report_path: 已有 Markdown 报告位置。
         vmax: 色标上限，越界格标出真实值；负值表示改善。
+        evaluated_examples: 本次每轮实际测试条数；省略时读取报告。
+        total_examples: 完整评测集总条数；省略时读取报告或本地 task 定义。
 
     返回：
         生成的图片路径列表。
@@ -348,6 +361,23 @@ def plot_heatmaps(
         raise ValueError("vmax must be finite and positive")
     report_path = Path(report_path)
     report = report_path.read_text(encoding="utf-8")
+    if evaluated_examples is None:
+        count = re.search(r"^- Evaluated examples: (\d+)$", report, re.MULTILINE)
+        if count is None:
+            raise ValueError("report is missing evaluated sample count")
+        evaluated_examples = int(count[1])
+    if total_examples is None:
+        count = re.search(r"^- Total evaluation examples: (\d+)$", report, re.MULTILINE)
+        total_examples = int(count[1]) if count else lm_eval_dataset_size(task)
+    if not 0 < evaluated_examples <= total_examples:
+        raise ValueError("sample counts must satisfy 0 < evaluated <= total")
+    annotation = f"Test samples: {evaluated_examples:,} / {total_examples:,} (evaluation split)"
+    if not re.search(r"^- Total evaluation examples:", report, re.MULTILINE):
+        report = report.replace(
+            f"- Evaluated examples: {evaluated_examples}",
+            f"- Evaluated examples: {evaluated_examples}\n- Total evaluation examples: {total_examples}",
+            1,
+        )
     images = []
     for metric in metrics:
         values, blocks, unit = heatmap_values(records, metric)
@@ -362,7 +392,7 @@ def plot_heatmaps(
         ax.set_yticks(range(len(MODULES)), MODULES)
         ax.set_xlabel("Transformer block")
         ax.set_ylabel("Module")
-        ax.set_title(f"{task.upper()} {metric} degradation heatmap ({unit})")
+        ax.set_title(f"{task.upper()} {metric} degradation heatmap ({unit})\n{annotation}")
         fig.colorbar(im, ax=ax, label=f"Degradation ({unit}), clipped to [0, {vmax:g}]")
         for row, col in np.argwhere(
             np.isfinite(values) & ((values > vmax) | (values < 0))
@@ -389,7 +419,7 @@ def plot_heatmaps(
             fig.legend(handles=legend, loc="outside lower center", ncol=2)
         slug = re.sub(r"[^A-Za-z0-9._-]+", "-", metric)
         destination = report_path.with_name(f"{report_path.stem}-{slug}-heatmap.png")
-        fig.savefig(destination, dpi=180)
+        fig.savefig(destination, dpi=180, metadata={"Description": annotation})
         images.append(destination)
         print(f"Heatmap: {destination.resolve()}")
     marker = "<!-- qcomp-sensitivity-heatmaps -->"

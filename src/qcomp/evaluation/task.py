@@ -55,3 +55,4 @@ class EvaluationResult:
     metrics: Mapping[str, float]
     evaluated_examples: int
     evaluated_tokens: int | None = None
+    total_examples: int | None = None

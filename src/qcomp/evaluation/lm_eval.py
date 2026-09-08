@@ -7,6 +7,7 @@
 主要内容：
 - ``LMEvalConfig``：定义 task 名称和 lm-eval 执行参数。
 - ``LMEvalEvaluator``：复用已加载 task 评测不同模型状态。
+- ``lm_eval_dataset_size``：读取 task/group 的完整评测集规模。
 - ``_extract_metrics``：提取 task 或 group 的数值指标和样本数。
 """
 
@@ -75,6 +76,28 @@ class LMEvalConfig:
                 raise ValueError(
                     "limit must be a positive integer, fraction in (0, 1), or None"
                 )
+
+
+def lm_eval_dataset_size(
+    task: str, *, runtime_config_path: str | Path | None = None
+) -> int:
+    """读取 task 对应评测集总条数，group 汇总叶子任务，不加载模型。
+
+    参数：
+        task: lm-eval task 或 group 名称。
+        runtime_config_path: 与实验相同的运行配置路径。
+
+    返回：
+        task 定义选用的 test 或 validation split 的总条数。
+    """
+    configure_runtime(runtime_config_path)
+    from lm_eval.tasks import TaskManager
+
+    loaded = TaskManager().load([task])
+    total = sum(len(item.eval_docs) for item in loaded["tasks"].values())
+    if total <= 0:
+        raise ValueError(f"no evaluation samples found for {task!r}")
+    return total
 
 
 def _metric_name(value: str) -> str | None:
@@ -340,8 +363,16 @@ class LMEvalEvaluator:
             preprocessing=preprocessing,
             requested_metrics=tuple(metrics),
         )
+        counts = raw_result.get("n-samples", {})
+        originals = [entry.get("original") for entry in counts.values()]
+        total_examples = (
+            sum(originals)
+            if originals and all(type(value) is int and value > 0 for value in originals)
+            else None
+        )
         return EvaluationResult(
             task=evaluation_task,
             metrics=metrics,
             evaluated_examples=evaluated_examples,
+            total_examples=total_examples,
         )
