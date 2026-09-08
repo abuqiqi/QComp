@@ -119,11 +119,12 @@ def sensitivity_case_record(result: SensitivityCaseResult) -> dict[str, Any]:
 
 @dataclass(frozen=True)
 class SensitivityResult:
-    """保存未压缩基线和全部敏感性实验结果。"""
+    """保存未压缩基线、全部实验结果及可选的已落盘报告路径。"""
 
     baseline_evaluation: EvaluationResult
     baseline_evaluation_seconds: float
     case_results: tuple[SensitivityCaseResult, ...]
+    report_path: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -593,6 +594,7 @@ def run_sensitivity_experiment(
         batch_size=config.evaluation.batch_size,
         max_length=config.evaluation.max_length,
         limit=config.evaluation.limit,
+        sample_start_index=config.evaluation.sample_start_index,
         apply_chat_template=config.evaluation.apply_chat_template,
         trust_remote_code=model_config.trust_remote_code,
         offline=runtime.offline,
@@ -619,4 +621,4 @@ def run_sensitivity_experiment(
     )
     format_sensitivity_report(result, output_path)
     log_event(log_path, "experiment_completed", run_id=run_id, report=str(output_path))
-    return result
+    return replace(result, report_path=output_path)
