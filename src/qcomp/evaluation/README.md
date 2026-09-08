@@ -215,15 +215,6 @@ for provider in list_backends("mpo"):
 
 ## CUDA 显存边界
 
-`infer_causal_lm()` 已记录一次真实完整模型生成的 PyTorch peak allocated/reserved 显存。后续独立 backend benchmark 将沿用计时函数的执行边界，分别测量：
+`infer_causal_lm()` 返回一次完整模型生成的 PyTorch peak allocated/reserved 显存，包含模型驻留参数和生成期间的分配；CPU 时为 `None`。统计边界为 PyTorch allocator，不包含 cuTensorNet 等库自行申请的 workspace。
 
-- 分解峰值显存；
-- Linear 构造后的驻留显存；
-- 首次推理和稳定推理峰值显存；
-- 完整训练 step 峰值显存。
-
-PyTorch allocator 指标和进程总 GPU 显存需要分开记录。后者用于覆盖 cuTensorNet 等计算库自行申请的 workspace，并使用独立测量轮次，避免采样过程影响时间结果。
-
-## 完整模型后续评测
-
-标准模型质量由 `LMEvalEvaluator` 评测，正常 inference workflow 返回真实生成吞吐和 PyTorch 峰值显存。后续完整模型 benchmark 继续增加重复生成、训练 step、进程级峰值显存和跨阶段报告汇总；这些功能仍由 evaluation 管理，不进入具体 backend。
+单层性能接口返回 warmup 后的重复计时样本。完整模型生成接口返回各 batch 的生成时间、总时间和吞吐。Alpaca 实验脚本在 `summary.json` 汇总原模型、压缩后及微调后三阶段的质量指标，具体用法见[实验指南](../../../docs/experiments.md)。

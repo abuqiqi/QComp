@@ -142,25 +142,6 @@ _BACKENDS = {
 
 ## 新增张量网络表示类型
 
-这里的“表示类型”指 MPO、Tucker、CP 等数学结构，不是 `torch.float16` 或 `torch.float32`。以新增 Tucker 为例，按下面的依赖顺序实现：
+新增表示的结构配置、artifact、重建注册、模型层和后端接入步骤见[扩展指南](../../../docs/extending.md#新增张量网络表示)。
 
-1. 在 `representations/tucker.py` 定义 `TuckerSpec`、张量布局校验、artifact 构造与解析函数，以及 `reconstruct_tucker()`。artifact 的 `representation` 使用 `"tucker"`。
-2. 在 representations registry 中注册 `"tucker" → reconstruct_tucker`，使通用 `reconstruct_tensor()` 和 compression evaluation 能够自动处理 Tucker。
-3. 在 `nn/tucker.py` 定义 Tucker Linear 的公共输入输出处理、参数访问和 artifact 导出行为。这里只放不同计算库共有的模型层逻辑。
-4. 为实际支持 Tucker 的 Provider 新建组合模块，例如 `tensorly/tucker.py`。实现 `TensorLyTuckerLinear` 和 `TensorLyTuckerBackend`。
-5. 在 backend registry 中增加 `("tensorly", "tucker")` 等已经实现的组合。没有实现的 Provider 不注册空适配器。
-6. 在 representations、backend 和 evaluation 测试中分别验证格式、数值结果、梯度和性能计时。
-
-新增表示后的数据流仍保持不变：
-
-```text
-稠密权重 + TuckerSpec
-    → TensorLyTuckerBackend.decompose()
-    → representation="tucker" 的 TensorNetworkArtifact
-    → TensorLyTuckerBackend.build_linear()
-    → TensorLyTuckerLinear
-```
-
-`TensorNetworkBackend` 已通过泛型参数保留具体 spec 类型，因此新增第二种表示时不需要修改通用 backend 接口。等多种表示之间出现真实、稳定的 spec 共性后，再决定是否提取共享 Protocol。
-
-如果“数据类型”是指 `torch.dtype`，则不需要新增 Provider 目录或 registry 项。artifact 中的 tensors 会保留 dtype；需要以不同于模型权重的浮点类型执行分解时，调用方在公共压缩接口中设置 `decomposition_dtype`，见 [workflows](../workflows/README.md)。
+浮点类型由 artifact tensors 保留；分解时需要转换类型可设置 `decomposition_dtype`，见 [workflows](../workflows/README.md)。

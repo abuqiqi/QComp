@@ -23,6 +23,7 @@ _METRIC_DIRECTIONS: dict[str, MetricDirection] = {
     "exact_match": "higher",
     "exact_match_remove_whitespace": "higher",
     "exact_match_strict_match": "higher",
+    "exact_match_flexible_extract": "higher",
     "f1": "higher",
     "loss": "lower",
     "perplexity": "lower",

@@ -88,11 +88,11 @@ class AlpacaFineTuneScriptTests(unittest.TestCase):
         """默认包含编号 25 和末层，排除编号 24、输出头及非目标 proj。"""
 
         args = experiment.parse_args([])
-        self.assertEqual((args.start_layer, args.end_layer, args.rank), (25, None, 96))
-        self.assertIsNone(args.max_blocks)
+        self.assertEqual((args.start_block, args.end_block, args.rank), (25, None, 96))
+        self.assertIsNone(args.max_token_blocks)
         model = TinyQwen(width=4096, device="meta")
         plan = experiment.make_compression_plan(
-            model, args.start_layer, args.end_layer, args.rank
+            model, args.start_block, args.end_block, args.rank
         )
         self.assertEqual(len(plan.targets), 14)
         paths = [target.module_path for target in plan.targets]
@@ -117,13 +117,30 @@ class AlpacaFineTuneScriptTests(unittest.TestCase):
             with self.subTest(start=start, stop=stop), self.assertRaises(ValueError):
                 experiment.make_compression_plan(model, start, stop, 96)
 
+    def test_block_and_token_block_cli_names(self) -> None:
+        """block 范围与 token block 上限分别解析，旧命令名称被拒绝。"""
+
+        args = experiment.parse_args(
+            ["--start-block", "24", "--end-block", "26", "--max-token-blocks", "8"]
+        )
+        self.assertEqual(
+            (args.start_block, args.end_block, args.max_token_blocks), (24, 26, 8)
+        )
+        for option in ("--start-layer", "--end-layer", "--max-blocks"):
+            with (
+                self.subTest(option=option),
+                redirect_stderr(io.StringIO()),
+                self.assertRaises(SystemExit),
+            ):
+                experiment.parse_args([option, "25"])
+
     def test_bad_configuration_fails_before_model_loading(self) -> None:
         """非法范围、rank、训练和评测参数在模型加载之前失败。"""
 
         for argv in (
             ["--rank", "0"],
-            ["--start-layer", "-1"],
-            ["--end-layer", "25"],
+            ["--start-block", "-1"],
+            ["--end-block", "25"],
             ["--batch-size", "0"],
             ["--num-train-epochs", "0"],
             ["--eval-limit", "0"],
@@ -197,6 +214,8 @@ class AlpacaFineTuneScriptTests(unittest.TestCase):
             str(root),
             "--eval-limit",
             "2",
+            "--max-token-blocks",
+            "8",
         ]
         if resume_from is not None:
             argv.extend(["--resume-from", str(resume_from)])
@@ -208,7 +227,9 @@ class AlpacaFineTuneScriptTests(unittest.TestCase):
                 return_value=SimpleNamespace(model=model, tokenizer=object()),
             ),
             patch.object(experiment, "make_qwen3_mpo_spec", side_effect=tiny_spec),
-            patch.object(experiment, "build_causal_lm_dataloader", return_value=loader),
+            patch.object(
+                experiment, "build_causal_lm_dataloader", return_value=loader
+            ) as build_loader,
             patch.object(experiment, "EVAL_TASKS", (("mmlu", 5, "acc"),)),
             patch.object(experiment, "LMEvalEvaluator", return_value=evaluate),
             patch.object(
@@ -223,6 +244,8 @@ class AlpacaFineTuneScriptTests(unittest.TestCase):
             self.assertEqual(
                 compress.call_args.kwargs["decomposition_dtype"], torch.float32
             )
+            if not fail_evaluation:
+                self.assertEqual(build_loader.call_args.args[2].max_blocks, 8)
         return model, snapshots
 
     def test_joint_compression_training_and_distinct_artifacts(self) -> None:
@@ -250,6 +273,15 @@ class AlpacaFineTuneScriptTests(unittest.TestCase):
                 set(summary["evaluations"]), {"baseline", "compressed", "finetuned"}
             )
             self.assertEqual(len(summary["compressed_layers"]), 14)
+            configuration = json.loads((root / "experiment_config.json").read_text())
+            for payload in (summary, configuration):
+                self.assertEqual(
+                    (payload["start_block"], payload["end_block"], payload["max_token_blocks"]),
+                    (25, 27, 8),
+                )
+                self.assertTrue(
+                    {"start_layer", "end_layer", "max_blocks"}.isdisjoint(payload)
+                )
             for stage in ("initial_artifacts", "finetuned_artifacts"):
                 files = summary[stage]
                 self.assertEqual(set(files), set(snapshots[1]["paths"]))

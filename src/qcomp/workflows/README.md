@@ -98,15 +98,15 @@ result = analyze_sensitivity(
 )
 report = format_sensitivity_report(
     result,
-    paths.evaluations / "qwen3-mmlu-sensitivity.md",
+    paths.root / "sensitivity" / "qwen3-mmlu-sensitivity.md",
 )
 ```
 
-Evaluator 是接收当前模型并返回 `EvaluationResult` 的可调用对象。`LMEvalEvaluator` 在第一次调用时加载配置指定的 task 或 group，后续 case 复用同一任务对象，只重新执行当前模型；更换标准 benchmark 只需修改 `LMEvalConfig.task`。原始指标保存在每个 `evaluation.metrics` 中，`metric_degradations` 保存指定指标相对 baseline 的退化量。`higher` 指标使用 `baseline - compressed`，`lower` 指标使用 `compressed - baseline`，因此正值统一表示性能下降。`format_sensitivity_report()` 始终返回 Markdown；指定输出路径时会创建父目录并写入相同内容。需要实时处理逐个 case 的结果时，可通过 `on_case_result` 传入回调；回调在该 case 恢复原模型后执行。`sensitivity_case_record(result)` 将单次结果整理为包含指标和耗时的独立字典，由调用方交给 `log_event(path, "case_completed", **record)` 或其他输出接口。
+Evaluator 是接收当前模型并返回 `EvaluationResult` 的可调用对象。`LMEvalEvaluator` 在第一次调用时加载配置指定的 task 或 group，后续 case 复用同一任务对象，只重新执行当前模型；更换标准 benchmark 时修改 `LMEvalConfig.task`，并同步选择该任务返回的指标、更新 `metric_directions`。例如 GSM8K 使用 `resolve_metric_directions(("exact_match_strict_match",))`；上层实验入口对应设置 `SensitivityExperimentConfig.metrics=("exact_match_strict_match",)`，脚本对应传入 `--metric exact_match_strict_match`。原始指标保存在每个 `evaluation.metrics` 中，`metric_degradations` 保存指定指标相对 baseline 的退化量。`higher` 指标使用 `baseline - compressed`，`lower` 指标使用 `compressed - baseline`，因此正值统一表示性能下降。`format_sensitivity_report()` 始终返回 Markdown；指定输出路径时会创建父目录并写入相同内容。需要实时处理逐个 case 的结果时，可通过 `on_case_result` 传入回调；回调在该 case 恢复原模型后执行。`sensitivity_case_record(result)` 将单次结果整理为包含指标和耗时的独立字典，由调用方交给 `log_event(path, "case_completed", **record)` 或其他输出接口。
 
 ### 逐层实验入口
 
-`SensitivityExperimentConfig` 复用 `ModelLoadConfig` 和 `LMEvalConfig`，配置实验名称、指标、backend、分段和输出。`run_sensitivity_experiment()` 加载模型，先用 `select_linear(path, linear)` 筛选，再应用 `start_index` 和 `max_layers`，最后用 `make_target(path, linear)` 为每层生成一个 `CompressionTarget`，包装成独立 case。回调必须保留选中层的模块路径。backend 根据实际 target 的 representation 创建。
+`SensitivityExperimentConfig` 复用 `ModelLoadConfig` 和 `LMEvalConfig`，配置实验名称、指标、backend、分段和输出。`run_sensitivity_experiment()` 加载模型，先用 `select_linear(path, linear)` 筛选，再应用 `start_layer_index` 和 `max_layers`，最后用 `make_target(path, linear)` 为每层生成一个 `CompressionTarget`，包装成独立 case。回调必须保留选中层的模块路径。backend 根据实际 target 的 representation 创建。
 
 ```python
 from qcomp import (
@@ -132,7 +132,7 @@ result = run_sensitivity_experiment(
 )
 ```
 
-输出默认集中在 `artifacts/evaluations/<name>/<timestamp>/`，报告为 `layers-<start>-<last>.md`，日志为同名 `.jsonl`。实验名称自动处理为安全的目录名，时间戳采用运行开始时的 UTC 时间，格式为 `YYYYMMDDTHHMMSSZ`（精确到秒）；`output` 和 `log` 可以覆盖路径。目录按需创建，日志追加写入，每次运行的开始、case 与完成记录共享 `run_id`。开始记录包含模型来源、backend、dtype 和评测配置。入口返回 `SensitivityResult`；case 使用模块路径命名，实验名称可包含 rank。
+输出默认集中在 `artifacts/sensitivity/<name>/<timestamp>/`，报告为 `layers-<start>-<last>.md`，日志为同名 `.jsonl`。实验名称自动处理为安全的目录名，时间戳采用运行开始时的 UTC+8 时间，格式为 `YYYYMMDDTHHMMSS`（精确到秒）；`output` 和 `log` 可以覆盖路径。目录按需创建，日志追加写入，每次运行的开始、case 与完成记录共享 `run_id`。开始记录包含模型来源、backend、dtype 和评测配置。入口返回 `SensitivityResult`；case 使用模块路径命名，实验名称可包含 rank。
 
 Qwen3 脚本保留命令行参数、层选择规则和 MPO spec 构造，调用上层入口完成执行与输出。多层联合方案或自定义 evaluator 继续使用底层 `analyze_sensitivity()`。
 
@@ -217,4 +217,4 @@ checkpoint 只保存本次选择的参数、优化器、调度器、训练位置
 
 ## 增加其他微调方法
 
-新的微调 workflow 负责选择自己的参数和 objective，然后调用同一个 `train_causal_lm()`。例如 Cayley workflow 将选择 Cayley Adapter 参数并使用包含 teacher 的知识蒸馏 objective；训练循环和 checkpoint 仍由 `training` 层提供。
+参数选择、objective、workflow 和 checkpoint 的扩展步骤见[扩展指南](../../../docs/extending.md#新增训练方法)。

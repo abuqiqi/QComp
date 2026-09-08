@@ -10,6 +10,7 @@
 - ``EvaluationResult``：保存任务、动态指标和统计范围。
 - ``LMEvalConfig``：配置任一 lm-eval task 或 group。
 - ``LMEvalEvaluator``：复用 lm-eval 任务评测不同模型状态。
+- ``lm_eval_dataset_size``：读取完整评测集样本数。
 - ``MetricDirection``：限定指标优化方向。
 - ``metric_direction``、``resolve_metric_directions``：查询常用指标方向。
 - ``TimingResult``：保存一组计时样本及其汇总统计。
@@ -24,7 +25,7 @@ from .compression import (
     compression_metrics,
     model_compression_metrics,
 )
-from .lm_eval import LMEvalConfig, LMEvalEvaluator
+from .lm_eval import LMEvalConfig, LMEvalEvaluator, lm_eval_dataset_size
 from .metrics import MetricDirection, metric_direction, resolve_metric_directions
 from .performance import (
     TimingResult,
@@ -39,6 +40,7 @@ __all__ = [
     "EvaluationTask",
     "LMEvalConfig",
     "LMEvalEvaluator",
+    "lm_eval_dataset_size",
     "MetricDirection",
     "CompressionMetrics",
     "ModelCompressionMetrics",

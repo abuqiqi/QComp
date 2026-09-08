@@ -19,6 +19,7 @@ import argparse
 import json
 import re
 from collections.abc import Mapping, Sequence
+from datetime import datetime
 from pathlib import Path
 
 import torch
@@ -102,8 +103,6 @@ def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
 EVAL_TASKS: Sequence[tuple[str, int, str]] = (
     ("mmlu", 5, "acc"),
     ("hellaswag", 10, "acc_norm"),
-    ("winogrande", 5, "acc"),
-    ("arc_challenge", 25, "acc_norm"),
 )
 
 # ── 命令行参数 ────────────────────────────────────────────────────────
@@ -120,6 +119,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
+        allow_abbrev=False,
         description="联合压缩 Qwen3 指定 block 的全部 proj，再用 Alpaca 微调 MPO 参数并评测。"
     )
     # 模型
@@ -137,15 +137,15 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     # 压缩
     parser.add_argument(
-        "--start-layer",
+        "--start-block",
         type=int,
         default=25,
         help="起始 Transformer block 编号（从 0 计数，包含；默认 25）。",
     )
     parser.add_argument(
-        "--end-layer",
+        "--end-block",
         type=int,
-        help="结束 Transformer block 编号（不包含）；省略则到最后一层。",
+        help="结束 Transformer block 编号（不包含）；省略则到最后一个 block。",
     )
     parser.add_argument("--rank", type=int, default=96)
     parser.add_argument("--decomposition-provider", default="tensorly")
@@ -156,7 +156,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument(
-        "--max-blocks",
+        "--max-token-blocks",
         type=int,
         help="训练 token block 数量上限；省略则使用全部训练文本。",
     )
@@ -182,15 +182,18 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="每个评测 task 的样本上限；省略则全量评测。",
     )
     # 产物
-    parser.add_argument("--artifact-root", default="artifacts/qwen3-alpaca-finetune")
+    parser.add_argument(
+        "--artifact-root",
+        help="直接指定产物目录；默认按模型、block 范围、rank 和时间戳自动生成。",
+    )
     parser.add_argument("--trust-remote-code", action="store_true")
     args = parser.parse_args(argv)
     if args.rank <= 0:
         parser.error("--rank must be positive")
-    if args.start_layer < 0:
-        parser.error("--start-layer must be non-negative")
-    if args.end_layer is not None and args.end_layer <= args.start_layer:
-        parser.error("--end-layer must be greater than --start-layer")
+    if args.start_block < 0:
+        parser.error("--start-block must be non-negative")
+    if args.end_block is not None and args.end_block <= args.start_block:
+        parser.error("--end-block must be greater than --start-block")
     if args.resume_from is not None and not Path(args.resume_from).is_file():
         parser.error("--resume-from must point to an existing checkpoint")
     return args
@@ -198,16 +201,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def make_compression_plan(
     model: nn.Module,
-    start_layer: int,
-    end_layer: int | None,
+    start_block: int,
+    end_block: int | None,
     rank: int,
 ) -> CompressionPlan:
     """选择指定 Qwen3 block 范围内的全部无 bias 投影层。
 
     参数：
         model: 具有 ``model.layers`` 的 Qwen3 Causal LM。
-        start_layer: 从零开始、包含的起始 block 编号。
-        end_layer: 不包含的结束编号；None 表示模型末尾。
+        start_block: 从零开始、包含的起始 block 编号。
+        end_block: 不包含的结束编号；None 表示模型末尾。
         rank: 所有目标共享的 MPO 内部 bond rank。
 
     返回：
@@ -217,10 +220,10 @@ def make_compression_plan(
         ValueError: 范围越界、rank 非正数或没有匹配投影层。
     """
 
-    layer_count = len(model.get_submodule("model.layers"))
-    stop = layer_count if end_layer is None else end_layer
-    if not 0 <= start_layer < stop <= layer_count:
-        raise ValueError(f"layer range must satisfy 0 <= start < end <= {layer_count}")
+    block_count = len(model.get_submodule("model.layers"))
+    stop = block_count if end_block is None else end_block
+    if not 0 <= start_block < stop <= block_count:
+        raise ValueError(f"block range must satisfy 0 <= start < end <= {block_count}")
     if rank <= 0:
         raise ValueError("rank must be positive")
     pattern = re.compile(
@@ -230,7 +233,7 @@ def make_compression_plan(
     targets = []
     for module_path, linear in list_linears(model):
         match = pattern.fullmatch(module_path)
-        if match is not None and start_layer <= int(match.group(1)) < stop:
+        if match is not None and start_block <= int(match.group(1)) < stop:
             targets.append(
                 CompressionTarget(
                     module_path=module_path,
@@ -323,7 +326,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         batch_size=args.batch_size,
         max_length=args.max_length,
         shuffle=True,
-        max_blocks=args.max_blocks,
+        max_blocks=args.max_token_blocks,
         seed=args.seed,
         drop_remainder=True,
         pin_memory=args.device.startswith("cuda"),
@@ -360,28 +363,36 @@ def main(argv: Sequence[str] | None = None) -> None:
     print("[1/7] 加载模型并选择投影层 …", flush=True)
     resources = load_causal_lm(model_config, runtime_config_path=args.runtime_config)
     model, tokenizer = resources.model, resources.tokenizer
-    plan = make_compression_plan(model, args.start_layer, args.end_layer, args.rank)
+    plan = make_compression_plan(model, args.start_block, args.end_block, args.rank)
     module_paths = tuple(target.module_path for target in plan.targets)
-    end_layer = (
-        args.end_layer
-        if args.end_layer is not None
+    end_block = (
+        args.end_block
+        if args.end_block is not None
         else len(model.get_submodule("model.layers"))
     )
     print(
-        f"  block 编号 [{args.start_layer}, {end_layer})，"
+        f"  block 编号 [{args.start_block}, {end_block})，"
         f"共 {len(module_paths)} 个 proj，MPO rank {args.rank}",
         flush=True,
     )
     for module_path in module_paths:
         print(f"    {module_path}")
 
+    if args.artifact_root is None:
+        model_name = Path(model_config.model_name_or_path).name
+        run_name = f"{model_name}_blocks-{args.start_block}-{end_block}_rank-{args.rank}"
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        args.artifact_root = str(
+            Path("artifacts/alpaca-finetune") / run_name / timestamp
+        )
     paths = ArtifactPaths(root=Path(args.artifact_root))
+    print(f"  产物目录: {paths.root}", flush=True)
     paths.create_directories()
     log_path = paths.root / "experiment.jsonl"
     experiment_config = {
         **vars(args),
         "model": model_config.model_name_or_path,
-        "end_layer": end_layer,
+        "end_block": end_block,
         "compressed_layers": module_paths,
         "trainable_scope": "mpo",
         "decomposition_dtype": "float32",
@@ -480,8 +491,8 @@ def main(argv: Sequence[str] | None = None) -> None:
         )
         summary = {
             "model": model_config.model_name_or_path,
-            "start_layer": args.start_layer,
-            "end_layer": end_layer,
+            "start_block": args.start_block,
+            "end_block": end_block,
             "compressed_layers": module_paths,
             "mpo_rank": args.rank,
             "trainable_scope": "mpo",
@@ -489,7 +500,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "dense_parameters": cm.dense_parameters,
             "compressed_parameters": cm.compressed_parameters,
             "train_dataset": args.dataset,
-            "max_blocks": args.max_blocks,
+            "max_token_blocks": args.max_token_blocks,
             "train_steps": training.global_step,
             "final_loss": final_loss,
             "trainable_parameters": training.trainable_parameters,

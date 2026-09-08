@@ -18,7 +18,7 @@ from unittest.mock import Mock, patch
 
 from torch import nn
 
-from qcomp.evaluation import LMEvalConfig, LMEvalEvaluator
+from qcomp.evaluation import LMEvalConfig, LMEvalEvaluator, lm_eval_dataset_size
 
 
 def _install_fake_lm_eval(
@@ -84,6 +84,10 @@ class LMEvalEvaluatorTests(unittest.TestCase):
             evaluation_calls.append(kwargs)
             self.assertFalse(model.training)
             return {
+                "n-samples": {
+                    "mmlu_a": {"original": 100, "effective": 20},
+                    "mmlu_b": {"original": 150, "effective": 20},
+                },
                 "groups": {
                     "mmlu": {
                         "acc,none": 0.625,
@@ -116,6 +120,7 @@ class LMEvalEvaluatorTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(first.metrics, {"acc": 0.625})
         self.assertEqual(first.evaluated_examples, 40)
+        self.assertEqual(first.total_examples, 250)
         self.assertEqual(first.task.name, "mmlu")
         self.assertEqual(first.task.preprocessing, "lm-eval-5-shot")
         self.assertEqual(first.task.requested_metrics, ("acc",))
@@ -148,7 +153,7 @@ class LMEvalEvaluatorTests(unittest.TestCase):
         modules = _install_fake_lm_eval(
             lambda **kwargs: {
                 "results": {"gsm8k": {"exact_match,strict-match": 0.75}},
-                "n-samples": {"gsm8k": {"effective": 12}},
+                "n-samples": {"gsm8k": {"original": 1319, "effective": 12}},
             },
             loaded={"groups": {}, "tasks": {"gsm8k": task}},
             wrapper_calls=[],
@@ -162,6 +167,7 @@ class LMEvalEvaluatorTests(unittest.TestCase):
 
         self.assertEqual(result.metrics, {"exact_match_strict_match": 0.75})
         self.assertEqual(result.evaluated_examples, 12)
+        self.assertEqual(result.total_examples, 1319)
         self.assertEqual(result.task.preprocessing, "lm-eval-default-shot")
 
     def test_sample_ranges_do_not_overlap_and_repeat_consistently(self) -> None:
@@ -224,6 +230,17 @@ class LMEvalEvaluatorTests(unittest.TestCase):
                         object(), LMEvalConfig(task="boolq", sample_start_index=start)
                     )(nn.Linear(2, 2, bias=False))
             evaluate.assert_not_called()
+
+    def test_dataset_size_sums_leaf_evaluation_splits(self) -> None:
+        """旧图补标注时汇总叶子任务的评测集，不加载模型或计入训练集。"""
+        modules = _install_fake_lm_eval(
+            Mock(), loaded={"tasks": {
+                "a": SimpleNamespace(eval_docs=[1, 2]),
+                "b": SimpleNamespace(eval_docs=[1, 2, 3]),
+            }}, wrapper_calls=[], load_calls=[],
+        )
+        with patch.dict(sys.modules, modules):
+            self.assertEqual(lm_eval_dataset_size("group"), 5)
 
     def test_failure_restores_model_state(self) -> None:
         """lm-eval 抛出异常时仍恢复模型原来的训练状态。"""

@@ -70,11 +70,4 @@ print(reconstructed.shape)     # torch.Size([8, 8])
 
 ## 新增张量网络表示
 
-以新增 Tucker 为例：
-
-1. 新建 `representations/tucker.py`，定义 Tucker 的结构配置、校验、artifact 构造、解析和稠密重建函数。
-2. 在 `registry.py` 中注册 `"tucker"` 对应的重建函数。
-3. 在 `representations/__init__.py` 中导出需要公开的接口。
-4. 在需要支持 Tucker 的 backend 中实现分解和模型层构造。
-
-`TensorNetworkArtifact` 保持通用，不需要为每种张量网络结构新建一套数据容器。
+新增表示的结构配置、artifact、重建注册、模型层和后端接入步骤见[扩展指南](../../../docs/extending.md#新增张量网络表示)。

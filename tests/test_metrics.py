@@ -26,6 +26,7 @@ class MetricDirectionTests(unittest.TestCase):
             "exact_match",
             "exact_match_remove_whitespace",
             "exact_match_strict_match",
+            "exact_match_flexible_extract",
             "f1",
         ):
             with self.subTest(metric=metric):

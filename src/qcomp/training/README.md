@@ -32,7 +32,7 @@ finetune_tensor_network_causal_lm()
   → 导出 TensorNetworkArtifact
 ```
 
-`train_causal_lm()` 不查找 MPO cores，也不导出 artifact。这样以后增加 Cayley 微调时，只需由新的 workflow 选择 Cayley Adapter 参数并传入蒸馏 objective，公共训练循环和 checkpoint 不需要重复实现。
+参数选择和 artifact 导出由 workflow 负责；新增 objective 或微调方法见[扩展指南](../../../docs/extending.md#新增训练方法)。
 
 ## 通用调用
 

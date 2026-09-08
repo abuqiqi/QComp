@@ -46,6 +46,16 @@ class SensitivityScriptTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             experiment.parse_args(["--task", "gsm8k"])
 
+    def test_layer_range_names_reject_legacy_cli(self) -> None:
+        """明确区分 Linear 起点与题目起点，并拒绝旧参数和缩写。"""
+
+        args = experiment.parse_args(["--start-layer-index", "3", "--max-layers", "2"])
+        self.assertEqual((args.start_layer_index, args.max_layers), (3, 2))
+        self.assertEqual(args.sample_start_index, 0)
+        for option in ("--start-index", "--start-layer"):
+            with self.subTest(option=option), self.assertRaises(SystemExit):
+                experiment.parse_args([option, "1"])
+
     def test_invalid_parameters_fail_before_experiment(self) -> None:
         """非法评测参数、范围和 rank 在启动实验前失败。"""
 
@@ -55,7 +65,7 @@ class SensitivityScriptTests(unittest.TestCase):
             ("--limit", "0"),
             ("--sample-start-index", "-1"),
             ("--num-fewshot", "-1"),
-            ("--start-index", "-1"),
+            ("--start-layer-index", "-1"),
             ("--max-layers", "0"),
             ("--rank", "0"),
         ):
@@ -94,7 +104,7 @@ class SensitivityScriptTests(unittest.TestCase):
                     "--apply-chat-template",
                     "--rank",
                     "3",
-                    "--start-index",
+                    "--start-layer-index",
                     "1",
                     "--max-layers",
                     "2",
@@ -117,7 +127,7 @@ class SensitivityScriptTests(unittest.TestCase):
         self.assertEqual(config.evaluation.sample_start_index, 8000)
         self.assertTrue(config.evaluation.apply_chat_template)
         self.assertEqual(config.metrics, ("exact_match_strict_match",))
-        self.assertEqual((config.start_index, config.max_layers), (1, 2))
+        self.assertEqual((config.start_layer_index, config.max_layers), (1, 2))
         self.assertEqual((config.output, config.log), ("out.md", "events.jsonl"))
         linear = nn.Linear(4096, 1024, bias=False, device="meta")
         select = run.call_args.kwargs["select_linear"]
@@ -142,6 +152,7 @@ class SensitivityScriptTests(unittest.TestCase):
             config = run.call_args.args[0]
             report = Path(config.output)
             self.assertEqual(report.name, "report.md")
+            self.assertRegex(report.parent.name, r"^\d{8}T\d{6}$")
             self.assertEqual(report.parent.parent.name, "qwen3-mmlu-mpo-rank-96")
             self.assertEqual(Path(config.log), report.parent / "events.jsonl")
             capture.assert_called_once_with(report.parent / "console.log")
@@ -179,7 +190,7 @@ class SensitivityScriptTests(unittest.TestCase):
         """补图从日志读取任务和指标，生成 PNG 并幂等嵌入报告，不运行模型。"""
         with tempfile.TemporaryDirectory() as directory:
             report = Path(directory) / "report.md"
-            report.write_text("# Existing report\n")
+            report.write_text("# Existing report\n\n- Evaluated examples: 2\n- Total evaluation examples: 3270\n")
             log = Path(directory) / "events.jsonl"
             entries = [
                 (
@@ -207,6 +218,13 @@ class SensitivityScriptTests(unittest.TestCase):
                 run.assert_not_called()
             png = report.with_name("report-acc-heatmap.png")
             self.assertTrue(png.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+            from PIL import Image
+
+            with Image.open(png) as image:
+                self.assertEqual(
+                    image.info["Description"],
+                    "Test samples: 2 / 3,270 (evaluation split)",
+                )
             self.assertEqual(report.read_text().count("![acc heatmap]"), 1)
             self.assertTrue(report.read_text().startswith("# Existing report"))
             entries[0][1]["layers"] = 2

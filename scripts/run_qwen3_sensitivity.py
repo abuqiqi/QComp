@@ -249,10 +249,10 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if config.output is None:
         timestamp = datetime.now(timezone(timedelta(hours=8))).strftime(
-            "%Y%m%dT%H%M%S%f+0800"
+            "%Y%m%dT%H%M%S"
         )
         slug = re.sub(r"[^A-Za-z0-9._-]+", "-", config.name).strip("-._")
-        directory = Path(config.artifact_root) / "evaluations" / slug / timestamp
+        directory = Path(config.artifact_root) / "sensitivity" / slug / timestamp
         config = replace(config, output=directory / "report.md")
     report_path = Path(config.output)
     if config.log is None:

@@ -49,11 +49,4 @@ TensorLy、torchTT 等第三方模型层使用自己的容器构造并管理张�
 
 ## 新增张量网络表示
 
-新增表示时，只在存在共享的模型层行为时增加对应文件。例如加入 Tucker：
-
-1. 在 `representations/tucker.py` 定义数据格式、校验和重建逻辑。
-2. 在 `nn/tucker.py` 定义 `TuckerLinearBase`，集中实现 Tucker 后端共有的输入处理和 artifact 导出行为。
-3. 在需要支持的 `backends/<provider>/tucker.py` 中实现 Provider 专用的分解和模型层。
-4. 让具体模型层继承 `TuckerLinearBase`，并由对应 backend 的 `build_linear()` 创建。
-
-没有多个 backend 共用的行为时，不需要提前创建额外的中间基类。
+新增表示的结构配置、artifact、重建注册、模型层和后端接入步骤见[扩展指南](../../../docs/extending.md#新增张量网络表示)。

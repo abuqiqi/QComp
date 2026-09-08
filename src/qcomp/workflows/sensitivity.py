@@ -139,7 +139,7 @@ class SensitivityExperimentConfig:
     decomposition_provider: str = "tensorly"
     execution_provider: str = "tensorly"
     decomposition_dtype: torch.dtype = torch.float32
-    start_index: int = 0
+    start_layer_index: int = 0
     max_layers: int | None = None
     artifact_root: str | Path = "artifacts"
     output: str | Path | None = None
@@ -150,8 +150,8 @@ class SensitivityExperimentConfig:
 
         if not self.name.strip():
             raise ValueError("experiment name must not be empty")
-        if self.start_index < 0:
-            raise ValueError("start_index must be non-negative")
+        if self.start_layer_index < 0:
+            raise ValueError("start_layer_index must be non-negative")
         if self.max_layers is not None and self.max_layers <= 0:
             raise ValueError("max_layers must be positive")
         if not self.decomposition_dtype.is_floating_point:
@@ -489,6 +489,8 @@ def format_sensitivity_report(
                 f"{_format_number(metrics.tensor_size_compression_ratio)} | "
                 f"{_format_number(metrics.relative_error)} |"
             )
+    if result.baseline_evaluation.total_examples is not None:
+        lines.insert(8, f"- Total evaluation examples: {result.baseline_evaluation.total_examples}")
     report = "\n".join(lines) + "\n"
     if output_path is not None:
         destination = Path(output_path)
@@ -518,7 +520,7 @@ def run_sensitivity_experiment(
         Exception: 模型加载、分析或输出错误直接向调用方传播。
     """
 
-    timestamp = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%dT%H%M%S+0800")
+    timestamp = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%dT%H%M%S")
     directions = resolve_metric_directions(config.metrics)
     runtime = load_runtime_config(config.runtime_config)
     model_config = replace(
@@ -532,8 +534,11 @@ def run_sensitivity_experiment(
         for path, linear in list_linears(resources.model)
         if select_linear(path, linear)
     ]
-    stop = None if config.max_layers is None else config.start_index + config.max_layers
-    selected = selected[config.start_index : stop]
+    stop = (
+        None if config.max_layers is None
+        else config.start_layer_index + config.max_layers
+    )
+    selected = selected[config.start_layer_index : stop]
     if not selected:
         raise ValueError("the selected Linear range is empty")
     cases = []
@@ -559,15 +564,15 @@ def run_sensitivity_experiment(
         runtime_config_path=config.runtime_config,
     )
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", config.name).strip("-._") or "experiment"
-    last_index = config.start_index + len(selected) - 1
+    last_index = config.start_layer_index + len(selected) - 1
     output_path = (
         Path(config.output)
         if config.output
         else (
-            ArtifactPaths(config.artifact_root).evaluations
+            ArtifactPaths(config.artifact_root).root / "sensitivity"
             / slug
             / timestamp
-            / f"layers-{config.start_index:03d}-{last_index:03d}.md"
+            / f"layers-{config.start_layer_index:03d}-{last_index:03d}.md"
         )
     )
     log_path = Path(config.log) if config.log else output_path.with_suffix(".jsonl")
@@ -598,7 +603,7 @@ def run_sensitivity_experiment(
         apply_chat_template=config.evaluation.apply_chat_template,
         trust_remote_code=model_config.trust_remote_code,
         offline=runtime.offline,
-        start_index=config.start_index,
+        start_layer_index=config.start_layer_index,
         max_layers=config.max_layers,
     )
 

@@ -74,7 +74,7 @@ class SensitivityExperimentTests(unittest.TestCase):
                 model=ModelLoadConfig(device="cpu", dtype=torch.float32),
                 decomposition_provider="native",
                 execution_provider="native",
-                start_index=1,
+                start_layer_index=1,
                 max_layers=1,
                 artifact_root=directory,
             )
@@ -126,16 +126,16 @@ class SensitivityExperimentTests(unittest.TestCase):
             )
             self.assertIs(evaluator.call_args.args[1], config.evaluation)
             root = Path(directory)
-            self.assertEqual({p.name for p in root.iterdir()}, {"evaluations"})
+            self.assertEqual({p.name for p in root.iterdir()}, {"sensitivity"})
             self.assertEqual(
-                {p.name for p in (root / "evaluations").iterdir()}, {"test-task"}
+                {p.name for p in (root / "sensitivity").iterdir()}, {"test-task"}
             )
-            run_dirs = sorted((root / "evaluations/test-task").iterdir())
+            run_dirs = sorted((root / "sensitivity/test-task").iterdir())
             self.assertEqual(len(run_dirs), 2)
             self.assertEqual(result.report_path, run_dirs[0] / "layers-001-001.md")
             records = []
             for run_dir in run_dirs:
-                self.assertRegex(run_dir.name, r"^\d{8}T\d{6}\+0800$")
+                self.assertRegex(run_dir.name, r"^\d{8}T\d{6}$")
                 report = run_dir / "layers-001-001.md"
                 self.assertIn("Sensitivity Report", report.read_text())
                 run_records = [
@@ -143,6 +143,8 @@ class SensitivityExperimentTests(unittest.TestCase):
                     for line in report.with_suffix(".jsonl").read_text().splitlines()
                 ]
                 self.assertEqual(len(run_records), 3)
+                self.assertEqual(run_records[0]["fields"]["start_layer_index"], 1)
+                self.assertNotIn("start_index", run_records[0]["fields"])
                 records.extend(run_records)
             self.assertEqual(
                 [r["event"] for r in records],
@@ -173,7 +175,7 @@ class SensitivityExperimentTests(unittest.TestCase):
             name="test", evaluation=LMEvalConfig(task="test"), metrics=("acc",)
         )
         for values in (
-            {"start_index": -1},
+            {"start_layer_index": -1},
             {"max_layers": 0},
             {"name": " "},
             {"decomposition_dtype": torch.int32},
