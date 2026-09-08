@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = ["torch>=2.5"]
 
 [project.optional-dependencies]
+plotting = ["matplotlib>=3.8"]
 tensorly = [
   "tensorly==0.8.1",
   "tensorly-torch==0.5.0",
@@ -17,6 +18,7 @@ tensorly = [
 torchtt = ["torchTT==0.4.0"]
 cutensornet = ["cuquantum-python-cu12>=25.6"]
 all = [
+  "matplotlib>=3.8",
   "tensorly==0.8.1",
   "tensorly-torch==0.5.0",
   "torchTT==0.4.0",
