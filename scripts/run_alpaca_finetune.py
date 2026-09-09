@@ -268,7 +268,7 @@ def evaluate_stage(
 
     results = {}
     for task_name, num_fewshot, metric_name in EVAL_TASKS:
-        print(f"  [{stage}] {task_name} ({num_fewshot}-shot) …", flush=True)
+        print(f"  [{stage}] {task_name} ({num_fewshot}-shot) ...", flush=True)
         result = evaluators[task_name](model)
         value = result.metrics[metric_name]
         results[task_name] = {
@@ -360,7 +360,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         dtype={"bfloat16": torch.bfloat16, "float32": torch.float32}[args.model_dtype],
         trust_remote_code=args.trust_remote_code,
     )
-    print("[1/7] 加载模型并选择投影层 …", flush=True)
+    print("[1/7] 加载模型并选择投影层 ...", flush=True)
     resources = load_causal_lm(model_config, runtime_config_path=args.runtime_config)
     model, tokenizer = resources.model, resources.tokenizer
     plan = make_compression_plan(model, args.start_block, args.end_block, args.rank)
@@ -410,10 +410,10 @@ def main(argv: Sequence[str] | None = None) -> None:
         )
         for task, config in evaluation_configs.items()
     }
-    print("[2/7] 原模型评测 …", flush=True)
+    print("[2/7] 原模型评测 ...", flush=True)
     evaluations = {"baseline": evaluate_stage(model, evaluators, "baseline", log_path)}
 
-    print("[3/7] 联合分解与替换全部目标 proj …", flush=True)
+    print("[3/7] 联合分解与替换全部目标 proj ...", flush=True)
     compression_result = compress_model(
         model,
         plan,
@@ -447,12 +447,12 @@ def main(argv: Sequence[str] | None = None) -> None:
             paths.decompositions / "initial",
             args.rank,
         )
-        print("[4/7] 联合压缩后、微调前评测 …", flush=True)
+        print("[4/7] 联合压缩后、微调前评测 ...", flush=True)
         evaluations["compressed"] = evaluate_stage(
             model, evaluators, "compressed", log_path
         )
 
-        print("[5/7] 构造 Alpaca DataLoader …", flush=True)
+        print("[5/7] 构造 Alpaca DataLoader ...", flush=True)
         train_dataloader = build_causal_lm_dataloader(
             HuggingFaceDatasetSource(dataset=args.dataset, split="train"),
             tokenizer,
@@ -461,7 +461,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             runtime_config_path=args.runtime_config,
         )
         print(f"  训练 batch 数: {len(train_dataloader)}", flush=True)
-        print("[6/7] 微调全部压缩层的 MPO 参数，其余参数冻结 …", flush=True)
+        print("[6/7] 微调全部压缩层的 MPO 参数，其余参数冻结 ...", flush=True)
         finetune_result = finetune_tensor_network_causal_lm(
             model,
             train_dataloader,
@@ -485,7 +485,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             trainable_params=training.trainable_parameters,
             checkpoint=str(training.checkpoint_path),
         )
-        print("[7/7] 微调后评测 …", flush=True)
+        print("[7/7] 微调后评测 ...", flush=True)
         evaluations["finetuned"] = evaluate_stage(
             model, evaluators, "finetuned", log_path
         )
