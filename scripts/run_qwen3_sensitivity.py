@@ -343,7 +343,7 @@ def plot_heatmaps(
         records: 单模块实验记录。
         task: 图标题中的任务名称。
         metrics: 每个指标生成一张图。
-        report_path: 已有 Markdown 报告位置。
+        report_path: 已有 Markdown 报告位置；从 Baseline Metrics 表读取各指标基线。
         vmax: 色标上限，越界格标出真实值；负值表示改善。
         evaluated_examples: 本次每轮实际测试条数；省略时读取报告。
         total_examples: 完整评测集总条数；省略时读取报告或本地 task 定义。
@@ -378,9 +378,31 @@ def plot_heatmaps(
             f"- Evaluated examples: {evaluated_examples}\n- Total evaluation examples: {total_examples}",
             1,
         )
+    baseline_section = re.search(
+        r"^## Baseline Metrics\s*\n(.*?)(?=^## |\Z)",
+        report,
+        re.MULTILINE | re.DOTALL,
+    )
+    baselines = {}
+    for metric in metrics:
+        match = re.search(
+            rf"^\|\s*{re.escape(metric)}\s*\|\s*([^|]+)\|\s*$",
+            baseline_section[1] if baseline_section else "",
+            re.MULTILINE,
+        )
+        if match is None:
+            raise ValueError(f"report is missing baseline metric: {metric}")
+        baseline = float(match[1])
+        if not math.isfinite(baseline):
+            raise ValueError(f"baseline metric must be finite: {metric}")
+        baselines[metric] = baseline
     images = []
     for metric in metrics:
         values, blocks, unit = heatmap_values(records, metric)
+        baseline_text = (
+            f"{baselines[metric]:.2%}" if unit == "pp" else f"{baselines[metric]:.6g}"
+        )
+        metric_annotation = f"{annotation} | Baseline: {baseline_text}"
         fig = Figure(figsize=(max(9, len(blocks) * 0.36), 5), layout="constrained")
         FigureCanvasAgg(fig)
         ax = fig.subplots()
@@ -392,7 +414,7 @@ def plot_heatmaps(
         ax.set_yticks(range(len(MODULES)), MODULES)
         ax.set_xlabel("Transformer block")
         ax.set_ylabel("Module")
-        ax.set_title(f"{task.upper()} {metric} degradation heatmap ({unit})\n{annotation}")
+        ax.set_title(f"{task.upper()} {metric} degradation heatmap ({unit})\n{metric_annotation}")
         fig.colorbar(im, ax=ax, label=f"Degradation ({unit}), clipped to [0, {vmax:g}]")
         for row, col in np.argwhere(
             np.isfinite(values) & ((values > vmax) | (values < 0))
@@ -419,7 +441,7 @@ def plot_heatmaps(
             fig.legend(handles=legend, loc="outside lower center", ncol=2)
         slug = re.sub(r"[^A-Za-z0-9._-]+", "-", metric)
         destination = report_path.with_name(f"{report_path.stem}-{slug}-heatmap.png")
-        fig.savefig(destination, dpi=180, metadata={"Description": annotation})
+        fig.savefig(destination, dpi=180, metadata={"Description": metric_annotation})
         images.append(destination)
         print(f"Heatmap: {destination.resolve()}")
     marker = "<!-- qcomp-sensitivity-heatmaps -->"
