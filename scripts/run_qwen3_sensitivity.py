@@ -1,6 +1,6 @@
 """逐层执行 Qwen3 MPO 压缩与可选 lm-eval task 的敏感性分析。
 
-本实验脚本提供 Qwen3 的层选择与 MPO 结构配置，通过上层 sensitivity 入口完成
+本实验脚本提供 Qwen3 的层选择、MPO 结构配置 与分模块键维配置，通过上层 sensitivity 入口完成
 模型加载、逐层 case 组装、临时压缩、评测、恢复和输出。
 模型结构与 MPO modes 留在脚本中；默认评测 MMLU，task、指标和运行范围可以由命令行
 覆盖。脚本直接调用通用 workflow，不经过 qcomp CLI 包。
@@ -8,6 +8,7 @@
 主要内容：
 - ``is_target_linear``：定义实验目标层的选择规则。
 - ``qwen3_modes``、``make_qwen3_mpo_spec``：定义 Qwen3 的 MPO 结构。
+- ``MODULE_RANKS``：定义不同 Linear 类型使用的 MPO 键维。
 - ``parse_args``、``main``：解析实验参数、自动保存终端日志并调用通用 workflow。
 - ``plot_heatmaps``、``plot_log``：生成模块与 Transformer 块热力图并支持已有日志补图。
 """
@@ -82,6 +83,25 @@ def qwen3_modes(size: int) -> tuple[int, int, int]:
     return modes[size]
 
 
+MODULE_RANKS: dict[str, int] = {
+    # 当前配置按 Linear 权重形状调整 bond dimension，使不同模块的压缩率保持在
+    # 约 7～8 倍，而不是对全部模块统一使用相同 rank：
+    # - q_proj / o_proj：4096 × 4096，使用 rank 96；
+    # - k_proj / v_proj：1024 × 4096，使用 rank 64；
+    # - gate_proj / up_proj / down_proj：4096 与 12288 之间映射，使用 rank 160。
+    #
+    # 命令行显式传入 --rank 时，该统一 rank 会覆盖此默认分模块配置，用于运行
+    # uniform-rank 对照实验。
+    "q_proj": 96,
+    "k_proj": 64,
+    "v_proj": 64,
+    "o_proj": 96,
+    "gate_proj": 160,
+    "up_proj": 160,
+    "down_proj": 160,
+}
+
+
 def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
     """为一个 Qwen3 Linear 创建三核 MPO spec。
 
@@ -91,11 +111,30 @@ def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
 
     返回：
         与 Linear 输入输出维度匹配的 MPO spec。
+
+    异常：
+        ValueError: rank 不在当前三核 MPO 结构允许的范围内。
     """
 
+    out_modes = qwen3_modes(linear.out_features)
+    in_modes = qwen3_modes(linear.in_features)
+
+    # 对三核 MPO 的统一内部 rank=(1, r, r, 1)，第一条 bond 不能超过
+    # 第一个 core 的物理维，第二条 bond 不能超过最后一个 core 的物理维。
+    max_rank = min(
+        out_modes[0] * in_modes[0],
+        out_modes[-1] * in_modes[-1],
+    )
+
+    if not 1 <= rank <= max_rank:
+        raise ValueError(
+            f"MPO rank {rank} is outside the valid range [1, {max_rank}] "
+            f"for Linear({linear.in_features}, {linear.out_features})"
+        )
+
     return MPOSpec(
-        out_modes=qwen3_modes(linear.out_features),
-        in_modes=qwen3_modes(linear.in_features),
+        out_modes=out_modes,
+        in_modes=in_modes,
         ranks=(1, rank, rank, 1),
     )
 
@@ -141,7 +180,15 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--model-dtype", choices=("bfloat16", "float32"), default="bfloat16"
     )
-    parser.add_argument("--rank", type=int, default=96)
+    # parser.add_argument("--rank", type=int, default=96)
+    parser.add_argument(
+        "--rank",
+        type=int,
+        help=(
+            "统一覆盖所有目标 Linear 的 MPO 键维；"
+            "省略时使用 MODULE_RANKS 中的默认分模块键维。"
+        ),
+    )
     parser.add_argument("--decomposition-provider", default="tensorly")
     parser.add_argument("--execution-provider", default="tensorly")
     parser.add_argument(
@@ -205,10 +252,18 @@ def main(argv: Sequence[str] | None = None) -> None:
     if args.plot_only is not None:
         plot_log(args.plot_only, args.heatmap_max)
         return
-    if args.rank <= 0:
-        raise ValueError("rank must be positive")
+    # if args.rank <= 0:
+    #     raise ValueError("rank must be positive")
+    rank_strategy = (
+        """
+        不同rank策略用于config
+        """
+        f"rank-{args.rank}"
+        if args.rank is not None
+        else "module-ranks"
+    )
     config = SensitivityExperimentConfig(
-        name=f"qwen3-{args.task}-mpo-rank-{args.rank}",
+        name=f"qwen3-{args.task}-mpo-{rank_strategy}",
         model=ModelLoadConfig(
             model_name_or_path=args.model,
             device=args.device,
@@ -238,13 +293,33 @@ def main(argv: Sequence[str] | None = None) -> None:
         log=args.log,
     )
 
+    # def make_target(path: str, linear: nn.Linear) -> CompressionTarget:
+    #     """将路径 path 与层 linear 转换为本次 rank 对应的 MPO 压缩目标。"""
+
+    #     return CompressionTarget(
+    #         module_path=path,
+    #         representation="mpo",
+    #         spec=make_qwen3_mpo_spec(linear, args.rank),
+    #     )
+
     def make_target(path: str, linear: nn.Linear) -> CompressionTarget:
-        """将路径 path 与层 linear 转换为本次 rank 对应的 MPO 压缩目标。"""
+        """根据实验配置为 Qwen3 Linear 创建 MPO 压缩目标。
+
+        参数：
+            path: Linear 相对于模型根节点的模块路径。
+            linear: 待压缩的稠密 Linear。
+
+        返回：
+            使用统一覆盖键维或默认分模块键维构造的压缩目标。
+        """
+
+        module_name = path.rsplit(".", 1)[-1]
+        rank = args.rank if args.rank is not None else MODULE_RANKS[module_name]
 
         return CompressionTarget(
             module_path=path,
             representation="mpo",
-            spec=make_qwen3_mpo_spec(linear, args.rank),
+            spec=make_qwen3_mpo_spec(linear, rank),
         )
 
     if config.output is None:
