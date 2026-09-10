@@ -92,7 +92,7 @@ def test_math_negative_drops_filter_and_order(page):
       const p={modules:[{name:'a',saving:.1},{name:'b',saving:.2}], datasets:[
         {id:'x',defaultMetric:'acc',baseline:{acc:.5},values:{acc:[.6,.4]}},
         {id:'y',defaultMetric:'acc',baseline:{acc:.8},values:{acc:[.6,.8]}}]};
-      const s=LayerSelection.defaults(p);s.k=1;
+      const s=LayerSelection.defaults(p);s.requested_module_count=1;
       const rows=LayerSelection.evaluate(p,s);
       const ordered=LayerSelection.fixedOrder(rows).map(r=>r.name);
       s.capEnabled=true;s.cap=15;
@@ -123,9 +123,9 @@ def test_controls_and_module_linkage(page):
     gsm.locator('[data-field="enabled"]').uncheck()
     assert page.locator(".normalized-weight").first.inner_text() == "实际 25.00%"
     assert page.locator('[data-index="0"] [data-field="lower"]').input_value() == "10"
-    page.locator("#k").fill("1")
+    page.locator("#requested_module_count").fill("1")
     assert page.locator("#selected-count").inner_text() == "1"
-    page.locator("#k").fill("252")
+    page.locator("#requested_module_count").fill("252")
     assert page.locator("#selected-count").inner_text() == "252"
     page.locator("#heatmap [data-module='0']").click()
     assert "model.layers.0.self_attn.q_proj" in page.locator("#detail").inner_text()
@@ -169,11 +169,12 @@ def test_stability_cancel_invalidate_and_export(page):
     with page.expect_download() as download:
         page.locator("#export-json").click()
     plan = json.loads(Path(download.value.path()).read_text())
-    assert plan["stability"]["count"] == 381
+    assert plan["selection"]["results"]["stability"]["weight_combination_count"] == 381
     assert sum(
-        s["frequency"] for s in plan["stability"]["stats"].values()
+        s["stability"]["selection_frequency"]
+        for s in plan["selection"]["results"]["candidates"]
     ) == pytest.approx(32)
-    page.locator("#k").fill("16")
+    page.locator("#requested_module_count").fill("16")
     assert "待更新" in page.locator("#status").inner_text()
     assert page.locator("#export-json").is_disabled()
     page.locator("#import-file").set_input_files(
@@ -186,7 +187,7 @@ def test_stability_cancel_invalidate_and_export(page):
     page.wait_for_function(
         "document.getElementById('status').textContent.includes('方案已导入')"
     )
-    assert page.locator("#k").input_value() == "32"
+    assert page.locator("#requested_module_count").input_value() == "32"
     # 五个任务的下限都设为 100%，使权重网格不可行。
     page.evaluate(
         """() => document.querySelectorAll('[data-field=upper], [data-field=lower]').forEach(e=>{e.value=100;e.dispatchEvent(new Event('input',{bubbles:true}));})"""
@@ -198,18 +199,21 @@ def test_stability_cancel_invalidate_and_export(page):
 def test_snapshots_json_csv_and_hash_rejection(page):
     """A/B 保存设置快照，文件往返核对来源且不信任导入的候选名单。"""
     page.locator("#save-a").click()
-    page.locator('[data-k="16"]').click()
+    page.locator('[data-module-count="16"]').click()
     page.locator("#save-b").click()
     assert "共同模块 16" in page.locator("#comparison").inner_text()
     with page.expect_download() as download:
         page.locator("#export-json").click()
     plan = json.loads(Path(download.value.path()).read_text())
-    assert len(plan["selectedModules"]) == 16 and len(plan["sources"]) == 5
+    assert (
+        len(plan["compression_plan"]["targets"]) == 16
+        and len(plan["selection"]["sources"]) == 5
+    )
     with page.expect_download() as csv:
         page.locator("#export-csv").click()
     lines = Path(csv.value.path()).read_text(encoding="utf-8-sig").splitlines()
     assert len(lines) == 253 and "baseline" in lines[0]
-    page.locator('[data-k="64"]').click()
+    page.locator('[data-module-count="64"]').click()
     page.locator("#import-file").set_input_files(
         {
             "name": "plan.json",
@@ -221,8 +225,8 @@ def test_snapshots_json_csv_and_hash_rejection(page):
         "document.getElementById('status').textContent.includes('方案已导入')"
     )
     assert page.locator("#selected-count").inner_text() == "16"
-    original_hash = plan["sources"][0]["sha256"]
-    plan["sources"][0]["sha256"] = "invalid"
+    original_hash = plan["selection"]["sources"][0]["sha256"]
+    plan["selection"]["sources"][0]["sha256"] = "invalid"
     page.locator("#import-file").set_input_files(
         {
             "name": "bad.json",
@@ -235,8 +239,8 @@ def test_snapshots_json_csv_and_hash_rejection(page):
     )
     assert page.locator("#selected-count").inner_text() == "16"
 
-    plan["sources"][0]["sha256"] = original_hash
-    plan["selectedModules"].reverse()
+    plan["selection"]["sources"][0]["sha256"] = original_hash
+    plan["compression_plan"]["targets"].reverse()
     page.locator("#import-file").set_input_files(
         {
             "name": "tampered.json",
@@ -248,3 +252,91 @@ def test_snapshots_json_csv_and_hash_rejection(page):
         "document.getElementById('status').textContent.includes('名单与设置')"
     )
     assert page.locator("#selected-count").inner_text() == "16"
+
+
+def test_results_specs_and_old_format_rejection(page):
+    """固定结果完整保存；旧文件、伪造 spec 或汇总结果不覆盖当前状态。"""
+    with page.expect_download() as download:
+        page.locator("#export-json").click()
+    original = json.loads(Path(download.value.path()).read_text())
+    result = original["selection"]["results"]
+    assert original["selection"]["settings"]["requested_module_count"] == 32
+    assert "schema_version" not in original and "rank" not in original
+    assert "selectedModules" not in original
+    assert result["stability"] is None and len(result["candidates"]) == 252
+    assert all(
+        r["stability"] is None and "selected" not in r for r in result["candidates"]
+    )
+    assert sum(result["normalized_weights"].values()) == pytest.approx(1)
+    for variant, message in [
+        ("old", "最新版"),
+        ("spec", "不支持复算"),
+        ("score", "结果与重新计算"),
+    ]:
+        plan = json.loads(json.dumps(original))
+        if variant == "old":
+            plan = {"rank": 96, "selectedModules": []}
+        elif variant == "spec":
+            plan["compression_plan"]["targets"][0]["spec"]["ranks"][1] = 64
+        else:
+            plan["selection"]["results"]["candidates"][0]["weighted_drop_pp"] += 1
+        page.locator("#import-file").set_input_files(
+            {
+                "name": "bad.json",
+                "mimeType": "application/json",
+                "buffer": json.dumps(plan).encode(),
+            }
+        )
+        page.wait_for_function(
+            "message => document.getElementById('status').textContent.includes(message)",
+            arg=message,
+        )
+        assert page.locator("#selected-count").inner_text() == "32"
+    # 数值误差在约定容差内可接受，但 JSON 字段顺序不影响导入。
+    original["selection"]["results"]["candidates"][0]["weighted_drop_pp"] += 1e-11
+    page.locator("#import-file").set_input_files(
+        {
+            "name": "close.json",
+            "mimeType": "application/json",
+            "buffer": json.dumps(original, sort_keys=True).encode(),
+        }
+    )
+    page.wait_for_function(
+        "document.getElementById('status').textContent.includes('方案已导入')"
+    )
+
+
+def test_import_stability_can_cancel_without_replacing_state(page):
+    """导入稳定性复算可以取消，保留原固定模式与选择数量。"""
+    page.locator("#stable-mode").click()
+    page.locator("#calculate").click()
+    page.wait_for_function(
+        "document.getElementById('status').textContent.includes('已完成 381')"
+    )
+    with page.expect_download() as download:
+        page.locator("#export-json").click()
+    plan = Path(download.value.path()).read_text()
+    page.locator("#fixed-mode").click()
+    page.locator("#requested_module_count").fill("16")
+    page.evaluate(
+        """text => {
+      const input = document.getElementById('import-file');
+      const transfer = new DataTransfer();
+      transfer.items.add(new File([text], 'plan.json', {type:'application/json'}));
+      const cancel = document.getElementById('cancel');
+      const observer = new MutationObserver(() => {
+        if (!cancel.disabled) {observer.disconnect(); cancel.click();}
+      });
+      observer.observe(cancel, {attributes:true, attributeFilter:['disabled']});
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change'));
+    }""",
+        plan,
+    )
+    page.wait_for_function(
+        "document.getElementById('status').textContent.includes('取消')"
+    )
+    page.wait_for_timeout(100)
+    assert page.locator("#selected-count").inner_text() == "16"
+    assert page.locator("#fixed-mode").get_attribute("aria-pressed") == "true"
+    assert not page.locator("#export-json").is_disabled()

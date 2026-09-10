@@ -28,6 +28,11 @@ from collections.abc import Mapping, Sequence
 import torch
 from torch import nn
 
+if __package__:
+    from .qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+else:
+    from qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+
 from qcomp import (
     CompressionTarget,
     MPOSpec,
@@ -58,30 +63,6 @@ def is_target_linear(path: str, linear: nn.Linear) -> bool:
     return path != "lm_head"
 
 
-def qwen3_modes(size: int) -> tuple[int, int, int]:
-    """返回 Qwen3-8B 已知特征维度对应的三核 MPO modes。
-
-    参数：
-        size: Linear 的输入或输出特征数。
-
-    返回：
-        乘积等于特征数的三个 mode。
-
-    异常：
-        ValueError: 特征数不属于当前 Qwen3-8B 配置时抛出。
-    """
-
-    modes = {
-        1024: (8, 8, 16),
-        4096: (16, 16, 16),
-        12288: (16, 16, 48),
-        151936: (8, 16, 1187),
-    }
-    if size not in modes:
-        raise ValueError(f"no Qwen3 MPO modes configured for feature size {size}")
-    return modes[size]
-
-
 def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
     """为一个 Qwen3 Linear 创建三核 MPO spec。
 
@@ -93,11 +74,7 @@ def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
         与 Linear 输入输出维度匹配的 MPO spec。
     """
 
-    return MPOSpec(
-        out_modes=qwen3_modes(linear.out_features),
-        in_modes=qwen3_modes(linear.in_features),
-        ranks=(1, rank, rank, 1),
-    )
+    return MPOSpec(**qwen3_mpo_spec_dict(linear.out_features, linear.in_features, rank))
 
 
 def parse_limit(value: str) -> int | float | None:
@@ -126,8 +103,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
-        allow_abbrev=False,
-        description="逐层运行 Qwen3-8B MPO 的 lm-eval 敏感性分析。"
+        allow_abbrev=False, description="逐层运行 Qwen3-8B MPO 的 lm-eval 敏感性分析。"
     )
     parser.add_argument(
         "--runtime-config",
@@ -145,11 +121,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--decomposition-provider", default="tensorly")
     parser.add_argument("--execution-provider", default="tensorly")
     parser.add_argument(
-        "--start-layer-index", type=int, default=0,
+        "--start-layer-index",
+        type=int,
+        default=0,
         help="筛选后的 Linear 模块起始索引（从 0 开始，包含）。",
     )
     parser.add_argument(
-        "--max-layers", type=int,
+        "--max-layers",
+        type=int,
         help="最多分析的 Linear 模块数量；不是 Transformer block 数量。",
     )
     parser.add_argument("--task", default="mmlu")
@@ -163,7 +142,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-length", type=int, default=4096)
     parser.add_argument("--limit", type=parse_limit, default=1)
     parser.add_argument(
-        "--sample-start-index", type=int, default=0,
+        "--sample-start-index",
+        type=int,
+        default=0,
         help="评测题目起始索引（从 0 开始，仅支持单 task）；limit 为从此处取的题数。",
     )
     parser.add_argument("--seed", type=int, default=42)
@@ -248,9 +229,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         )
 
     if config.output is None:
-        timestamp = datetime.now(timezone(timedelta(hours=8))).strftime(
-            "%Y%m%dT%H%M%S"
-        )
+        timestamp = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%dT%H%M%S")
         slug = re.sub(r"[^A-Za-z0-9._-]+", "-", config.name).strip("-._")
         directory = Path(config.artifact_root) / "sensitivity" / slug / timestamp
         config = replace(config, output=directory / "report.md")
@@ -371,7 +350,9 @@ def plot_heatmaps(
         total_examples = int(count[1]) if count else lm_eval_dataset_size(task)
     if not 0 < evaluated_examples <= total_examples:
         raise ValueError("sample counts must satisfy 0 < evaluated <= total")
-    annotation = f"Test samples: {evaluated_examples:,} / {total_examples:,} (evaluation split)"
+    annotation = (
+        f"Test samples: {evaluated_examples:,} / {total_examples:,} (evaluation split)"
+    )
     if not re.search(r"^- Total evaluation examples:", report, re.MULTILINE):
         report = report.replace(
             f"- Evaluated examples: {evaluated_examples}",
@@ -414,7 +395,9 @@ def plot_heatmaps(
         ax.set_yticks(range(len(MODULES)), MODULES)
         ax.set_xlabel("Transformer block")
         ax.set_ylabel("Module")
-        ax.set_title(f"{task.upper()} {metric} degradation heatmap ({unit})\n{metric_annotation}")
+        ax.set_title(
+            f"{task.upper()} {metric} degradation heatmap ({unit})\n{metric_annotation}"
+        )
         fig.colorbar(im, ax=ax, label=f"Degradation ({unit}), clipped to [0, {vmax:g}]")
         for row, col in np.argwhere(
             np.isfinite(values) & ((values > vmax) | (values < 0))

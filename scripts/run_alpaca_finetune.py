@@ -25,6 +25,11 @@ from pathlib import Path
 import torch
 from torch import nn
 
+if __package__:
+    from .qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+else:
+    from qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+
 from qcomp import (
     ArtifactPaths,
     CompressionPlan,
@@ -56,30 +61,6 @@ from qcomp.evaluation import (
 # ── Qwen3-8B MPO 结构 ────────────────────────────────────────────────
 
 
-def qwen3_modes(size: int) -> tuple[int, int, int]:
-    """返回 Qwen3-8B 已知特征维度对应的三核 MPO modes。
-
-    参数：
-        size: Linear 的输入或输出特征数。
-
-    返回：
-        乘积等于特征数的三个 mode。
-
-    异常：
-        ValueError: 特征数不属于当前 Qwen3-8B 配置时抛出。
-    """
-
-    modes = {
-        1024: (8, 8, 16),
-        4096: (16, 16, 16),
-        12288: (16, 16, 48),
-        151936: (8, 16, 1187),
-    }
-    if size not in modes:
-        raise ValueError(f"no Qwen3 MPO modes configured for feature size {size}")
-    return modes[size]
-
-
 def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
     """为一个 Qwen3 Linear 创建三核 MPO spec。
 
@@ -91,11 +72,7 @@ def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
         与 Linear 输入输出维度匹配的 MPO spec。
     """
 
-    return MPOSpec(
-        out_modes=qwen3_modes(linear.out_features),
-        in_modes=qwen3_modes(linear.in_features),
-        ranks=(1, rank, rank, 1),
-    )
+    return MPOSpec(**qwen3_mpo_spec_dict(linear.out_features, linear.in_features, rank))
 
 
 # ── 默认评测任务 ─────────────────────────────────────────────────────
@@ -120,7 +97,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
         allow_abbrev=False,
-        description="联合压缩 Qwen3 指定 block 的全部 proj，再用 Alpaca 微调 MPO 参数并评测。"
+        description="联合压缩 Qwen3 指定 block 的全部 proj，再用 Alpaca 微调 MPO 参数并评测。",
     )
     # 模型
     parser.add_argument(
@@ -380,7 +357,9 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if args.artifact_root is None:
         model_name = Path(model_config.model_name_or_path).name
-        run_name = f"{model_name}_blocks-{args.start_block}-{end_block}_rank-{args.rank}"
+        run_name = (
+            f"{model_name}_blocks-{args.start_block}-{end_block}_rank-{args.rank}"
+        )
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         args.artifact_root = str(
             Path("artifacts/alpaca-finetune") / run_name / timestamp

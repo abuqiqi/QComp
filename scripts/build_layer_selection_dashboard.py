@@ -4,6 +4,35 @@
 - ``read_source``：验证日志、合并来源、报告样本数和逐层基线。
 - ``build_payload``：对齐五个数据集，整理浏览器使用的指标和来源。
 - ``build_dashboard``：嵌入原生页面资源与数据，保存来源配置。
+
+使用说明（以下命令在项目根目录执行）：
+    python scripts/build_layer_selection_dashboard.py
+    python scripts/build_layer_selection_dashboard.py --config config/layer_selection.json
+    python scripts/build_layer_selection_dashboard.py --config config/layer_selection.json --output artifacts/layer-selection/custom-run
+
+命令行参数（均可省略）：
+- ``--config``：数据来源 JSON，默认使用项目根目录下的
+  ``config/layer_selection.json``；默认位置由脚本位置确定，不受工作目录影响。
+  显式传入的相对配置路径相对于当前工作目录解析。
+- ``--output``：输出目录，默认使用项目根目录下的
+  ``artifacts/layer-selection/<北京时间戳>/``，时间戳格式为 ``YYYYMMDDTHHMMSS``。
+  显式传入的相对输出路径相对于当前工作目录解析；输出目录必须尚不存在。
+- ``--model-config``：本地模型 config.json，默认读取日志模型目录；不加载权重。
+- ``-h`` / ``--help``：查看命令行帮助。
+
+数据来源配置：
+- ``datasets`` 数组包含 BoolQ、MMLU、HellaSwag、GSM8K、TriviaQA 五份结果，
+  每项填写 ``id``、``label``、``metric``、``path``，完整示例见默认配置文件。
+- ``path`` 指向 ``events.jsonl`` 或 ``merged_results.json``，允许绝对路径；
+  相对路径以配置文件所在目录为基准。读取时还需要同目录的 ``report.md``，
+  合并结果还需要其记录的原始来源文件，以便校验来源及哈希。
+- 当前要求五份结果覆盖相同的 252 个 Qwen3 Linear、rank 为 96，且实验完整、
+  模型与压缩配置一致；来源由配置明确指定，不会自动选择最新实验。
+
+输出与更新：
+    输出目录包含嵌入全部数据的 ``index.html`` 和保存来源配置的 ``sources.json``。
+    页面可直接在浏览器离线打开；更换来源数据或更新页面代码后需重新生成。
+    在页面中调整数据集、指标、权重或期望选择矩阵数无需重新运行脚本。
 """
 
 from __future__ import annotations
@@ -16,6 +45,11 @@ import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+if __package__:
+    from .qwen3_mpo_config import qwen3_mpo_spec_dict, qwen3_projection_shapes
+else:
+    from qwen3_mpo_config import qwen3_mpo_spec_dict, qwen3_projection_shapes
 
 PROJECT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).with_name("layer_selection")
@@ -256,8 +290,10 @@ def read_source(path: Path, seen: frozenset[Path] = frozenset()) -> dict[str, An
     )
 
 
-def build_payload(config: dict[str, Any], base: Path) -> dict[str, Any]:
-    """按 config 的五份来源构建页面数据；相对路径基于 base 解析。"""
+def build_payload(
+    config: dict[str, Any], base: Path, model_config: Path | None = None
+) -> dict[str, Any]:
+    """按 config 五份来源及可选 model_config 构建数据；来源相对路径基于 base。"""
     entries = config["datasets"]
     require(len(entries) == 5, "配置必须包含五个数据集")
     require(
@@ -308,13 +344,52 @@ def build_payload(config: dict[str, Any], base: Path) -> dict[str, Any]:
                 source=source["provenance"],
             )
         )
+    config_file = model_config or (
+        base / config["model_config"]
+        if config.get("model_config")
+        else Path(reference["config"]["model_name_or_path"]) / "config.json"
+    )
+    require(
+        config_file.is_file(),
+        f"模型配置不存在：{config_file}；请使用 --model-config 指定 config.json",
+    )
+    model_data = json.loads(config_file.read_text())
+    shapes = qwen3_projection_shapes(model_data)
+    require(
+        model_data["num_hidden_layers"] == 36, "模型 block 数与 252 个来源模块不一致"
+    )
+    targets = {}
+    for name in expected_names:
+        spec = qwen3_mpo_spec_dict(*shapes[name.rsplit(".", 1)[1]], reference["rank"])
+        out_modes, in_modes, ranks = spec["out_modes"], spec["in_modes"], spec["ranks"]
+        compressed = sum(
+            ranks[j] * o * i * ranks[j + 1]
+            for j, (o, i) in enumerate(zip(out_modes, in_modes, strict=True))
+        )
+        ratio = math.prod(out_modes) * math.prod(in_modes) / compressed
+        require(
+            math.isclose(
+                ratio,
+                reference["cases"][name]["layers"][name]["compression_ratio"],
+                rel_tol=1e-9,
+                abs_tol=1e-12,
+            ),
+            f"{name}: 模型配置与来源压缩比不一致",
+        )
+        targets[name] = dict(module_path=name, representation="mpo", spec=spec)
     return {
-        "version": 1,
+        "model": dict(
+            name_or_path=reference["config"]["model_name_or_path"],
+            model_type=model_data["model_type"],
+            config_sha256=digest(config_file),
+        ),
+        "model_config_path": str(config_file.resolve()),
         "rank": 96,
         "datasets": datasets,
         "modules": [
             {
                 "name": name,
+                "target": targets[name],
                 "block": i // 7,
                 "type": MODULES[i % 7],
                 "saving": 1 - 1 / reference["cases"][name]["model_ratio"],
@@ -324,11 +399,14 @@ def build_payload(config: dict[str, Any], base: Path) -> dict[str, Any]:
     }
 
 
-def build_dashboard(config_path: Path, output: Path | None = None) -> Path:
-    """验证 config_path 并向新的 output 目录写入独立页面及可复用来源配置。"""
+def build_dashboard(
+    config_path: Path, output: Path | None = None, *, model_config: Path | None = None
+) -> Path:
+    """验证 config_path 和可选 model_config，向新的 output 目录写入页面及来源配置。"""
     config_path = config_path.resolve()
     config = json.loads(config_path.read_text())
-    payload = build_payload(config, config_path.parent)
+    payload = build_payload(config, config_path.parent, model_config)
+    config["model_config"] = payload.pop("model_config_path")
     if output is None:
         output = (
             PROJECT
@@ -361,8 +439,15 @@ def main() -> None:
         "--config", type=Path, default=PROJECT / "config/layer_selection.json"
     )
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--model-config", type=Path, help="本地 Qwen3 config.json，不加载权重"
+    )
     args = parser.parse_args()
-    print(build_dashboard(args.config, args.output).resolve())
+    print(
+        build_dashboard(
+            args.config, args.output, model_config=args.model_config
+        ).resolve()
+    )
 
 
 if __name__ == "__main__":

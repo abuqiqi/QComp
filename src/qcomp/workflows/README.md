@@ -218,3 +218,7 @@ checkpoint 只保存本次选择的参数、优化器、调度器、训练位置
 ## 增加其他微调方法
 
 参数选择、objective、workflow 和 checkpoint 的扩展步骤见[扩展指南](../../../docs/extending.md#新增训练方法)。
+
+## 选层 JSON 计划
+
+`load_compression_plan(path, model=model)` 读取统一选层 JSON 的执行部分，并自动检查目标无 bias Linear 和矩阵维度，成功后返回 `CompressionPlan`。它不读取敏感度来源、不修改模型。`compression_plan_to_dict()` 和 `compression_plan_from_dict()` 读写 `compression_plan` 对象，支持逐矩阵不同 modes 与 ranks 的 MPO spec。文件结构和使用示例见[实验文档](../../../docs/experiments.md#统一-json-与计划加载)。

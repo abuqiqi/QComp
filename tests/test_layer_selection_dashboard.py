@@ -22,6 +22,27 @@ from scripts.build_layer_selection_dashboard import (
 
 def make_sources(root: Path) -> dict:
     """在 root 构造五份完整实验，返回相对路径配置。"""
+    model_dir = root / "model"
+    model_dir.mkdir()
+    model_config = dict(
+        model_type="qwen3",
+        hidden_size=4096,
+        intermediate_size=12288,
+        num_attention_heads=32,
+        num_key_value_heads=8,
+        head_dim=128,
+        num_hidden_layers=36,
+    )
+    (model_dir / "config.json").write_text(json.dumps(model_config))
+    ratios = {
+        "q_proj": 6.965986394557823,
+        "o_proj": 6.965986394557823,
+        "k_proj": 3.4478114478114477,
+        "v_proj": 3.4478114478114477,
+        "gate_proj": 20.48,
+        "up_proj": 20.48,
+        "down_proj": 20.48,
+    }
     entries = []
     for task in ["boolq", "mmlu", "hellaswag", "gsm8k", "triviaqa"]:
         directory = root / task
@@ -33,7 +54,7 @@ def make_sources(root: Path) -> dict:
             metric_directions={"acc": "higher"},
             layers=252,
             run_id=task,
-            model_name_or_path="fixture/model",
+            model_name_or_path=str(model_dir),
             model_dtype="torch.bfloat16",
             decomposition_dtype="torch.float32",
             decomposition_provider="tensorly",
@@ -59,7 +80,10 @@ def make_sources(root: Path) -> dict:
                         degradations={"acc": 0.25},
                         model_ratio=1.001,
                         layers={
-                            name: {"compression_ratio": 2.0, "relative_error": 0.1}
+                            name: {
+                                "compression_ratio": ratios[module],
+                                "relative_error": 0.1,
+                            }
                         },
                     )
                 )
@@ -112,6 +136,46 @@ class DashboardSourceTests(unittest.TestCase):
             self.assertTrue(Path(saved["datasets"][0]["path"]).is_absolute())
             with self.assertRaises(FileExistsError):
                 build_dashboard(path, root / "output")
+
+    def test_model_config_and_spec_validation(self) -> None:
+        """配置推导覆盖七类矩阵，缺失配置、错误 block 和压缩比均拒绝。"""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = make_sources(root)
+            payload = build_payload(config, root)
+            spec = payload["modules"][1]["target"]["spec"]
+            self.assertEqual(spec["out_modes"], [8, 8, 16])
+            self.assertEqual(spec["ranks"], [1, 96, 96, 1])
+            model_path = root / "model/config.json"
+            model_path.rename(root / "moved.json")
+            with self.assertRaisesRegex(ValueError, "--model-config"):
+                build_payload(config, root)
+            self.assertEqual(
+                build_payload(config, root, root / "moved.json")["model"][
+                    "config_sha256"
+                ],
+                payload["model"]["config_sha256"],
+            )
+            model = json.loads((root / "moved.json").read_text())
+            for key, value in [
+                ("num_hidden_layers", 35),
+                ("hidden_size", 1024),
+                ("attention_bias", True),
+                ("model_type", "other"),
+            ]:
+                changed = dict(model, **{key: value})
+                model_path.write_text(json.dumps(changed))
+                with self.assertRaises(ValueError):
+                    build_payload(config, root)
+            model_path.write_text(json.dumps(model))
+            for task in config["datasets"]:
+                log = root / task["path"]
+                events = [json.loads(line) for line in log.read_text().splitlines()]
+                layer = events[1]["fields"]["case"]
+                events[1]["fields"]["layers"][layer]["compression_ratio"] = 2
+                log.write_text("\n".join(json.dumps(e) for e in events))
+            with self.assertRaisesRegex(ValueError, "压缩比"):
+                build_payload(config, root)
 
     def test_invalid_records_rejected(self) -> None:
         """未完成、重复、非有限数和基线漂移必须拒绝。"""

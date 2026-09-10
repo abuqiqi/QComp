@@ -4,6 +4,7 @@
 操作。当前提供单层与模型级压缩、压缩敏感性分析、已压缩 Causal LM 微调和正常生成流程。
 
 主要内容：
+- ``load_compression_plan``、``compression_plan_to_dict``、``compression_plan_from_dict``：读写并验证压缩计划。
 - ``CompressionTarget``、``CompressionPlan``：描述模型级压缩目标。
 - ``LinearCompressionResult``：保存单层压缩产生的 artifact 和模型替换记录。
 - ``ModelCompressionResult``：保存模型级压缩产生的逐层结果。
@@ -52,7 +53,16 @@ from .sensitivity import (
     sensitivity_case_record,
 )
 
+from .compression_plan_io import (
+    compression_plan_to_dict,
+    compression_plan_from_dict,
+    load_compression_plan,
+)
+
 __all__ = [
+    "compression_plan_to_dict",
+    "compression_plan_from_dict",
+    "load_compression_plan",
     "InferenceConfig",
     "InferencePerformance",
     "InferenceResult",

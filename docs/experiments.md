@@ -52,7 +52,7 @@ python scripts/run_qwen3_sensitivity.py \
 
 ## 交互式敏感性选层
 
-从项目根目录生成可直接打开的独立 HTML，无需模型、GPU、网页服务或网络：
+从项目根目录生成可直接打开的独立 HTML，只读取模型配置和敏感度结果，无需加载权重、GPU、网页服务或网络：
 
 ```bash
 python scripts/build_layer_selection_dashboard.py
@@ -64,15 +64,49 @@ python scripts/build_layer_selection_dashboard.py --config config/layer_selectio
 
 默认输出 `artifacts/layer-selection/<北京时间戳>/index.html` 和 `sources.json`，显式输出目录必须尚不存在。将 `index.html` 下载到本机后用浏览器打开即可；页面内已嵌入全部数据和资源。来源配置采用绝对路径保存，便于在同一机器重建页面；换机器时修改来源路径。
 
-页面默认全部勾选、等权、K=32、rank=96。可切换各任务实际存在的指标，拖动权重即时更新；固定评分为 `Σ 归一化权重 × max(0, 基线−压缩得分) × 100`，不按题数加权。表格保留有符号掉点；可用单任务最大掉点上限过滤候选。热力图与排名表支持点击联动，悬停显示各任务得分。
+页面默认全部勾选、等权、期望选择 32 个矩阵（`requested_module_count`）、rank=96。可切换各任务实际存在的指标，拖动权重即时更新；固定评分为 `Σ 归一化权重 × max(0, 基线−压缩得分) × 100`，不按题数加权。表格保留有符号掉点；可用单任务最大掉点上限过滤候选。热力图与排名表支持点击联动，悬停显示各任务得分。
 
-稳定性模式按 5% 步长枚举上下限内总和为 100% 的权重组合。默认五任务各 10%～30%，共 381 组。勾选数为 N 时，下限按 `50/N%` 向下取整至 5% 倍数，上限按 `150/N%` 向上取整并限制为 100%。点击计算后分批处理，可取消；设置改变后必须重新计算。前 K 名边界并列按剩余名额分摊入选频率，分数保留十位小数判定并列；排名统计使用平均名次和 nearest-rank 分位数。
+稳定性模式按 5% 步长枚举上下限内总和为 100% 的权重组合。默认五任务各 10%～30%，共 381 组。勾选数为 N 时，下限按 `50/N%` 向下取整至 5% 倍数，上限按 `150/N%` 向上取整并限制为 100%。点击计算后分批处理，可取消；设置改变后必须重新计算。期望选择数量的边界并列按剩余名额分摊入选频率，分数保留十位小数判定并列；排名统计使用平均名次和 nearest-rank 分位数。
 
-固定模式依次按综合分数、最大掉点、参数收益及模块路径排序；稳定性模式依次按入选频率、最大掉点、最差加权分数、参数收益及模块路径排序。预计参数节省由各模块 `1−1/model_ratio` 求和。A/B 按钮保存当前页面内的方案快照，刷新页面会清空；JSON 可长期保存设置、来源哈希、rank 和有序模块路径。导入会核对来源哈希并重新计算验证名单；CSV 导出所有模块当前排名及各任务指标。
+固定模式依次按综合分数、最大掉点、参数收益及模块路径排序；稳定性模式依次按入选频率、最大掉点、最差加权分数、参数收益及模块路径排序。预计参数节省由各模块 `1−1/model_ratio` 求和。A/B 按钮保存当前页面内的完整方案快照，刷新页面会清空；CSV 导出所有模块当前排名及各任务指标。
 
-候选名单用于后续构造 `CompressionPlan`，本页不执行压缩或微调。参数节省不代表推理加速，入选频率不代表统计置信度，联合压缩分数仍需实际评测。
+### 统一 JSON 与计划加载
 
-验证生成器使用 `python -m pytest tests/test_layer_selection_dashboard.py`。浏览器交互测试另需安装 `playwright` 和 `python -m playwright install chromium`，运行 `python -m pytest tests/test_layer_selection_browser.py`；未安装 Playwright 时该文件跳过，页面本身没有此依赖。
+页面只下载一个 `layer-selection.json`，与未来自动选层共用结构，不保存格式或算法版本号：
+
+- `kind` 为 `qcomp_compression_selection`，`created_at` 和 `producer` 记录生成时间和入口。
+- `model` 保存 `name_or_path`、`model_type`、`config_sha256`；配置哈希不代表权重指纹。
+- `compression_plan.targets` 按入选顺序保存每个目标的 `module_path`、`representation` 和完整 `spec`。MPO spec 包含 `out_modes`、`in_modes`、`ranks`，允许不同矩阵独立配置。执行以 targets 为唯一依据。
+- `selection.method` 为 `fixed_weight` 或 `weight_stability`。`settings` 保存 `requested_module_count`、可空的 `max_task_drop_pp`、`weight_step_pp` 和五任务的勾选、指标、原始权重及上下限；`sources` 保存来源路径、题数、哈希及完整合并 provenance。
+- `selection.results` 保存候选总数、合格数量、实际入选数量 `selected_count`、整体参数节省比例、归一化权重，以及全部 252 个矩阵的资格、排名、掉点和参数收益。固定模式的 `stability` 为 null；稳定性模式增加权重组合数、各合格矩阵的入选频率、中位排名、P95 排名和最差加权掉点，不保存逐权重组合的完整排名。
+- `evaluation.joint_compression_status` 为 `not_evaluated`，表示尚未进行联合评测。
+
+所有掉点使用百分点（`_pp`），保留原始负掉点；参数节省、频率和归一化权重使用 0～1 比例。不合格候选排名为 null。筛选后实际入选数可以小于期望数量。固定权重模式只保存固定评分；稳定性模式的 `weighted_drop_pp` 是滑块权重下的参考分数，排名由稳定性统计确定。
+
+生成器默认读取日志模型目录的 `config.json`。模型目录迁移后可指定本地配置：
+
+```bash
+python scripts/build_layer_selection_dashboard.py --model-config /infini-data/Qwen3-8B/config.json
+```
+
+显式 `--model-config` 相对于当前工作目录；生成的 `sources.json` 保存绝对 `model_config` 路径，重建时可直接使用该来源配置。生成器按配置推导七类投影形状，使用与实验脚本共享的 modes 规则，核对每个矩阵的压缩比。当前页面仍只处理 Qwen3 五任务、252 个模块和 rank 96。
+
+页面导入检查模型配置和来源哈希，并重新计算验证完整 targets、设置及结果。稳定性复算显示进度并支持取消；不一致时保留原页面状态。旧文件需通过最新版页面重新导出。当前页面没有对应敏感度数据的混合 rank 方案不能导入复算；Python 计划接口可解析混合 rank 的 MPO 计划。
+
+压缩端将已经加载的模型传入一次调用即可，加载接口自动检查目标存在、无 bias Linear 类型和矩阵维度，不读取敏感度来源、不修改模型：
+
+```python
+from qcomp import load_compression_plan
+
+# model 是调用方已加载的模型。
+plan = load_compression_plan("layer-selection.json", model=model)
+```
+
+返回的 plan 可交给现有 `compress_model()`，backend 和 dtype 继续由执行配置提供。`compression_plan_to_dict(plan)` 与 `compression_plan_from_dict(data)` 分别读写执行部分，供脚本生成统一 JSON；未知表示明确报错，目前仅支持 MPO。模型路径只用于追溯，加载不要求原路径存在，也不宣称校验了模型权重身份。
+
+页面不执行压缩或微调，现有微调脚本暂未增加 JSON 入口。参数节省不代表推理加速，入选频率不代表统计置信度，联合压缩分数仍需实际评测。
+
+验证生成器和计划接口使用 `python -m pytest tests/test_layer_selection_dashboard.py tests/test_compression_plan_io.py`。浏览器交互测试另需安装 `playwright` 和 `python -m playwright install chromium`，运行 `python -m pytest tests/test_layer_selection_browser.py`；未安装 Playwright 时该文件跳过，页面本身没有此依赖。
 
 ## Alpaca 联合压缩与微调
 

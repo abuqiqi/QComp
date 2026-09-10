@@ -5,6 +5,7 @@
 只有通过 registry 选择后才会被加载。
 
 主要内容：
+- ``load_compression_plan``、``compression_plan_to_dict``、``compression_plan_from_dict``：读写并验证压缩计划。
 - ``TensorNetworkArtifact``：保存与具体张量网络表示无关的数据。
 - ``reconstruct_tensor``：根据 artifact 的表示类型重建稠密张量。
 - ``MPOSpec``：描述 MPO 的输入维度、输出维度和 TT ranks。
@@ -105,7 +106,16 @@ from .workflows import (
     restore_compressed_model,
 )
 
+from .workflows.compression_plan_io import (
+    compression_plan_to_dict,
+    compression_plan_from_dict,
+    load_compression_plan,
+)
+
 __all__ = [
+    "compression_plan_to_dict",
+    "compression_plan_from_dict",
+    "load_compression_plan",
     "ArtifactPaths",
     "CausalLMResources",
     "DataLoaderConfig",
