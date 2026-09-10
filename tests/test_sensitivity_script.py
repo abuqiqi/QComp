@@ -186,11 +186,41 @@ class SensitivityScriptTests(unittest.TestCase):
         self.assertEqual(values[6, 0], 2.5)
         self.assertEqual(unit, "raw units")
 
+    def test_heatmaps_show_each_baseline_in_metric_units(self) -> None:
+        """多指标图分别显示基线，比例转百分比且原始指标保留数值。"""
+        from PIL import Image
+
+        metrics = ["exact_match_strict_match", "exact_match_flexible_extract", "word_perplexity"]
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / "report.md"
+            report.write_text(
+                "- Evaluated examples: 256\n- Total evaluation examples: 1319\n"
+                "\n## Baseline Metrics\n\n| Metric | Value |\n|---|---:|\n"
+                "| exact_match_strict_match | 0.921875 |\n"
+                "| exact_match_flexible_extract | 0.9296875 |\n"
+                "| word_perplexity | 12.5 |\n"
+            )
+            records = [{
+                "layers": {"model.layers.0.self_attn.q_proj": {}},
+                "degradations": dict.fromkeys(metrics, 0.01),
+            }]
+            images = experiment.plot_heatmaps(
+                records, task="gsm8k", metrics=metrics, report_path=report,
+            )
+            for path, expected in zip(images, ["92.19%", "92.97%", "12.5"]):
+                with Image.open(path) as image:
+                    self.assertIn(f"Baseline: {expected}", image.info["Description"])
+            report.write_text(report.read_text().replace("0.921875", "nan"))
+            with self.assertRaisesRegex(ValueError, "baseline metric must be finite"):
+                experiment.plot_heatmaps(
+                    records, task="gsm8k", metrics=metrics, report_path=report,
+                )
+
     def test_plot_only_creates_png_and_updates_report_without_model(self) -> None:
         """补图从日志读取任务和指标，生成 PNG 并幂等嵌入报告，不运行模型。"""
         with tempfile.TemporaryDirectory() as directory:
             report = Path(directory) / "report.md"
-            report.write_text("# Existing report\n\n- Evaluated examples: 2\n- Total evaluation examples: 3270\n")
+            report.write_text("# Existing report\n\n- Evaluated examples: 2\n- Total evaluation examples: 3270\n\n## Baseline Metrics\n\n| Metric | Value |\n|---|---:|\n| acc | 0.75 |\n")
             log = Path(directory) / "events.jsonl"
             entries = [
                 (
@@ -223,7 +253,7 @@ class SensitivityScriptTests(unittest.TestCase):
             with Image.open(png) as image:
                 self.assertEqual(
                     image.info["Description"],
-                    "Test samples: 2 / 3,270 (evaluation split)",
+                    "Test samples: 2 / 3,270 (evaluation split) | Baseline: 75.00%",
                 )
             self.assertEqual(report.read_text().count("![acc heatmap]"), 1)
             self.assertTrue(report.read_text().startswith("# Existing report"))

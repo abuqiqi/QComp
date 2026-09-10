@@ -41,7 +41,7 @@ python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num
 
 非零题目起点仅支持单 task，limit 使用整数或 none，越界起点会报错。分段沿用缓存数据的原始评测顺序；每段分别评测基线和所选 Linear，日志记录题目起点，报告记录实际范围与样本数。两段分别输出结果，暂不自动合并。为了与一次性全量评测使用相同 prompt，分段示例固定 `--num-fewshot 0`；非零 few-shot 的示例抽样可能随分段而变化。
 
-敏感性实验结束后自动生成热力图，横轴为 Transformer 块号，纵轴为七类投影模块。每张图标注 `Test samples: 本次条数 / 评测集总条数`；总数仅指任务使用的 test 或 validation split，group 按叶子任务汇总，不包含训练数据。每个比较指标输出一张 `<报告名>-<指标>-heatmap.png`，与 Markdown 报告保存在同一实验目录，并嵌入报告末尾；默认目录为 `artifacts/sensitivity/<实验名>/<时间戳>/`，使用 `--output` 时跟随该报告路径。准确率和 exact-match 的掉点乘以 100，以百分点（pp）表示；困惑度等使用原始单位。`--heatmap-max` 默认 10，超出色标范围的格子标真实数值，负值表示改善，未评测格显示灰色。绘图依赖可通过 `python -m pip install -e ".[plotting]"` 安装，`[all]` 也包含此依赖。
+敏感性实验结束后自动生成热力图，横轴为 Transformer 块号，纵轴为七类投影模块。每张图标注 `Test samples: 本次条数 / 评测集总条数`；总数仅指任务使用的 test 或 validation split，group 按叶子任务汇总，不包含训练数据。图标题同时显示对应指标的 `Baseline` 得分，读取报告的 `Baseline Metrics` 表；准确率和 exact-match 等比例指标显示为百分比，其他指标保留原始单位。每个比较指标输出一张 `<报告名>-<指标>-heatmap.png`，与 Markdown 报告保存在同一实验目录，并嵌入报告末尾；默认目录为 `artifacts/sensitivity/<实验名>/<时间戳>/`，使用 `--output` 时跟随该报告路径。准确率和 exact-match 的掉点乘以 100，以百分点（pp）表示；困惑度等使用原始单位。`--heatmap-max` 默认 10，超出色标范围的格子标真实数值，负值表示改善，未评测格显示灰色。绘图依赖可通过 `python -m pip install -e ".[plotting]"` 安装，`[all]` 也包含此依赖。
 
 已有完整实验可直接补图，无需加载模型；从项目根目录运行：
 
@@ -49,6 +49,30 @@ python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num
 python scripts/run_qwen3_sensitivity.py \
   --plot-only artifacts/sensitivity/qwen3-mmlu-mpo-rank-96/20260905T182434/events.jsonl
 ```
+
+## 交互式敏感性选层
+
+从项目根目录生成可直接打开的独立 HTML，无需模型、GPU、网页服务或网络：
+
+```bash
+python scripts/build_layer_selection_dashboard.py
+# 指定另一份来源配置或新的输出目录
+python scripts/build_layer_selection_dashboard.py --config config/layer_selection.json --output artifacts/layer-selection/my-selection
+```
+
+默认配置 `config/layer_selection.json` 为五个数据集各指定一份完整结果。相对路径基于配置文件目录；默认使用 BoolQ / MMLU 全量、HellaSwag 合并 2,000 条、GSM8K 合并 256 条和 TriviaQA 128 条。生成器验证完成状态、252 个模块、模型与压缩配置、指标基线及合并来源哈希。合并来源原先位于 `evaluations`、后来移到 `sensitivity` 时，按同任务下的原时间戳目录定位，并严格核对原哈希。缺失或不一致会报错。
+
+默认输出 `artifacts/layer-selection/<北京时间戳>/index.html` 和 `sources.json`，显式输出目录必须尚不存在。将 `index.html` 下载到本机后用浏览器打开即可；页面内已嵌入全部数据和资源。来源配置采用绝对路径保存，便于在同一机器重建页面；换机器时修改来源路径。
+
+页面默认全部勾选、等权、K=32、rank=96。可切换各任务实际存在的指标，拖动权重即时更新；固定评分为 `Σ 归一化权重 × max(0, 基线−压缩得分) × 100`，不按题数加权。表格保留有符号掉点；可用单任务最大掉点上限过滤候选。热力图与排名表支持点击联动，悬停显示各任务得分。
+
+稳定性模式按 5% 步长枚举上下限内总和为 100% 的权重组合。默认五任务各 10%～30%，共 381 组。勾选数为 N 时，下限按 `50/N%` 向下取整至 5% 倍数，上限按 `150/N%` 向上取整并限制为 100%。点击计算后分批处理，可取消；设置改变后必须重新计算。前 K 名边界并列按剩余名额分摊入选频率，分数保留十位小数判定并列；排名统计使用平均名次和 nearest-rank 分位数。
+
+固定模式依次按综合分数、最大掉点、参数收益及模块路径排序；稳定性模式依次按入选频率、最大掉点、最差加权分数、参数收益及模块路径排序。预计参数节省由各模块 `1−1/model_ratio` 求和。A/B 按钮保存当前页面内的方案快照，刷新页面会清空；JSON 可长期保存设置、来源哈希、rank 和有序模块路径。导入会核对来源哈希并重新计算验证名单；CSV 导出所有模块当前排名及各任务指标。
+
+候选名单用于后续构造 `CompressionPlan`，本页不执行压缩或微调。参数节省不代表推理加速，入选频率不代表统计置信度，联合压缩分数仍需实际评测。
+
+验证生成器使用 `python -m pytest tests/test_layer_selection_dashboard.py`。浏览器交互测试另需安装 `playwright` 和 `python -m playwright install chromium`，运行 `python -m pytest tests/test_layer_selection_browser.py`；未安装 Playwright 时该文件跳过，页面本身没有此依赖。
 
 ## Alpaca 联合压缩与微调
 
