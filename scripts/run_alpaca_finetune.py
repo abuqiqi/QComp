@@ -360,7 +360,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         run_name = (
             f"{model_name}_blocks-{args.start_block}-{end_block}_rank-{args.rank}"
         )
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         args.artifact_root = str(
             Path("artifacts/alpaca-finetune") / run_name / timestamp
         )

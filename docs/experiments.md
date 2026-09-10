@@ -131,6 +131,6 @@ python scripts/run_alpaca_finetune.py \
 
 该命令使用一个默认长度为 2048 token 的训练 block，更新一步。文本 tokenize 后追加 EOS 并拼接切块，因此一个 block 不等于一条 Alpaca 原始记录。三阶段评测均限制每个 task 为一条样本，MMLU 按每个子任务各一条计算；few-shot 示例数量保持上述设置。此命令用于验证流程，训练效果和评测稳定性需要更多数据验证。
 
-默认产物目录为 `artifacts/alpaca-finetune/<模型名>_blocks-<起点>-<终点>_rank-<rank>/<YYYYMMDD-HHMMSS>/`，例如 `artifacts/alpaca-finetune/Qwen3-8B_blocks-25-36_rank-96/20260908-143025/`。模型名取模型来源路径的最后一段，终点为实际使用的不包含端点的 block 编号，时间戳使用本地时间。显式传入 `--artifact-root <目录>` 时直接使用该目录。
+默认产物目录为 `artifacts/alpaca-finetune/<模型名>_blocks-<起点>-<终点>_rank-<rank>/<YYYYMMDDTHHMMSS>/`，例如 `artifacts/alpaca-finetune/Qwen3-8B_blocks-25-36_rank-96/20260908T143025/`。模型名取模型来源路径的最后一段，终点为实际使用的不包含端点的 block 编号，时间戳使用本地时间。显式传入 `--artifact-root <目录>` 时直接使用该目录。
 
 产物目录包含三阶段结果 `summary.json`、配置 `experiment_config.json`、日志 `experiment.jsonl`、`decompositions/initial/` 和 `decompositions/finetuned/` 下的逐层 artifact，以及 `checkpoints/` 下的训练状态。产物需配合原始模型和相同执行后端使用。断点续训时，在原命令上追加 `--resume-from <checkpoint路径>`，保持模型、数据、层范围、rank、后端及训练配置一致；续训仍会先评测原模型和初始压缩模型，再由训练接口恢复 checkpoint。
