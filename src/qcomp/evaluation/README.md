@@ -220,3 +220,5 @@ for provider in list_backends("mpo"):
 单层性能接口返回 warmup 后的重复计时样本。完整模型生成接口返回各 batch 的生成时间、总时间和吞吐。Alpaca 实验脚本在 `summary.json` 汇总原模型、压缩后及微调后三阶段的质量指标，具体用法见[实验指南](../../../docs/experiments.md)。
 
 `EvaluationTaskConfig(evaluation, metric_directions)` 组合单任务配置与关注指标，指标名称统一去除首尾空白并转为小写，拒绝重名和非法方向。`LMEvalConfig.evaluation_seed` 默认 42，同时传给 lm-eval 的 Python、NumPy、Torch 和 few-shot 种子，不改变题目起点或上限。
+
+`evaluation_task_config_to_dict(config)` 保存完整执行配置和指标方向，`evaluation_task_config_from_dict(data)` 校验并恢复配置；反序列化拒绝缺失字段，避免把当前默认值作为历史实验设置。

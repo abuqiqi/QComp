@@ -30,6 +30,8 @@ from .lm_eval import (
     EvaluationTaskConfig,
     LMEvalConfig,
     LMEvalEvaluator,
+    evaluation_task_config_from_dict,
+    evaluation_task_config_to_dict,
     lm_eval_dataset_size,
 )
 from .metrics import MetricDirection, metric_direction, resolve_metric_directions
@@ -42,19 +44,21 @@ from .performance import (
 from .task import EvaluationResult, EvaluationTask
 
 __all__ = [
-    "EvaluationTaskConfig",
+    "CompressionMetrics",
     "EvaluationResult",
     "EvaluationTask",
+    "EvaluationTaskConfig",
     "LMEvalConfig",
     "LMEvalEvaluator",
-    "lm_eval_dataset_size",
     "MetricDirection",
-    "CompressionMetrics",
     "ModelCompressionMetrics",
     "TimingResult",
     "compression_metrics",
-    "model_compression_metrics",
+    "evaluation_task_config_from_dict",
+    "evaluation_task_config_to_dict",
+    "lm_eval_dataset_size",
     "metric_direction",
+    "model_compression_metrics",
     "resolve_metric_directions",
     "time_decomposition",
     "time_inference",

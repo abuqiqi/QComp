@@ -10,34 +10,40 @@
 - ``write_report``：生成联合压缩报告。
 - ``main``：串联加载、校验、压缩、保存和评测，异常时记录失败并恢复模型。
 
-使用说明：
+使用说明（以下命令在项目根目录执行）：
     python scripts/run_compression_plan.py --selection-json path/to/layer-selection.json
-    添加 --dry-run 只检查文件与配置，不加载模型或创建产物目录。
-    添加 --skip-eval 只压缩并保存；--eval-limit 仅用于临时覆盖各任务评测上限。
+    python scripts/run_compression_plan.py \
+      --selection-json path/to/layer-selection.json --dry-run
+    python scripts/run_compression_plan.py \
+      --selection-json path/to/layer-selection.json \
+      --eval-config config/compression_evaluation.json
+
+``--dry-run`` 只检查文件与配置，不加载模型或创建产物目录；``--skip-eval`` 只压缩并
+保存；``--eval-limit`` 仅用于临时覆盖各任务评测上限。完整参数见
+``python scripts/run_compression_plan.py --help``。
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, replace
 from datetime import datetime, timedelta, timezone
-import hashlib
-import json
 from pathlib import Path
-import re
 from typing import Any
 
 import torch
-from torch import nn
 
 from qcomp import (
-    ModelLoadConfig,
-    evaluate_compression_plans,
+    CompressionExecutionConfig,
     CompressionPlanEvaluation,
+    ModelLoadConfig,
     TimedEvaluation,
     compression_plan_from_dict,
-    CompressionExecutionConfig,
+    evaluate_compression_plans,
     load_causal_lm,
     load_compression_plan,
     load_runtime_config,
@@ -48,6 +54,7 @@ from qcomp.evaluation import (
     EvaluationTaskConfig,
     LMEvalConfig,
     LMEvalEvaluator,
+    evaluation_task_config_from_dict,
     resolve_metric_directions,
 )
 from qcomp.logging import capture_console
@@ -133,7 +140,9 @@ def evaluation_configs(
     datasets = selection.get("settings", {}).get("datasets")
     sources = selection.get("sources")
     if not isinstance(datasets, list) or not isinstance(sources, list):
-        raise ValueError("JSON 缺少评测设置及来源；只压缩请使用 --skip-eval")
+        raise ValueError(  # noqa: TRY004 - 保持方案校验的异常接口
+            "JSON 缺少评测设置及来源；只压缩请使用 --skip-eval"
+        )
     source_map = {}
     for source in sources:
         key = source["dataset_id"]
@@ -149,6 +158,16 @@ def evaluation_configs(
         task = item["id"]
         if task in configs:
             raise ValueError(f"重复评测任务：{task}")
+        provenance = source_map.get(task, {}).get("provenance", {})
+        if "evaluation_config" in provenance:
+            parsed = evaluation_task_config_from_dict(provenance["evaluation_config"])
+            metric = item["metric"]
+            if metric not in parsed.metric_directions:
+                raise ValueError(f"{task}: 来源未评测指标 {metric}")
+            configs[task] = EvaluationTaskConfig(
+                parsed.evaluation, {metric: parsed.metric_directions[metric]}
+            )
+            continue
         source = source_map.get(task, {}).get("provenance", {}).get("configuration", {})
         fields = (
             "task",
@@ -381,31 +400,31 @@ def main(argv: Sequence[str] | None = None) -> None:
     output = output.resolve()
     if output.exists():
         raise FileExistsError(f"产物目录必须不存在：{output}")
-    experiment = dict(
-        model=model_name,
-        selection_json=str(args.selection_json.resolve()),
-        selection_sha256=hashlib.sha256(source_bytes).hexdigest(),
-        output=str(output),
-        device=args.device,
-        model_dtype=args.model_dtype,
-        decomposition_dtype=args.decomposition_dtype,
-        decomposition_provider=args.decomposition_provider,
-        execution_provider=args.execution_provider,
-        trust_remote_code=args.trust_remote_code,
-        decomposition_seed=args.decomposition_seed,
-        offline=runtime.offline,
-        runtime_config=args.runtime_config,
-        target_count=len(parsed.targets),
-        evaluation_configs={
+    experiment = {
+        "model": model_name,
+        "selection_json": str(args.selection_json.resolve()),
+        "selection_sha256": hashlib.sha256(source_bytes).hexdigest(),
+        "output": str(output),
+        "device": args.device,
+        "model_dtype": args.model_dtype,
+        "decomposition_dtype": args.decomposition_dtype,
+        "decomposition_provider": args.decomposition_provider,
+        "execution_provider": args.execution_provider,
+        "trust_remote_code": args.trust_remote_code,
+        "decomposition_seed": args.decomposition_seed,
+        "offline": runtime.offline,
+        "runtime_config": args.runtime_config,
+        "target_count": len(parsed.targets),
+        "evaluation_configs": {
             task: asdict(config.evaluation) for task, config in configs.items()
         },
-        selected_metrics={
+        "selected_metrics": {
             task: dict(config.metric_directions) for task, config in configs.items()
         },
-        skip_eval=args.skip_eval,
-        eval_config=str(args.eval_config.resolve()) if args.eval_config else None,
-        no_plot=args.no_plot,
-    )
+        "skip_eval": args.skip_eval,
+        "eval_config": str(args.eval_config.resolve()) if args.eval_config else None,
+        "no_plot": args.no_plot,
+    }
     if args.dry_run:
         print(json.dumps(experiment, ensure_ascii=False, indent=2))
         print("配置检查通过；尚未加载模型，目标类型与维度将在实际运行时校验。")
@@ -466,19 +485,19 @@ def main(argv: Sequence[str] | None = None) -> None:
                     relative = f"decompositions/{index:04d}.pt"
                     save_artifact(output / relative, artifact)
                     artifacts.append(
-                        dict(
-                            module_path=module_path,
-                            representation=artifact.representation,
-                            path=relative,
-                        )
+                        {
+                            "module_path": module_path,
+                            "representation": artifact.representation,
+                            "path": relative,
+                        }
                     )
                 write_json(
                     output / "artifacts.json",
-                    dict(
-                        model=model_name,
-                        execution_provider=args.execution_provider,
-                        artifacts=artifacts,
-                    ),
+                    {
+                        "model": model_name,
+                        "execution_provider": args.execution_provider,
+                        "artifacts": artifacts,
+                    },
                 )
                 log_event(
                     log_path,
@@ -511,12 +530,12 @@ def main(argv: Sequence[str] | None = None) -> None:
             cm = asdict(completed.model_compression)
             evaluations = {
                 stage: {
-                    task: dict(
-                        metrics=dict(timed.evaluation.metrics),
-                        evaluated_examples=timed.evaluation.evaluated_examples,
-                        total_examples=timed.evaluation.total_examples,
-                        seconds=timed.seconds,
-                    )
+                    task: {
+                        "metrics": dict(timed.evaluation.metrics),
+                        "evaluated_examples": timed.evaluation.evaluated_examples,
+                        "total_examples": timed.evaluation.total_examples,
+                        "seconds": timed.seconds,
+                    }
                     for task, timed in records.items()
                 }
                 for stage, records in (
@@ -526,31 +545,31 @@ def main(argv: Sequence[str] | None = None) -> None:
             }
             comparison = {
                 task: {
-                    metric: dict(
-                        direction=direction,
-                        baseline=measured.baseline[task].evaluation.metrics[metric],
-                        compressed=completed.evaluations[task].evaluation.metrics[
+                    metric: {
+                        "direction": direction,
+                        "baseline": measured.baseline[task].evaluation.metrics[metric],
+                        "compressed": completed.evaluations[task].evaluation.metrics[
                             metric
                         ],
-                        degradation=completed.metric_degradations[task][metric],
-                        evaluated_examples=measured.baseline[
+                        "degradation": completed.metric_degradations[task][metric],
+                        "evaluated_examples": measured.baseline[
                             task
                         ].evaluation.evaluated_examples,
-                    )
+                    }
                     for metric, direction in task_config.metric_directions.items()
                 }
                 for task, task_config in configs.items()
             }
-            summary = dict(
-                model=model_name,
-                compression=cm,
-                compression_seconds=completed.compression_seconds,
-                parameter_saving_fraction=1 - 1 / cm["compression_ratio"],
-                evaluation_status="skipped" if args.skip_eval else "completed",
-                evaluations=evaluations,
-                comparison=comparison,
-                artifacts=artifacts,
-            )
+            summary = {
+                "model": model_name,
+                "compression": cm,
+                "compression_seconds": completed.compression_seconds,
+                "parameter_saving_fraction": 1 - 1 / cm["compression_ratio"],
+                "evaluation_status": "skipped" if args.skip_eval else "completed",
+                "evaluations": evaluations,
+                "comparison": comparison,
+                "artifacts": artifacts,
+            }
             phase = "output"
             write_json(output / "summary.json", summary)
             write_report(output / "report.md", summary)

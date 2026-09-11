@@ -11,6 +11,19 @@
 - ``evaluate_stage``：复用相同评测配置比较各阶段模型。
 - ``save_layer_artifacts``：按模块路径分别保存压缩产物。
 - ``parse_args``、``main``：解析配置并编排联合压缩、微调和评测。
+
+使用说明（以下命令在项目根目录执行）：
+    python scripts/run_alpaca_finetune.py \
+      --start-block 25 --rank 96 \
+      --num-train-epochs 1 --batch-size 1 --grad-accum-steps 4
+    python scripts/run_alpaca_finetune.py \
+      --max-token-blocks 1 --num-train-epochs 1 \
+      --batch-size 1 --grad-accum-steps 1 --eval-limit 1 --eval-batch-size 1
+
+第一条命令执行默认范围的联合压缩、Alpaca 微调和三阶段评测；第二条只使用一个 token
+block 和每个评测 task 一条样本，用于快速验证流程。断点续训时在原命令后追加
+``--resume-from <checkpoint路径>``，并保持模型、数据、层范围、rank、后端和训练配置一致。
+完整参数见 ``python scripts/run_alpaca_finetune.py --help``。
 """
 
 from __future__ import annotations

@@ -21,6 +21,7 @@
 - ``infer_causal_lm``：生成 token 并记录时间、吞吐与峰值显存。
 """
 
+from ..evaluation import MetricDirection
 from .compress import (
     CompressionExecutionConfig,
     CompressionPlan,
@@ -30,6 +31,18 @@ from .compress import (
     compress_linear,
     compress_model,
     restore_compressed_model,
+)
+from .compression_plan_io import (
+    compression_plan_from_dict,
+    compression_plan_to_dict,
+    load_compression_plan,
+)
+from .evaluate import (
+    CompressionEvaluationResult,
+    CompressionPlanEvaluation,
+    ModelEvaluator,
+    TimedEvaluation,
+    evaluate_compression_plans,
 )
 from .finetune import (
     TensorNetworkFineTuneResult,
@@ -41,56 +54,50 @@ from .inference import (
     InferenceResult,
     infer_causal_lm,
 )
-from ..evaluation import MetricDirection
 from .sensitivity import (
     SensitivityExperimentConfig,
     SensitivityExperimentResult,
-    run_sensitivity_experiment,
     format_sensitivity_report,
+    run_sensitivity_experiment,
     sensitivity_case_record,
 )
 
-from .compression_plan_io import (
-    compression_plan_to_dict,
-    compression_plan_from_dict,
-    load_compression_plan,
-)
-
-from .evaluate import (
-    ModelEvaluator,
-    TimedEvaluation,
-    CompressionPlanEvaluation,
-    CompressionEvaluationResult,
-    evaluate_compression_plans,
-)
-
 __all__ = [
-    "CompressionExecutionConfig",
-    "TimedEvaluation",
-    "CompressionPlanEvaluation",
     "CompressionEvaluationResult",
-    "evaluate_compression_plans",
-    "compression_plan_to_dict",
-    "compression_plan_from_dict",
-    "load_compression_plan",
+    "CompressionExecutionConfig",
+    "CompressionPlan",
+    "CompressionPlanEvaluation",
+    "CompressionTarget",
     "InferenceConfig",
     "InferencePerformance",
     "InferenceResult",
-    "CompressionPlan",
-    "CompressionTarget",
     "LinearCompressionResult",
-    "ModelCompressionResult",
     "MetricDirection",
+    "ModelCompressionResult",
     "ModelEvaluator",
     "SensitivityExperimentConfig",
     "SensitivityExperimentResult",
-    "run_sensitivity_experiment",
     "TensorNetworkFineTuneResult",
+    "TimedEvaluation",
     "compress_linear",
     "compress_model",
+    "compression_plan_from_dict",
+    "compression_plan_to_dict",
+    "evaluate_compression_plans",
     "finetune_tensor_network_causal_lm",
     "format_sensitivity_report",
-    "sensitivity_case_record",
     "infer_causal_lm",
+    "load_compression_plan",
+    "read_sensitivity_results",
     "restore_compressed_model",
+    "run_sensitivity_experiment",
+    "sensitivity_case_record",
+    "validate_sensitivity_results",
+    "write_sensitivity_results",
 ]
+
+from .sensitivity_io import (
+    read_sensitivity_results,
+    validate_sensitivity_results,
+    write_sensitivity_results,
+)

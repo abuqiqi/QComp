@@ -7,7 +7,7 @@
 - `compress_linear()`：分解一个无 bias Linear，并安装指定执行 backend 构造的压缩层。
 - `compress_model()`：按照 `CompressionPlan` 原子压缩一个或多个模型层。
 - `restore_compressed_model()`：关闭计划安装的压缩层并恢复原始 Linear。
-- `SensitivityExperimentConfig`、`run_sensitivity_experiment()`：配置资源并执行逐层 lm-eval 实验，统一输出日志和报告。
+- `SensitivityExperimentConfig`、`run_sensitivity_experiment()`：配置资源并执行逐层 lm-eval 实验，逐 case 原子保存标准 JSON 结果和 Markdown 报告。
 - `evaluate_compression_plans()`：使用外部 backend 和 evaluator 比较多个临时压缩方案。
 - `format_sensitivity_report()`：将敏感性分析结果转换为 Markdown，并按需写入文件。
 - `infer_causal_lm()`：执行正常自回归生成并返回 token、时间、吞吐和显存。
@@ -103,7 +103,7 @@ print(result.plan_results[0].metric_degradations["hellaswag"])
 - `on_compressed(plan_name, artifacts, model_compression, compression_seconds)`：联合压缩后提供模块路径到 artifact 的映射，用于提前保存；早于逐层误差统计和任务评测。回调不应跨方案保留张量。
 - `on_plan_result(plan_result)`：当前方案恢复原模型后通知，适合记录完整结果。
 
-`sensitivity_case_record(plan_result, task_name)` 和 `format_sensitivity_report(result, output_path, task_name=...)` 从通用结果中提取单个任务，保持敏感度日志与 Markdown 表格格式。需要逐矩阵误差字段时开启 `collect_layer_metrics`。
+`sensitivity_case_record(plan_result, task_name)` 和 `format_sensitivity_report(result, output_path, task_name=...)` 从通用结果中提取单个任务，保存完整计划、统计和 Markdown 表格。需要逐矩阵误差字段时开启 `collect_layer_metrics`。
 
 ### 逐层实验入口
 
@@ -138,7 +138,7 @@ result = run_sensitivity_experiment(
 )
 ```
 
-输出默认集中在 `artifacts/sensitivity/<name>/<timestamp>/`，报告为 `layers-<start>-<last>.md`，日志为同名 `.jsonl`。实验名称自动处理为安全的目录名，时间戳采用运行开始时的 UTC+8 时间，格式为 `YYYYMMDDTHHMMSS`（精确到秒）；`output` 和 `log` 可以覆盖路径。目录按需创建，日志追加写入，每次运行的开始、case 与完成记录共享 `run_id`。开始记录包含模型来源、backend、dtype 和评测配置。入口返回 `SensitivityExperimentResult`，其中 `evaluation` 是通用评测结果、`report_path` 是报告路径；方案使用模块路径命名，实验名称可包含 rank。
+输出默认集中在 `artifacts/sensitivity/<name>/<timestamp>/`，报告为 `layers-<start>-<last>.md`，结构化结果为 `sensitivity_results.json`。实验名称处理为安全目录名，时间戳采用 UTC+8 的 `YYYYMMDDTHHMMSS`；`output` 和 `results` 可以覆盖路径，已有结果拒绝覆盖。基线和每个 case 完成后原子保存，记录完整模型、执行配置、任务信息与压缩计划。入口返回 `SensitivityExperimentResult`，包含通用 `evaluation`、`report_path` 和 `results_path`。
 
 Qwen3 脚本保留命令行参数、层选择规则和 MPO spec 构造，调用上层入口完成执行与输出。多层联合方案或自定义 evaluator 继续使用底层 `evaluate_compression_plans()`。
 
@@ -230,3 +230,5 @@ checkpoint 只保存本次选择的参数、优化器、调度器、训练位置
 `load_compression_plan(path, model=model)` 读取统一选层 JSON 的执行部分，并自动检查目标无 bias Linear 和矩阵维度，成功后返回 `CompressionPlan`。它不读取敏感度来源、不修改模型。`compression_plan_to_dict()` 和 `compression_plan_from_dict()` 读写 `compression_plan` 对象，支持逐矩阵不同 modes 与 ranks 的 MPO spec。文件结构和使用示例见[实验文档](../../../docs/experiments.md#统一-json-与计划加载)。
 
 实验配置使用 `CompressionExecutionConfig.build_backends(plans)` 按实际表示构建并检查后端；它不改变随机状态。`EvaluationTaskConfig` 将任务参数和指标方向放在一起，调用公共评测流程时再构建 evaluator 与方向映射。敏感度的 `evaluation_seed` 控制 lm-eval，分解沿用评测结束后的随机状态，没有独立分解种子。
+
+敏感性结果使用 `read_sensitivity_results()` 与 `write_sensitivity_results()` 统一校验和读写；每个 case 保存完整压缩计划，任务配置使用 `evaluation_task_config_to_dict()` / `evaluation_task_config_from_dict()` 往返。生命周期和字段见[标准敏感性结果](../../../docs/experiments.md#标准敏感性结果)。

@@ -9,45 +9,56 @@
 - ``is_target_linear``：定义实验目标层的选择规则。
 - ``qwen3_modes``、``make_qwen3_mpo_spec``：定义 Qwen3 的 MPO 结构。
 - ``parse_args``、``main``：解析实验参数、自动保存终端日志并调用通用 workflow。
-- ``plot_heatmaps``、``plot_log``：生成模块与 Transformer 块热力图并支持已有日志补图。
+- ``plot_heatmaps``、``plot_results``：生成模块与 Transformer 块热力图并支持已有结果补图。
+
+使用说明（以下命令在项目根目录执行）：
+    python scripts/run_qwen3_sensitivity.py --limit 1 --max-layers 1
+    python scripts/run_qwen3_sensitivity.py \
+      --task boolq --metric acc --num-fewshot 0 --limit none
+    python scripts/run_qwen3_sensitivity.py \
+      --plot-only artifacts/sensitivity/<实验>/<时间戳>/sensitivity_results.json
+
+第一条命令用于快速验证，第二条运行完整 BoolQ 实验，第三条从标准结果 JSON 重新绘图。
+默认 task 为 MMLU、MPO rank 为 96；非 MMLU task 需要显式指定 ``--metric``。
+``--results`` 可指定标准结果 JSON，``--output`` 可指定 Markdown 报告；完整参数见
+``python scripts/run_qwen3_sensitivity.py --help``。
 """
 
 from __future__ import annotations
 
 import argparse
-import json
 import math
 import re
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
-from collections.abc import Mapping, Sequence
 
 import torch
 from torch import nn
 
 if __package__:
-    from .qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+    from .qwen3_mpo_config import qwen3_mpo_spec_dict
 else:
-    from qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+    from qwen3_mpo_config import qwen3_mpo_spec_dict
 
 from qcomp import (
+    CompressionExecutionConfig,
     CompressionTarget,
-    MPOSpec,
     ModelLoadConfig,
+    MPOSpec,
     SensitivityExperimentConfig,
     run_sensitivity_experiment,
 )
-from qcomp.logging import capture_console
 from qcomp.evaluation import (
     EvaluationTaskConfig,
     LMEvalConfig,
     lm_eval_dataset_size,
     resolve_metric_directions,
 )
-from qcomp import CompressionExecutionConfig
+from qcomp.logging import capture_console
 from qcomp.workflows import sensitivity_case_record
 
 
@@ -167,10 +178,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--apply-chat-template", action="store_true")
     parser.add_argument("--artifact-root", default="artifacts")
     parser.add_argument("--output")
-    parser.add_argument("--log")
+    parser.add_argument("--results")
     parser.add_argument("--trust-remote-code", action="store_true")
     parser.add_argument(
-        "--plot-only", type=Path, help="仅从指定 JSONL 日志补图，不加载模型。"
+        "--plot-only",
+        type=Path,
+        help="仅从指定 sensitivity_results.json 补图，不加载模型。",
     )
     parser.add_argument(
         "--heatmap-max",
@@ -200,7 +213,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     args = parse_args(argv)
     if args.plot_only is not None:
-        plot_log(args.plot_only, args.heatmap_max)
+        plot_results(args.plot_only, args.heatmap_max)
         return
     if args.rank <= 0:
         raise ValueError("rank must be positive")
@@ -236,7 +249,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         max_layers=args.max_layers,
         artifact_root=args.artifact_root,
         output=args.output,
-        log=args.log,
+        results=args.results,
     )
 
     def make_target(path: str, linear: nn.Linear) -> CompressionTarget:
@@ -254,8 +267,6 @@ def main(argv: Sequence[str] | None = None) -> None:
         directory = Path(config.artifact_root) / "sensitivity" / slug / timestamp
         config = replace(config, output=directory / "report.md")
     report_path = Path(config.output)
-    if config.log is None:
-        config = replace(config, log=report_path.parent / "events.jsonl")
     with capture_console(report_path.parent / "console.log"):
         print(f"Experiment directory: {report_path.parent.resolve()}", flush=True)
         result = run_sensitivity_experiment(
@@ -357,8 +368,8 @@ def plot_heatmaps(
     """
     import numpy as np
     from matplotlib import colormaps
-    from matplotlib.figure import Figure
     from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.figure import Figure
     from matplotlib.patches import Patch
 
     if not math.isfinite(vmax) or vmax <= 0:
@@ -468,35 +479,22 @@ def plot_heatmaps(
     return images
 
 
-def plot_log(log_path: Path, vmax: float = 10.0) -> list[Path]:
-    """读取 log_path 中单次已完成实验的 JSONL，按记录中的任务和指标补图。
+def plot_results(results_path: Path, vmax: float = 10.0) -> list[Path]:
+    """读取完整 results_path 结果，使用 vmax 色标上限补图，不加载模型。"""
+    from qcomp.workflows import read_sensitivity_results
 
-    参数：
-        log_path: 包含开始、逐层结果和完成事件的日志。
-        vmax: 热力图色标上限。
-
-    异常：
-        ValueError: 日志混合多次运行、缺少完成事件或运行标识不一致。
-    """
-    events = [
-        json.loads(line) for line in log_path.read_text().splitlines() if line.strip()
-    ]
-    starts = [e["fields"] for e in events if e["event"] == "experiment_started"]
-    ends = [e["fields"] for e in events if e["event"] == "experiment_completed"]
-    if len(starts) != 1 or len(ends) != 1:
-        raise ValueError("plot-only requires exactly one completed experiment")
-    start = starts[0]
-    records = [e["fields"] for e in events if e["event"] == "case_completed"]
-    if any(r.get("run_id") != start["run_id"] for r in [*records, ends[0]]):
-        raise ValueError("mixed run IDs in log")
-    if len(records) != start["layers"]:
-        raise ValueError("completed case count differs from experiment configuration")
+    data = read_sensitivity_results(results_path)
+    report = data.get("report_path")
+    if not report or not Path(report).is_file():
+        raise ValueError("补图需要该实验的 report.md")
     return plot_heatmaps(
-        records,
-        task=start["task"],
-        metrics=start["metrics"],
-        report_path=Path(ends[0]["report"]),
+        data["cases"],
+        task=data["evaluation_config"]["evaluation"]["task"],
+        metrics=tuple(data["evaluation_config"]["metric_directions"]),
+        report_path=Path(report),
         vmax=vmax,
+        evaluated_examples=data["baseline"]["evaluated_examples"],
+        total_examples=data["baseline"]["total_examples"],
     )
 
 

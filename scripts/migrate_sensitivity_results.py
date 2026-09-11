@@ -3,6 +3,18 @@
 主要内容：
 - ``convert_source``：核验旧日志、恢复计划和任务信息，转换合并依赖。
 - ``migrate``：扫描完整实验，输出清单和对应的页面来源配置。
+
+使用说明（以下命令在项目根目录执行）：
+    python scripts/migrate_sensitivity_results.py
+    python scripts/migrate_sensitivity_results.py \
+      --root artifacts/sensitivity \
+      --config config/layer_selection.json \
+      --output artifacts/sensitivity/migrated-custom
+
+默认扫描 ``artifacts/sensitivity``，并创建 ``migrated-<北京时间戳>`` 目录；显式
+指定的 ``--output`` 目录也必须尚不存在。``--config`` 用于选择写入迁移后
+``layer_selection.json`` 的页面来源。脚本只读取和校验原实验，不修改原文件；完整参数见
+``python scripts/migrate_sensitivity_results.py --help``。
 """
 
 from __future__ import annotations
