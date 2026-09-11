@@ -242,16 +242,21 @@ def main(argv: Sequence[str] | None = None) -> None:
             config, select_linear=is_target_linear, make_target=make_target
         )
 
-        if result.report_path is None:
-            raise ValueError("experiment did not return a report path")
         plot_heatmaps(
-            [sensitivity_case_record(case) for case in result.case_results],
+            [
+                sensitivity_case_record(case, args.task)
+                for case in result.evaluation.plan_results
+            ],
             task=args.task,
             metrics=config.metrics,
             report_path=result.report_path,
             vmax=args.heatmap_max,
-            evaluated_examples=result.baseline_evaluation.evaluated_examples,
-            total_examples=result.baseline_evaluation.total_examples,
+            evaluated_examples=result.evaluation.baseline[
+                args.task
+            ].evaluation.evaluated_examples,
+            total_examples=result.evaluation.baseline[
+                args.task
+            ].evaluation.total_examples,
         )
 
 

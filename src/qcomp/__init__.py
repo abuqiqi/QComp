@@ -5,6 +5,7 @@
 只有通过 registry 选择后才会被加载。
 
 主要内容：
+- ``evaluate_compression_plans``：共享 baseline 评测多个方案与任务。
 - ``load_compression_plan``、``compression_plan_to_dict``、``compression_plan_from_dict``：读写并验证压缩计划。
 - ``TensorNetworkArtifact``：保存与具体张量网络表示无关的数据。
 - ``reconstruct_tensor``：根据 artifact 的表示类型重建稠密张量。
@@ -16,9 +17,7 @@
 - ``find_linear``、``replace_linear``、``restore_linear``：替换和恢复模型中的 Linear。
 - ``CompressionTarget``、``CompressionPlan``：描述模型级压缩目标。
 - ``compress_linear``、``compress_model``：执行单层或模型级压缩。
-- ``SensitivityCase``、``SensitivityResult``：描述并汇总压缩敏感性实验。
 - ``SensitivityExperimentConfig``、``run_sensitivity_experiment``：配置并执行逐层实验。
-- ``analyze_sensitivity``：使用外部 backend 和 evaluator 执行敏感性分析。
 - ``sensitivity_case_record``：将敏感性结果整理为实验记录字段。
 - ``format_sensitivity_report``：生成并按需保存敏感性 Markdown 报告。
 - ``metric_direction``、``resolve_metric_directions``：查询常用评测指标方向。
@@ -89,14 +88,10 @@ from .workflows import (
     InferenceResult,
     LinearCompressionResult,
     ModelCompressionResult,
-    ModelEvaluator,
-    SensitivityCase,
     SensitivityExperimentConfig,
+    SensitivityExperimentResult,
     run_sensitivity_experiment,
-    SensitivityCaseResult,
-    SensitivityResult,
     TensorNetworkFineTuneResult,
-    analyze_sensitivity,
     compress_linear,
     format_sensitivity_report,
     sensitivity_case_record,
@@ -112,7 +107,19 @@ from .workflows.compression_plan_io import (
     load_compression_plan,
 )
 
+from .workflows.evaluate import (
+    ModelEvaluator,
+    TimedEvaluation,
+    CompressionPlanEvaluation,
+    CompressionEvaluationResult,
+    evaluate_compression_plans,
+)
+
 __all__ = [
+    "TimedEvaluation",
+    "CompressionPlanEvaluation",
+    "CompressionEvaluationResult",
+    "evaluate_compression_plans",
     "compression_plan_to_dict",
     "compression_plan_from_dict",
     "load_compression_plan",
@@ -136,18 +143,15 @@ __all__ = [
     "MetricDirection",
     "ModelCompressionResult",
     "ModelEvaluator",
-    "SensitivityCase",
     "SensitivityExperimentConfig",
+    "SensitivityExperimentResult",
     "run_sensitivity_experiment",
-    "SensitivityCaseResult",
-    "SensitivityResult",
     "ModelLoadConfig",
     "TensorNetworkArtifact",
     "TrainingObjective",
     "TensorNetworkFineTuneResult",
     "TrainingResult",
     "RuntimeConfig",
-    "analyze_sensitivity",
     "build_causal_lm_dataloader",
     "configure_runtime",
     "log_event",
