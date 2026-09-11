@@ -5,5 +5,12 @@ __pycache__/
 .venv/
 build/
 dist/
-artifacts/
+# 实验目录只跟踪敏感性分析的图片、报告和标准结果。
+/artifacts/*
+!/artifacts/sensitivity/
+/artifacts/sensitivity/**
+!/artifacts/sensitivity/**/
+!/artifacts/sensitivity/**/*.png
+!/artifacts/sensitivity/**/report.md
+!/artifacts/sensitivity/**/sensitivity_results.json
 notebooks/

@@ -1,0 +1,6064 @@
+{
+  "kind": "qcomp_sensitivity_results",
+  "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+  "name": "qwen3-hellaswag-mpo-rank-96",
+  "status": "completed",
+  "started_at": "2026-09-08T10:12:41.829738+08:00",
+  "finished_at": "2026-09-08T11:56:00.958450+08:00",
+  "expected_cases": [
+    "model.layers.19.self_attn.o_proj",
+    "model.layers.19.mlp.gate_proj",
+    "model.layers.19.mlp.up_proj",
+    "model.layers.19.mlp.down_proj",
+    "model.layers.20.self_attn.q_proj",
+    "model.layers.20.self_attn.k_proj",
+    "model.layers.20.self_attn.v_proj",
+    "model.layers.20.self_attn.o_proj",
+    "model.layers.20.mlp.gate_proj",
+    "model.layers.20.mlp.up_proj",
+    "model.layers.20.mlp.down_proj",
+    "model.layers.21.self_attn.q_proj",
+    "model.layers.21.self_attn.k_proj",
+    "model.layers.21.self_attn.v_proj",
+    "model.layers.21.self_attn.o_proj",
+    "model.layers.21.mlp.gate_proj",
+    "model.layers.21.mlp.up_proj",
+    "model.layers.21.mlp.down_proj",
+    "model.layers.22.self_attn.q_proj",
+    "model.layers.22.self_attn.k_proj",
+    "model.layers.22.self_attn.v_proj",
+    "model.layers.22.self_attn.o_proj",
+    "model.layers.22.mlp.gate_proj",
+    "model.layers.22.mlp.up_proj",
+    "model.layers.22.mlp.down_proj",
+    "model.layers.23.self_attn.q_proj",
+    "model.layers.23.self_attn.k_proj",
+    "model.layers.23.self_attn.v_proj",
+    "model.layers.23.self_attn.o_proj",
+    "model.layers.23.mlp.gate_proj",
+    "model.layers.23.mlp.up_proj",
+    "model.layers.23.mlp.down_proj",
+    "model.layers.24.self_attn.q_proj",
+    "model.layers.24.self_attn.k_proj",
+    "model.layers.24.self_attn.v_proj",
+    "model.layers.24.self_attn.o_proj",
+    "model.layers.24.mlp.gate_proj",
+    "model.layers.24.mlp.up_proj",
+    "model.layers.24.mlp.down_proj",
+    "model.layers.25.self_attn.q_proj",
+    "model.layers.25.self_attn.k_proj",
+    "model.layers.25.self_attn.v_proj",
+    "model.layers.25.self_attn.o_proj",
+    "model.layers.25.mlp.gate_proj",
+    "model.layers.25.mlp.up_proj",
+    "model.layers.25.mlp.down_proj",
+    "model.layers.26.self_attn.q_proj",
+    "model.layers.26.self_attn.k_proj",
+    "model.layers.26.self_attn.v_proj",
+    "model.layers.26.self_attn.o_proj",
+    "model.layers.26.mlp.gate_proj",
+    "model.layers.26.mlp.up_proj",
+    "model.layers.26.mlp.down_proj",
+    "model.layers.27.self_attn.q_proj",
+    "model.layers.27.self_attn.k_proj",
+    "model.layers.27.self_attn.v_proj",
+    "model.layers.27.self_attn.o_proj",
+    "model.layers.27.mlp.gate_proj",
+    "model.layers.27.mlp.up_proj",
+    "model.layers.27.mlp.down_proj",
+    "model.layers.28.self_attn.q_proj",
+    "model.layers.28.self_attn.k_proj",
+    "model.layers.28.self_attn.v_proj",
+    "model.layers.28.self_attn.o_proj",
+    "model.layers.28.mlp.gate_proj",
+    "model.layers.28.mlp.up_proj",
+    "model.layers.28.mlp.down_proj",
+    "model.layers.29.self_attn.q_proj",
+    "model.layers.29.self_attn.k_proj",
+    "model.layers.29.self_attn.v_proj",
+    "model.layers.29.self_attn.o_proj",
+    "model.layers.29.mlp.gate_proj",
+    "model.layers.29.mlp.up_proj",
+    "model.layers.29.mlp.down_proj",
+    "model.layers.30.self_attn.q_proj",
+    "model.layers.30.self_attn.k_proj",
+    "model.layers.30.self_attn.v_proj",
+    "model.layers.30.self_attn.o_proj",
+    "model.layers.30.mlp.gate_proj",
+    "model.layers.30.mlp.up_proj",
+    "model.layers.30.mlp.down_proj",
+    "model.layers.31.self_attn.q_proj",
+    "model.layers.31.self_attn.k_proj",
+    "model.layers.31.self_attn.v_proj",
+    "model.layers.31.self_attn.o_proj",
+    "model.layers.31.mlp.gate_proj",
+    "model.layers.31.mlp.up_proj",
+    "model.layers.31.mlp.down_proj",
+    "model.layers.32.self_attn.q_proj",
+    "model.layers.32.self_attn.k_proj",
+    "model.layers.32.self_attn.v_proj",
+    "model.layers.32.self_attn.o_proj",
+    "model.layers.32.mlp.gate_proj",
+    "model.layers.32.mlp.up_proj",
+    "model.layers.32.mlp.down_proj",
+    "model.layers.33.self_attn.q_proj",
+    "model.layers.33.self_attn.k_proj",
+    "model.layers.33.self_attn.v_proj",
+    "model.layers.33.self_attn.o_proj",
+    "model.layers.33.mlp.gate_proj",
+    "model.layers.33.mlp.up_proj",
+    "model.layers.33.mlp.down_proj",
+    "model.layers.34.self_attn.q_proj",
+    "model.layers.34.self_attn.k_proj",
+    "model.layers.34.self_attn.v_proj",
+    "model.layers.34.self_attn.o_proj",
+    "model.layers.34.mlp.gate_proj",
+    "model.layers.34.mlp.up_proj",
+    "model.layers.34.mlp.down_proj",
+    "model.layers.35.self_attn.q_proj",
+    "model.layers.35.self_attn.k_proj",
+    "model.layers.35.self_attn.v_proj",
+    "model.layers.35.self_attn.o_proj",
+    "model.layers.35.mlp.gate_proj",
+    "model.layers.35.mlp.up_proj",
+    "model.layers.35.mlp.down_proj"
+  ],
+  "model": {
+    "name_or_path": "/infini-data/Qwen3-8B",
+    "model_type": "qwen3",
+    "config": {
+      "architectures": [
+        "Qwen3ForCausalLM"
+      ],
+      "attention_bias": false,
+      "attention_dropout": 0.0,
+      "bos_token_id": 151643,
+      "eos_token_id": 151645,
+      "head_dim": 128,
+      "hidden_act": "silu",
+      "hidden_size": 4096,
+      "initializer_range": 0.02,
+      "intermediate_size": 12288,
+      "max_position_embeddings": 40960,
+      "max_window_layers": 36,
+      "model_type": "qwen3",
+      "num_attention_heads": 32,
+      "num_hidden_layers": 36,
+      "num_key_value_heads": 8,
+      "rms_norm_eps": 1e-06,
+      "rope_scaling": null,
+      "rope_theta": 1000000,
+      "sliding_window": null,
+      "tie_word_embeddings": false,
+      "torch_dtype": "bfloat16",
+      "transformers_version": "4.51.0",
+      "use_cache": true,
+      "use_sliding_window": false,
+      "vocab_size": 151936
+    },
+    "config_sha256": "db9a057024370dc56a8bba76b9f274692c2094615dc4da1497ce830d14707bc6",
+    "dense_parameters": null
+  },
+  "execution": {
+    "model_dtype": "torch.bfloat16",
+    "decomposition_dtype": "torch.float32",
+    "decomposition_provider": "tensorly",
+    "execution_provider": "tensorly",
+    "trust_remote_code": false
+  },
+  "evaluation_config": {
+    "evaluation": {
+      "task": "hellaswag",
+      "num_fewshot": 0,
+      "batch_size": 8,
+      "max_length": 4096,
+      "limit": 2000,
+      "evaluation_seed": 42,
+      "apply_chat_template": false,
+      "sample_start_index": 0
+    },
+    "metric_directions": {
+      "acc": "higher",
+      "acc_norm": "higher"
+    }
+  },
+  "evaluation_task": {
+    "name": "hellaswag",
+    "dataset": "hellaswag",
+    "split": "lm-eval",
+    "preprocessing": "lm-eval-0-shot",
+    "requested_metrics": [
+      "acc",
+      "acc_norm"
+    ]
+  },
+  "baseline": {
+    "metrics": {
+      "acc": 0.494,
+      "acc_norm": 0.6375
+    },
+    "evaluated_examples": 2000,
+    "total_examples": 10042,
+    "evaluated_tokens": null,
+    "seconds": 61.6001
+  },
+  "cases": [
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.19.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4855,
+        "acc_norm": 0.6265
+      },
+      "degradations": {
+        "acc": 0.008500000000000008,
+        "acc_norm": 0.01100000000000001
+      },
+      "layers": {
+        "model.layers.19.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.88671875,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.09170026704668999,
+      "evaluation_seconds": 51.92147666821256,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.19.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.19.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4895,
+        "acc_norm": 0.6365
+      },
+      "degradations": {
+        "acc": 0.004500000000000004,
+        "acc_norm": 0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.19.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13915877928957343,
+      "evaluation_seconds": 54.288925282191485,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.19.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.19.mlp.up_proj",
+      "metrics": {
+        "acc": 0.4885,
+        "acc_norm": 0.6355
+      },
+      "degradations": {
+        "acc": 0.005500000000000005,
+        "acc_norm": 0.0020000000000000018
+      },
+      "layers": {
+        "model.layers.19.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.138967530336231,
+      "evaluation_seconds": 53.99873510096222,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.19.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.19.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4895,
+        "acc_norm": 0.6335
+      },
+      "degradations": {
+        "acc": 0.004500000000000004,
+        "acc_norm": 0.0040000000000000036
+      },
+      "layers": {
+        "model.layers.19.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.9609375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13863400695845485,
+      "evaluation_seconds": 52.7694752169773,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.19.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.6335
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": 0.0040000000000000036
+      },
+      "layers": {
+        "model.layers.20.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8828125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050037563778460026,
+      "evaluation_seconds": 51.96331835119054,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.493,
+        "acc_norm": 0.634
+      },
+      "degradations": {
+        "acc": 0.0010000000000000009,
+        "acc_norm": 0.0034999999999999476
+      },
+      "layers": {
+        "model.layers.20.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.0310694994404912,
+      "evaluation_seconds": 52.056657986715436,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4915,
+        "acc_norm": 0.6345
+      },
+      "degradations": {
+        "acc": 0.0025000000000000022,
+        "acc_norm": 0.0030000000000000027
+      },
+      "layers": {
+        "model.layers.20.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030701565090566874,
+      "evaluation_seconds": 51.742791743949056,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4885,
+        "acc_norm": 0.639
+      },
+      "degradations": {
+        "acc": 0.005500000000000005,
+        "acc_norm": -0.0015000000000000568
+      },
+      "layers": {
+        "model.layers.20.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.890625,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05143666407093406,
+      "evaluation_seconds": 51.93949863873422,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4785,
+        "acc_norm": 0.625
+      },
+      "degradations": {
+        "acc": 0.015500000000000014,
+        "acc_norm": 0.012499999999999956
+      },
+      "layers": {
+        "model.layers.20.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13839791109785438,
+      "evaluation_seconds": 54.20097280200571,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.mlp.up_proj",
+      "metrics": {
+        "acc": 0.483,
+        "acc_norm": 0.627
+      },
+      "degradations": {
+        "acc": 0.01100000000000001,
+        "acc_norm": 0.010499999999999954
+      },
+      "layers": {
+        "model.layers.20.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1414832421578467,
+      "evaluation_seconds": 54.3752767322585,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.20.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4845,
+        "acc_norm": 0.625
+      },
+      "degradations": {
+        "acc": 0.009500000000000008,
+        "acc_norm": 0.012499999999999956
+      },
+      "layers": {
+        "model.layers.20.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1370373130775988,
+      "evaluation_seconds": 52.74082349613309,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.20.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.499,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": -0.0050000000000000044,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.21.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.88671875,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05000705877318978,
+      "evaluation_seconds": 51.85339048784226,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4945,
+        "acc_norm": 0.632
+      },
+      "degradations": {
+        "acc": -0.0005000000000000004,
+        "acc_norm": 0.005499999999999949
+      },
+      "layers": {
+        "model.layers.21.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030380386859178543,
+      "evaluation_seconds": 51.97727992106229,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4935,
+        "acc_norm": 0.6305
+      },
+      "degradations": {
+        "acc": 0.0005000000000000004,
+        "acc_norm": 0.007000000000000006
+      },
+      "layers": {
+        "model.layers.21.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.029843772295862436,
+      "evaluation_seconds": 51.59780271071941,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.49,
+        "acc_norm": 0.63
+      },
+      "degradations": {
+        "acc": 0.0040000000000000036,
+        "acc_norm": 0.007499999999999951
+      },
+      "layers": {
+        "model.layers.21.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05006101028993726,
+      "evaluation_seconds": 51.910897713154554,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.5,
+        "acc_norm": 0.6365
+      },
+      "degradations": {
+        "acc": -0.006000000000000005,
+        "acc_norm": 0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.21.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1395423267967999,
+      "evaluation_seconds": 53.929919050075114,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.mlp.up_proj",
+      "metrics": {
+        "acc": 0.5,
+        "acc_norm": 0.6375
+      },
+      "degradations": {
+        "acc": -0.006000000000000005,
+        "acc_norm": 0.0
+      },
+      "layers": {
+        "model.layers.21.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13993200240656734,
+      "evaluation_seconds": 54.264156671240926,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.21.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4955,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": -0.0015000000000000013,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.21.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13831247435882688,
+      "evaluation_seconds": 52.8208286492154,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.21.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.5,
+        "acc_norm": 0.6385
+      },
+      "degradations": {
+        "acc": -0.006000000000000005,
+        "acc_norm": -0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.22.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.88671875,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050162052270025015,
+      "evaluation_seconds": 52.059433243237436,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.49,
+        "acc_norm": 0.628
+      },
+      "degradations": {
+        "acc": 0.0040000000000000036,
+        "acc_norm": 0.009499999999999953
+      },
+      "layers": {
+        "model.layers.22.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.79296875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03002388682216406,
+      "evaluation_seconds": 52.029750670772046,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4955,
+        "acc_norm": 0.6435
+      },
+      "degradations": {
+        "acc": -0.0015000000000000013,
+        "acc_norm": -0.006000000000000005
+      },
+      "layers": {
+        "model.layers.22.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03010043501853943,
+      "evaluation_seconds": 51.661692761816084,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4945,
+        "acc_norm": 0.6395
+      },
+      "degradations": {
+        "acc": -0.0005000000000000004,
+        "acc_norm": -0.0020000000000000018
+      },
+      "layers": {
+        "model.layers.22.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.890625,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050169679801911116,
+      "evaluation_seconds": 51.92563571361825,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.494,
+        "acc_norm": 0.628
+      },
+      "degradations": {
+        "acc": 0.0,
+        "acc_norm": 0.009499999999999953
+      },
+      "layers": {
+        "model.layers.22.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13888285169377923,
+      "evaluation_seconds": 54.900356761179864,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.mlp.up_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.63
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": 0.007499999999999951
+      },
+      "layers": {
+        "model.layers.22.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13810904370620847,
+      "evaluation_seconds": 54.09126783115789,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.22.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4895,
+        "acc_norm": 0.635
+      },
+      "degradations": {
+        "acc": 0.004500000000000004,
+        "acc_norm": 0.0024999999999999467
+      },
+      "layers": {
+        "model.layers.22.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1391808930784464,
+      "evaluation_seconds": 52.807554656174034,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.22.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4885,
+        "acc_norm": 0.62
+      },
+      "degradations": {
+        "acc": 0.005500000000000005,
+        "acc_norm": 0.01749999999999996
+      },
+      "layers": {
+        "model.layers.23.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.87890625,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05377559410408139,
+      "evaluation_seconds": 51.818415387067944,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.486,
+        "acc_norm": 0.6265
+      },
+      "degradations": {
+        "acc": 0.008000000000000007,
+        "acc_norm": 0.01100000000000001
+      },
+      "layers": {
+        "model.layers.23.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030271629337221384,
+      "evaluation_seconds": 51.83222924731672,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4855,
+        "acc_norm": 0.633
+      },
+      "degradations": {
+        "acc": 0.008500000000000008,
+        "acc_norm": 0.0044999999999999485
+      },
+      "layers": {
+        "model.layers.23.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030084704980254173,
+      "evaluation_seconds": 51.563974833115935,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.485,
+        "acc_norm": 0.6295
+      },
+      "degradations": {
+        "acc": 0.009000000000000008,
+        "acc_norm": 0.008000000000000007
+      },
+      "layers": {
+        "model.layers.23.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05011903587728739,
+      "evaluation_seconds": 51.782064192928374,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.485,
+        "acc_norm": 0.621
+      },
+      "degradations": {
+        "acc": 0.009000000000000008,
+        "acc_norm": 0.01649999999999996
+      },
+      "layers": {
+        "model.layers.23.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.14817824633792043,
+      "evaluation_seconds": 54.3050416870974,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.mlp.up_proj",
+      "metrics": {
+        "acc": 0.4815,
+        "acc_norm": 0.627
+      },
+      "degradations": {
+        "acc": 0.012500000000000011,
+        "acc_norm": 0.010499999999999954
+      },
+      "layers": {
+        "model.layers.23.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13907968625426292,
+      "evaluation_seconds": 54.05450769281015,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.23.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4825,
+        "acc_norm": 0.6315
+      },
+      "degradations": {
+        "acc": 0.01150000000000001,
+        "acc_norm": 0.006000000000000005
+      },
+      "layers": {
+        "model.layers.23.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1399043849669397,
+      "evaluation_seconds": 52.906775758136064,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.23.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4875,
+        "acc_norm": 0.6265
+      },
+      "degradations": {
+        "acc": 0.006500000000000006,
+        "acc_norm": 0.01100000000000001
+      },
+      "layers": {
+        "model.layers.24.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.88671875,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.049552401062101126,
+      "evaluation_seconds": 52.04670442827046,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4905,
+        "acc_norm": 0.634
+      },
+      "degradations": {
+        "acc": 0.003500000000000003,
+        "acc_norm": 0.0034999999999999476
+      },
+      "layers": {
+        "model.layers.24.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80859375,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03023551218211651,
+      "evaluation_seconds": 51.774498648010194,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4975,
+        "acc_norm": 0.644
+      },
+      "degradations": {
+        "acc": -0.003500000000000003,
+        "acc_norm": -0.006500000000000061
+      },
+      "layers": {
+        "model.layers.24.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.029993848875164986,
+      "evaluation_seconds": 51.71023106062785,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.5015,
+        "acc_norm": 0.6415
+      },
+      "degradations": {
+        "acc": -0.007499999999999951,
+        "acc_norm": -0.0040000000000000036
+      },
+      "layers": {
+        "model.layers.24.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.0501790139824152,
+      "evaluation_seconds": 52.18290710495785,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.487,
+        "acc_norm": 0.622
+      },
+      "degradations": {
+        "acc": 0.007000000000000006,
+        "acc_norm": 0.015499999999999958
+      },
+      "layers": {
+        "model.layers.24.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13938734075054526,
+      "evaluation_seconds": 53.99293725006282,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.mlp.up_proj",
+      "metrics": {
+        "acc": 0.4815,
+        "acc_norm": 0.6255
+      },
+      "degradations": {
+        "acc": 0.012500000000000011,
+        "acc_norm": 0.01200000000000001
+      },
+      "layers": {
+        "model.layers.24.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1389080649241805,
+      "evaluation_seconds": 54.04925862979144,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.24.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4815,
+        "acc_norm": 0.627
+      },
+      "degradations": {
+        "acc": 0.012500000000000011,
+        "acc_norm": 0.010499999999999954
+      },
+      "layers": {
+        "model.layers.24.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13864778401330113,
+      "evaluation_seconds": 52.81443148711696,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.24.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4915,
+        "acc_norm": 0.6395
+      },
+      "degradations": {
+        "acc": 0.0025000000000000022,
+        "acc_norm": -0.0020000000000000018
+      },
+      "layers": {
+        "model.layers.25.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05016593588516116,
+      "evaluation_seconds": 54.69956064596772,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.494,
+        "acc_norm": 0.635
+      },
+      "degradations": {
+        "acc": 0.0,
+        "acc_norm": 0.0024999999999999467
+      },
+      "layers": {
+        "model.layers.25.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030697602778673172,
+      "evaluation_seconds": 51.648989129811525,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.493,
+        "acc_norm": 0.63
+      },
+      "degradations": {
+        "acc": 0.0010000000000000009,
+        "acc_norm": 0.007499999999999951
+      },
+      "layers": {
+        "model.layers.25.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030041398014873266,
+      "evaluation_seconds": 51.69927362725139,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4885,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": 0.005500000000000005,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.25.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.90234375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050777149852365255,
+      "evaluation_seconds": 51.85774595942348,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4895,
+        "acc_norm": 0.622
+      },
+      "degradations": {
+        "acc": 0.004500000000000004,
+        "acc_norm": 0.015499999999999958
+      },
+      "layers": {
+        "model.layers.25.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13914197403937578,
+      "evaluation_seconds": 54.270639162976295,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.mlp.up_proj",
+      "metrics": {
+        "acc": 0.488,
+        "acc_norm": 0.6245
+      },
+      "degradations": {
+        "acc": 0.006000000000000005,
+        "acc_norm": 0.0129999999999999
+      },
+      "layers": {
+        "model.layers.25.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13941955799236894,
+      "evaluation_seconds": 54.07264575781301,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.25.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4915,
+        "acc_norm": 0.625
+      },
+      "degradations": {
+        "acc": 0.0025000000000000022,
+        "acc_norm": 0.012499999999999956
+      },
+      "layers": {
+        "model.layers.25.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13799918722361326,
+      "evaluation_seconds": 52.65436610020697,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.25.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.6285
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": 0.009000000000000008
+      },
+      "layers": {
+        "model.layers.26.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.890625,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050051047932356596,
+      "evaluation_seconds": 52.195331576280296,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4895,
+        "acc_norm": 0.638
+      },
+      "degradations": {
+        "acc": 0.004500000000000004,
+        "acc_norm": -0.000500000000000056
+      },
+      "layers": {
+        "model.layers.26.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80859375,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03029604209586978,
+      "evaluation_seconds": 53.31687262002379,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4915,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": 0.0025000000000000022,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.26.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80859375,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030294607393443584,
+      "evaluation_seconds": 51.67938956292346,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4895,
+        "acc_norm": 0.6375
+      },
+      "degradations": {
+        "acc": 0.004500000000000004,
+        "acc_norm": 0.0
+      },
+      "layers": {
+        "model.layers.26.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.04993892973288894,
+      "evaluation_seconds": 52.044255557935685,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.485,
+        "acc_norm": 0.624
+      },
+      "degradations": {
+        "acc": 0.009000000000000008,
+        "acc_norm": 0.013499999999999956
+      },
+      "layers": {
+        "model.layers.26.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13925744500011206,
+      "evaluation_seconds": 53.9861728111282,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.mlp.up_proj",
+      "metrics": {
+        "acc": 0.489,
+        "acc_norm": 0.627
+      },
+      "degradations": {
+        "acc": 0.0050000000000000044,
+        "acc_norm": 0.010499999999999954
+      },
+      "layers": {
+        "model.layers.26.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.14349960582330823,
+      "evaluation_seconds": 54.01783122681081,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.26.mlp.down_proj",
+      "metrics": {
+        "acc": 0.486,
+        "acc_norm": 0.629
+      },
+      "degradations": {
+        "acc": 0.008000000000000007,
+        "acc_norm": 0.008499999999999952
+      },
+      "layers": {
+        "model.layers.26.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13937496161088347,
+      "evaluation_seconds": 52.74146873829886,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.26.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4905,
+        "acc_norm": 0.64
+      },
+      "degradations": {
+        "acc": 0.003500000000000003,
+        "acc_norm": -0.0025000000000000577
+      },
+      "layers": {
+        "model.layers.27.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.90234375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050321046728640795,
+      "evaluation_seconds": 52.00849706213921,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.493,
+        "acc_norm": 0.6385
+      },
+      "degradations": {
+        "acc": 0.0010000000000000009,
+        "acc_norm": -0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.27.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030089061241596937,
+      "evaluation_seconds": 51.70327922096476,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.27.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030794430058449507,
+      "evaluation_seconds": 51.622822153847665,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.498,
+        "acc_norm": 0.637
+      },
+      "degradations": {
+        "acc": -0.0040000000000000036,
+        "acc_norm": 0.0004999999999999449
+      },
+      "layers": {
+        "model.layers.27.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.90234375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05022434704005718,
+      "evaluation_seconds": 52.30035799834877,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4875,
+        "acc_norm": 0.627
+      },
+      "degradations": {
+        "acc": 0.006500000000000006,
+        "acc_norm": 0.010499999999999954
+      },
+      "layers": {
+        "model.layers.27.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13984583411365747,
+      "evaluation_seconds": 54.18722815299407,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.mlp.up_proj",
+      "metrics": {
+        "acc": 0.492,
+        "acc_norm": 0.628
+      },
+      "degradations": {
+        "acc": 0.0020000000000000018,
+        "acc_norm": 0.009499999999999953
+      },
+      "layers": {
+        "model.layers.27.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13898448925465345,
+      "evaluation_seconds": 54.15530564496294,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.27.mlp.down_proj",
+      "metrics": {
+        "acc": 0.49,
+        "acc_norm": 0.624
+      },
+      "degradations": {
+        "acc": 0.0040000000000000036,
+        "acc_norm": 0.013499999999999956
+      },
+      "layers": {
+        "model.layers.27.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1394489649683237,
+      "evaluation_seconds": 52.98372374009341,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.27.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4905,
+        "acc_norm": 0.635
+      },
+      "degradations": {
+        "acc": 0.003500000000000003,
+        "acc_norm": 0.0024999999999999467
+      },
+      "layers": {
+        "model.layers.28.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.049837203696370125,
+      "evaluation_seconds": 51.87080936413258,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4935,
+        "acc_norm": 0.639
+      },
+      "degradations": {
+        "acc": 0.0005000000000000004,
+        "acc_norm": -0.0015000000000000568
+      },
+      "layers": {
+        "model.layers.28.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.79296875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030278658028692007,
+      "evaluation_seconds": 51.74625812517479,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4965,
+        "acc_norm": 0.6395
+      },
+      "degradations": {
+        "acc": -0.0025000000000000022,
+        "acc_norm": -0.0020000000000000018
+      },
+      "layers": {
+        "model.layers.28.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030177407898008823,
+      "evaluation_seconds": 51.77834301488474,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.497,
+        "acc_norm": 0.6375
+      },
+      "degradations": {
+        "acc": -0.0030000000000000027,
+        "acc_norm": 0.0
+      },
+      "layers": {
+        "model.layers.28.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05058115208521485,
+      "evaluation_seconds": 52.19922840083018,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4805,
+        "acc_norm": 0.6255
+      },
+      "degradations": {
+        "acc": 0.013500000000000012,
+        "acc_norm": 0.01200000000000001
+      },
+      "layers": {
+        "model.layers.28.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.14434538409113884,
+      "evaluation_seconds": 55.13813539315015,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.mlp.up_proj",
+      "metrics": {
+        "acc": 0.4775,
+        "acc_norm": 0.6275
+      },
+      "degradations": {
+        "acc": 0.016500000000000015,
+        "acc_norm": 0.010000000000000009
+      },
+      "layers": {
+        "model.layers.28.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.16510562924668193,
+      "evaluation_seconds": 54.03729432495311,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.28.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4835,
+        "acc_norm": 0.6315
+      },
+      "degradations": {
+        "acc": 0.01050000000000001,
+        "acc_norm": 0.006000000000000005
+      },
+      "layers": {
+        "model.layers.28.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.14005559589713812,
+      "evaluation_seconds": 52.975000916048884,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.28.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.489,
+        "acc_norm": 0.638
+      },
+      "degradations": {
+        "acc": 0.0050000000000000044,
+        "acc_norm": -0.000500000000000056
+      },
+      "layers": {
+        "model.layers.29.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8828125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05009709903970361,
+      "evaluation_seconds": 51.94880114495754,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4905,
+        "acc_norm": 0.6345
+      },
+      "degradations": {
+        "acc": 0.003500000000000003,
+        "acc_norm": 0.0030000000000000027
+      },
+      "layers": {
+        "model.layers.29.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.796875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.02966617187485099,
+      "evaluation_seconds": 51.84299975959584,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.492,
+        "acc_norm": 0.633
+      },
+      "degradations": {
+        "acc": 0.0020000000000000018,
+        "acc_norm": 0.0044999999999999485
+      },
+      "layers": {
+        "model.layers.29.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.79296875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.029809163883328438,
+      "evaluation_seconds": 51.65304765990004,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4925,
+        "acc_norm": 0.6365
+      },
+      "degradations": {
+        "acc": 0.0015000000000000013,
+        "acc_norm": 0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.29.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05097433412447572,
+      "evaluation_seconds": 52.23593547241762,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.484,
+        "acc_norm": 0.6155
+      },
+      "degradations": {
+        "acc": 0.010000000000000009,
+        "acc_norm": 0.02199999999999991
+      },
+      "layers": {
+        "model.layers.29.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13997530099004507,
+      "evaluation_seconds": 54.10848040506244,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.mlp.up_proj",
+      "metrics": {
+        "acc": 0.484,
+        "acc_norm": 0.6215
+      },
+      "degradations": {
+        "acc": 0.010000000000000009,
+        "acc_norm": 0.015999999999999903
+      },
+      "layers": {
+        "model.layers.29.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.97265625,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13956706691533327,
+      "evaluation_seconds": 54.24146813573316,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.29.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4845,
+        "acc_norm": 0.624
+      },
+      "degradations": {
+        "acc": 0.009500000000000008,
+        "acc_norm": 0.013499999999999956
+      },
+      "layers": {
+        "model.layers.29.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1369655216112733,
+      "evaluation_seconds": 55.909150555264205,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.29.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4965,
+        "acc_norm": 0.624
+      },
+      "degradations": {
+        "acc": -0.0025000000000000022,
+        "acc_norm": 0.013499999999999956
+      },
+      "layers": {
+        "model.layers.30.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.060923511162400246,
+      "evaluation_seconds": 51.99339583190158,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.499,
+        "acc_norm": 0.6285
+      },
+      "degradations": {
+        "acc": -0.0050000000000000044,
+        "acc_norm": 0.009000000000000008
+      },
+      "layers": {
+        "model.layers.30.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.79296875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.0327047030441463,
+      "evaluation_seconds": 51.67681209882721,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4915,
+        "acc_norm": 0.6255
+      },
+      "degradations": {
+        "acc": 0.0025000000000000022,
+        "acc_norm": 0.01200000000000001
+      },
+      "layers": {
+        "model.layers.30.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.0304979938082397,
+      "evaluation_seconds": 51.87742485618219,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.495,
+        "acc_norm": 0.634
+      },
+      "degradations": {
+        "acc": -0.0010000000000000009,
+        "acc_norm": 0.0034999999999999476
+      },
+      "layers": {
+        "model.layers.30.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.90234375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05052763503044844,
+      "evaluation_seconds": 51.78171086870134,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4785,
+        "acc_norm": 0.618
+      },
+      "degradations": {
+        "acc": 0.015500000000000014,
+        "acc_norm": 0.019499999999999962
+      },
+      "layers": {
+        "model.layers.30.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1508314199745655,
+      "evaluation_seconds": 54.07523052301258,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.mlp.up_proj",
+      "metrics": {
+        "acc": 0.483,
+        "acc_norm": 0.6145
+      },
+      "degradations": {
+        "acc": 0.01100000000000001,
+        "acc_norm": 0.02299999999999991
+      },
+      "layers": {
+        "model.layers.30.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13933492824435234,
+      "evaluation_seconds": 54.41039122501388,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.30.mlp.down_proj",
+      "metrics": {
+        "acc": 0.485,
+        "acc_norm": 0.6155
+      },
+      "degradations": {
+        "acc": 0.009000000000000008,
+        "acc_norm": 0.02199999999999991
+      },
+      "layers": {
+        "model.layers.30.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1382874008268118,
+      "evaluation_seconds": 52.69448057608679,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.30.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.6385
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": -0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.31.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.0510333557613194,
+      "evaluation_seconds": 53.36040215566754,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4945,
+        "acc_norm": 0.6375
+      },
+      "degradations": {
+        "acc": -0.0005000000000000004,
+        "acc_norm": 0.0
+      },
+      "layers": {
+        "model.layers.31.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.7890625,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.02985344873741269,
+      "evaluation_seconds": 51.524609924759716,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4975,
+        "acc_norm": 0.6415
+      },
+      "degradations": {
+        "acc": -0.003500000000000003,
+        "acc_norm": -0.0040000000000000036
+      },
+      "layers": {
+        "model.layers.31.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03127354709431529,
+      "evaluation_seconds": 51.93988090660423,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4965,
+        "acc_norm": 0.642
+      },
+      "degradations": {
+        "acc": -0.0025000000000000022,
+        "acc_norm": -0.0045000000000000595
+      },
+      "layers": {
+        "model.layers.31.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05051437532529235,
+      "evaluation_seconds": 51.92514014104381,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.486,
+        "acc_norm": 0.6295
+      },
+      "degradations": {
+        "acc": 0.008000000000000007,
+        "acc_norm": 0.008000000000000007
+      },
+      "layers": {
+        "model.layers.31.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13966721389442682,
+      "evaluation_seconds": 54.44994198810309,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.mlp.up_proj",
+      "metrics": {
+        "acc": 0.487,
+        "acc_norm": 0.6335
+      },
+      "degradations": {
+        "acc": 0.007000000000000006,
+        "acc_norm": 0.0040000000000000036
+      },
+      "layers": {
+        "model.layers.31.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13924930524080992,
+      "evaluation_seconds": 54.10503083001822,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.31.mlp.down_proj",
+      "metrics": {
+        "acc": 0.492,
+        "acc_norm": 0.6305
+      },
+      "degradations": {
+        "acc": 0.0020000000000000018,
+        "acc_norm": 0.007000000000000006
+      },
+      "layers": {
+        "model.layers.31.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.14962219120934606,
+      "evaluation_seconds": 52.86339068505913,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.31.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4975,
+        "acc_norm": 0.629
+      },
+      "degradations": {
+        "acc": -0.003500000000000003,
+        "acc_norm": 0.008499999999999952
+      },
+      "layers": {
+        "model.layers.32.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.049497049767524004,
+      "evaluation_seconds": 51.97691140277311,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.4985,
+        "acc_norm": 0.6375
+      },
+      "degradations": {
+        "acc": -0.004500000000000004,
+        "acc_norm": 0.0
+      },
+      "layers": {
+        "model.layers.32.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.7890625,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030215502716600895,
+      "evaluation_seconds": 52.02720938809216,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4925,
+        "acc_norm": 0.6325
+      },
+      "degradations": {
+        "acc": 0.0015000000000000013,
+        "acc_norm": 0.0050000000000000044
+      },
+      "layers": {
+        "model.layers.32.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80859375,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03036754485219717,
+      "evaluation_seconds": 51.887938716914505,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.495,
+        "acc_norm": 0.6365
+      },
+      "degradations": {
+        "acc": -0.0010000000000000009,
+        "acc_norm": 0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.32.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05056295217946172,
+      "evaluation_seconds": 51.7833922249265,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.6245
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": 0.0129999999999999
+      },
+      "layers": {
+        "model.layers.32.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1369316028431058,
+      "evaluation_seconds": 54.2790693459101,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.mlp.up_proj",
+      "metrics": {
+        "acc": 0.491,
+        "acc_norm": 0.63
+      },
+      "degradations": {
+        "acc": 0.0030000000000000027,
+        "acc_norm": 0.007499999999999951
+      },
+      "layers": {
+        "model.layers.32.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13669340778142214,
+      "evaluation_seconds": 53.99784143362194,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.32.mlp.down_proj",
+      "metrics": {
+        "acc": 0.489,
+        "acc_norm": 0.6265
+      },
+      "degradations": {
+        "acc": 0.0050000000000000044,
+        "acc_norm": 0.01100000000000001
+      },
+      "layers": {
+        "model.layers.32.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1390443998388946,
+      "evaluation_seconds": 52.720688038971275,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.32.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.497,
+        "acc_norm": 0.6355
+      },
+      "degradations": {
+        "acc": -0.0030000000000000027,
+        "acc_norm": 0.0020000000000000018
+      },
+      "layers": {
+        "model.layers.33.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.04990789573639631,
+      "evaluation_seconds": 52.01425935514271,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.494,
+        "acc_norm": 0.632
+      },
+      "degradations": {
+        "acc": 0.0,
+        "acc_norm": 0.005499999999999949
+      },
+      "layers": {
+        "model.layers.33.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.78515625,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03100700629875064,
+      "evaluation_seconds": 51.754565646871924,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4885,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": 0.005500000000000005,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.33.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.029618131928145885,
+      "evaluation_seconds": 51.7031331891194,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4905,
+        "acc_norm": 0.6375
+      },
+      "degradations": {
+        "acc": 0.003500000000000003,
+        "acc_norm": 0.0
+      },
+      "layers": {
+        "model.layers.33.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.89453125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05053906608372927,
+      "evaluation_seconds": 54.842815903015435,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.49,
+        "acc_norm": 0.6295
+      },
+      "degradations": {
+        "acc": 0.0040000000000000036,
+        "acc_norm": 0.008000000000000007
+      },
+      "layers": {
+        "model.layers.33.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13881408469751477,
+      "evaluation_seconds": 54.044370830990374,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.mlp.up_proj",
+      "metrics": {
+        "acc": 0.492,
+        "acc_norm": 0.6365
+      },
+      "degradations": {
+        "acc": 0.0020000000000000018,
+        "acc_norm": 0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.33.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.97265625,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13977895537391305,
+      "evaluation_seconds": 54.20008961809799,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.33.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4925,
+        "acc_norm": 0.6385
+      },
+      "degradations": {
+        "acc": 0.0015000000000000013,
+        "acc_norm": -0.0010000000000000009
+      },
+      "layers": {
+        "model.layers.33.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.14100164780393243,
+      "evaluation_seconds": 52.698989475145936,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.33.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4935,
+        "acc_norm": 0.616
+      },
+      "degradations": {
+        "acc": 0.0005000000000000004,
+        "acc_norm": 0.021499999999999964
+      },
+      "layers": {
+        "model.layers.34.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.890625,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.050232600420713425,
+      "evaluation_seconds": 52.01806915178895,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.486,
+        "acc_norm": 0.6345
+      },
+      "degradations": {
+        "acc": 0.008000000000000007,
+        "acc_norm": 0.0030000000000000027
+      },
+      "layers": {
+        "model.layers.34.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.77734375,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.03000024100765586,
+      "evaluation_seconds": 51.598830168135464,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4975,
+        "acc_norm": 0.6405
+      },
+      "degradations": {
+        "acc": -0.003500000000000003,
+        "acc_norm": -0.0030000000000000027
+      },
+      "layers": {
+        "model.layers.34.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.8046875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030257325619459152,
+      "evaluation_seconds": 51.577089845668525,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.4935,
+        "acc_norm": 0.649
+      },
+      "degradations": {
+        "acc": 0.0005000000000000004,
+        "acc_norm": -0.011500000000000066
+      },
+      "layers": {
+        "model.layers.34.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.90234375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05059644766151905,
+      "evaluation_seconds": 52.048921461217105,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.4835,
+        "acc_norm": 0.622
+      },
+      "degradations": {
+        "acc": 0.01050000000000001,
+        "acc_norm": 0.015499999999999958
+      },
+      "layers": {
+        "model.layers.34.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13971673417836428,
+      "evaluation_seconds": 54.410338417161256,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.mlp.up_proj",
+      "metrics": {
+        "acc": 0.485,
+        "acc_norm": 0.6265
+      },
+      "degradations": {
+        "acc": 0.009000000000000008,
+        "acc_norm": 0.01100000000000001
+      },
+      "layers": {
+        "model.layers.34.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.97265625,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13987003033980727,
+      "evaluation_seconds": 56.76677370024845,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.34.mlp.down_proj",
+      "metrics": {
+        "acc": 0.484,
+        "acc_norm": 0.6275
+      },
+      "degradations": {
+        "acc": 0.010000000000000009,
+        "acc_norm": 0.010000000000000009
+      },
+      "layers": {
+        "model.layers.34.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.16220464603975415,
+      "evaluation_seconds": 53.089568050112575,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.34.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.self_attn.q_proj",
+      "metrics": {
+        "acc": 0.4935,
+        "acc_norm": 0.636
+      },
+      "degradations": {
+        "acc": 0.0005000000000000004,
+        "acc_norm": 0.0014999999999999458
+      },
+      "layers": {
+        "model.layers.35.self_attn.q_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.90234375,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05077587114647031,
+      "evaluation_seconds": 51.93558810604736,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.self_attn.k_proj",
+      "metrics": {
+        "acc": 0.492,
+        "acc_norm": 0.638
+      },
+      "degradations": {
+        "acc": 0.0020000000000000018,
+        "acc_norm": -0.000500000000000056
+      },
+      "layers": {
+        "model.layers.35.self_attn.k_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.796875,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.030346347950398922,
+      "evaluation_seconds": 51.76407441217452,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.self_attn.v_proj",
+      "metrics": {
+        "acc": 0.4925,
+        "acc_norm": 0.649
+      },
+      "degradations": {
+        "acc": 0.0015000000000000013,
+        "acc_norm": -0.011500000000000066
+      },
+      "layers": {
+        "model.layers.35.self_attn.v_proj": {
+          "compression_ratio": 3.4478114478114477,
+          "relative_error": 0.80078125,
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.029964819084852934,
+      "evaluation_seconds": 51.89534463221207,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.self_attn.v_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.self_attn.o_proj",
+      "metrics": {
+        "acc": 0.494,
+        "acc_norm": 0.653
+      },
+      "degradations": {
+        "acc": 0.0,
+        "acc_norm": -0.01550000000000007
+      },
+      "layers": {
+        "model.layers.35.self_attn.o_proj": {
+          "compression_ratio": 6.965986394557823,
+          "relative_error": 0.8828125,
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.04991821479052305,
+      "evaluation_seconds": 52.021365102846175,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.mlp.gate_proj",
+      "metrics": {
+        "acc": 0.485,
+        "acc_norm": 0.604
+      },
+      "degradations": {
+        "acc": 0.009000000000000008,
+        "acc_norm": 0.033499999999999974
+      },
+      "layers": {
+        "model.layers.35.mlp.gate_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96484375,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1400811723433435,
+      "evaluation_seconds": 54.20608967496082,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.mlp.up_proj",
+      "metrics": {
+        "acc": 0.4925,
+        "acc_norm": 0.617
+      },
+      "degradations": {
+        "acc": 0.0015000000000000013,
+        "acc_norm": 0.020499999999999963
+      },
+      "layers": {
+        "model.layers.35.mlp.up_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.96875,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.137002422939986,
+      "evaluation_seconds": 54.404043844901025,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    },
+    {
+      "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+      "case": "model.layers.35.mlp.down_proj",
+      "metrics": {
+        "acc": 0.4975,
+        "acc_norm": 0.615
+      },
+      "degradations": {
+        "acc": -0.003500000000000003,
+        "acc_norm": 0.022499999999999964
+      },
+      "layers": {
+        "model.layers.35.mlp.down_proj": {
+          "compression_ratio": 20.48,
+          "relative_error": 0.97265625,
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.1382153150625527,
+      "evaluation_seconds": 52.81648670276627,
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.35.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": null
+    }
+  ],
+  "provenance": {
+    "kind": "legacy_conversion",
+    "original": {
+      "path": "/mnt/intern7/xls/projects/qcomp/artifacts/sensitivity/qwen3-hellaswag-mpo-rank-96/20260908T101233/events.jsonl",
+      "sha256": "4a41dcab667d32385396d90ec1fadbb5a628e5bb71a363711e16aecff58ca9d9",
+      "report_sha256": "bffd8e80d8b224cdfadd94c36048f078ce1c570a374f5d22622b183a0e0015d1",
+      "configuration": {
+        "run_id": "693a1afc112b4fd5a9c5493000c0589a",
+        "name": "qwen3-hellaswag-mpo-rank-96",
+        "task": "hellaswag",
+        "metrics": [
+          "acc",
+          "acc_norm"
+        ],
+        "metric_directions": {
+          "acc": "higher",
+          "acc_norm": "higher"
+        },
+        "layers": 116,
+        "first": "model.layers.19.self_attn.o_proj",
+        "last": "model.layers.35.mlp.down_proj",
+        "model_name_or_path": "/infini-data/Qwen3-8B",
+        "device": "cuda:0",
+        "model_dtype": "torch.bfloat16",
+        "decomposition_dtype": "torch.float32",
+        "decomposition_provider": "tensorly",
+        "execution_provider": "tensorly",
+        "seed": 42,
+        "num_fewshot": 0,
+        "batch_size": 8,
+        "max_length": 4096,
+        "limit": 2000,
+        "sample_start_index": 0,
+        "apply_chat_template": false,
+        "trust_remote_code": false,
+        "offline": true,
+        "start_index": 136,
+        "max_layers": null
+      },
+      "aggregation": null
+    },
+    "converted_at": "2026-09-11T05:27:18.021847+00:00",
+    "model_config_path": "/infini-data/Qwen3-8B/config.json",
+    "model_config_file_sha256": "f7c4eadfbbf522470667b797a3c89be2524832d2d599797248dc304fff447c30",
+    "spec_recovery": {
+      "rule": "Qwen3 三核 modes；两条内部 bond 使用实验名称中的 rank",
+      "reference_commit": "615a10a",
+      "rule_sha256": "3da0ae3bc80e08904d57cc760b1fb42b8023f24a03847dc6e99407b1ea885dc9"
+    },
+    "unknown_fields": [
+      "model.dense_parameters",
+      "cases.model_compression"
+    ],
+    "assumptions": [],
+    "converted_sources": []
+  },
+  "report_path": null
+}
