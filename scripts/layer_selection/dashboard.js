@@ -3,14 +3,16 @@
 const LayerSelection = (() => {
   const rounded = value => Number(value.toFixed(10));
   const byName = (a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-  // 为 payload 生成初始设置，五任务等权且每项独立保留指标。
+  // 为 payload 生成初始设置，所有任务等权且每项独立保留指标。
   function defaults(payload) {
-    return {mode: "fixed", requested_module_count: 32, capEnabled: false, cap: 5, datasets: payload.datasets.map(d =>
-      ({id: d.id, enabled: true, metric: d.defaultMetric, weight: 20, lower: 10, upper: 30}))};
+    const state = {mode: "fixed", requested_module_count: Math.min(32, payload.modules.length), capEnabled: false, cap: 5, datasets: payload.datasets.map(d =>
+      ({id: d.id, enabled: true, metric: d.defaultMetric, weight: 100 / payload.datasets.length, lower: 0, upper: 100}))};
+    resetRanges(state);
+    return state;
   }
   // 校验设置，拒绝无效选择、权重与导入配置；不悄悄修正用户输入。
   function validate(payload, state) {
-    if (!state || !["fixed", "stable"].includes(state.mode) || !Number.isInteger(state.requested_module_count) || state.requested_module_count < 1 || state.requested_module_count > payload.modules.length) throw Error("期望选择矩阵数必须是 1～252 的整数。");
+    if (!state || !["fixed", "stable"].includes(state.mode) || !Number.isInteger(state.requested_module_count) || state.requested_module_count < 1 || state.requested_module_count > payload.modules.length) throw Error(`期望选择矩阵数必须是 1～${payload.modules.length} 的整数。`);
     if (typeof state.capEnabled !== "boolean" || !Number.isFinite(state.cap) || state.cap < 0 || state.cap > 100) throw Error("掉点上限必须在 0～100 pp 之间。");
     if (!Array.isArray(state.datasets) || state.datasets.length !== payload.datasets.length) throw Error("数据集设置不完整。");
     state.datasets.forEach((s, i) => {
@@ -27,7 +29,7 @@ const LayerSelection = (() => {
   function resetRanges(state) {
     const n = state.datasets.filter(d => d.enabled).length;
     if (!n) return;
-    state.datasets.forEach(d => {d.lower = Math.floor(10 / n) * 5; d.upper = Math.min(100, Math.ceil(30 / n) * 5);});
+    state.datasets.forEach(d => {d.lower = n === 1 ? 100 : Math.floor(10 / n) * 5; d.upper = n === 1 ? 100 : Math.min(100, Math.ceil(30 / n) * 5);});
   }
   // 构造全部模块的有符号掉点、当前分数和筛选资格。
   function evaluate(payload, state) {
@@ -36,7 +38,7 @@ const LayerSelection = (() => {
     const total = active.reduce((sum, i) => sum + state.datasets[i].weight, 0);
     const weights = active.map(i => state.datasets[i].weight / total);
     return payload.modules.map((module, index) => {
-      const drops = payload.datasets.map((d, i) => 100 * (d.baseline[state.datasets[i].metric] - d.values[state.datasets[i].metric][index]));
+      const drops = payload.datasets.map((d, i) => 100 * (d.baseline[state.datasets[i].metric] - d.values[state.datasets[i].metric][index]) * (d.directions[state.datasets[i].metric] === "lower" ? -1 : 1));
       const losses = active.map(i => Math.max(0, drops[i]));
       const maxDrop = Math.max(...losses);
       const score = losses.reduce((sum, value, i) => sum + value * weights[i], 0);
@@ -50,6 +52,16 @@ const LayerSelection = (() => {
   // 穷举以 5% 为步长且总和等于 100% 的权重组合。
   function weightGrid(settings) {
     const bounds = settings.filter(d => d.enabled);
+    // 动态规划先计数组合，防止大量任务耗尽浏览器内存。
+    let counts = Array(21).fill(0); counts[0] = 1;
+    for (const bound of bounds) {
+      const next = Array(21).fill(0);
+      for (let used = 0; used <= 20; used++) for (let v = bound.lower / 5; v <= Math.min(20 - used, bound.upper / 5); v++) {
+        next[used + v] = Math.min(100001, next[used + v] + counts[used]);
+      }
+      counts = next;
+    }
+    if (counts[20] > 100000) throw Error("权重组合超过 100,000 组，请收窄范围或使用固定权重。");
     const result = [];
     // 按剩余整数份额递归，最后一项直接使用余量。
     function visit(index, remaining, values) {
@@ -123,7 +135,7 @@ const LayerSelection = (() => {
   // 保留验证过的完整来源，顶层字段供导入快速识别数据集和哈希。
   function sourceRecords(payload) {
     return payload.datasets.map(d => ({dataset_id: d.id, evaluated_examples: d.count,
-      path: d.source.path, sha256: d.source.sha256, report_sha256: d.source.report_sha256,
+      path: d.source.path, sha256: d.source.sha256,
       provenance: structuredClone(d.source)}));
   }
   // 将当前排名与设置统一序列化；下载、A/B 和导入验证共享唯一实现。
@@ -144,6 +156,7 @@ const LayerSelection = (() => {
         },
         sources: sourceRecords(payload),
         results: {
+          parameter_saving_basis: payload.saving_basis,
           candidate_count: ordered.length, eligible_count: ordered.filter(r => r.eligible).length,
           selected_count: candidates.length, parameter_saving_fraction: candidates.reduce((sum, r) => sum + r.saving, 0),
           normalized_weights: Object.fromEntries(state.datasets.map(d => [d.id, d.enabled ? d.weight / total : 0])),
@@ -203,11 +216,11 @@ window.LayerSelection = LayerSelection;
   function signature() {return JSON.stringify(state);}
   // 更新提示及错误语义。
   function status(message, error = false) {$("status").textContent = message; $("status").classList.toggle("error", error);}
-  // 构建五个数据集卡片及指标、来源和权重范围控件。
+  // 构建动态数据集卡片及指标、来源和权重范围控件。
   function renderCards() {
     $("datasets").innerHTML = data.datasets.map((d, i) => {
       const s = state.datasets[i];
-      return `<article class="dataset-card ${s.enabled ? "" : "off"}" data-index="${i}"><label class="dataset-name"><input type="checkbox" data-field="enabled" ${s.enabled ? "checked" : ""}>${escape(d.label)}</label><small>${d.count.toLocaleString()} / ${d.total.toLocaleString()} 题</small><select aria-label="${escape(d.label)} 指标" data-field="metric">${Object.keys(d.values).map(m => `<option ${s.metric === m ? "selected" : ""}>${escape(m)}</option>`).join("")}</select><div>基线 <b class="baseline"></b></div><input aria-label="${escape(d.label)} 权重" data-field="weight" type="range" min="0" max="100" step="1" value="${s.weight}"><div class="weight-label"><span class="raw-weight"></span><strong class="normalized-weight"></strong></div><div class="range-control" ${state.mode === "stable" ? "" : "hidden"}><input aria-label="${escape(d.label)} 权重下限" data-field="lower" type="number" min="0" max="100" step="5" value="${s.lower}">～<input aria-label="${escape(d.label)} 权重上限" data-field="upper" type="number" min="0" max="100" step="5" value="${s.upper}">%</div><details><summary>查看实验来源</summary><div>${escape(d.source.path)}</div><div>SHA-256: ${escape(d.source.sha256)}</div><div>few-shot: ${d.source.configuration.num_fewshot ?? "任务默认"}</div>${d.source.aggregation ? "<div>已验证合并来源，分段数据不重复参与评分。</div>" : ""}</details></article>`;
+      return `<article class="dataset-card ${s.enabled ? "" : "off"}" data-index="${i}"><label class="dataset-name"><input type="checkbox" data-field="enabled" ${s.enabled ? "checked" : ""}>${escape(d.label)}</label><small>${d.count.toLocaleString()} / ${d.total === null ? "未知" : d.total.toLocaleString()} 题</small><select aria-label="${escape(d.label)} 指标" data-field="metric">${Object.keys(d.values).map(m => `<option ${s.metric === m ? "selected" : ""}>${escape(m)}</option>`).join("")}</select><div>基线 <b class="baseline"></b></div><input aria-label="${escape(d.label)} 权重" data-field="weight" type="range" min="0" max="100" step="any" value="${s.weight}"><div class="weight-label"><span class="raw-weight"></span><strong class="normalized-weight"></strong></div><div class="range-control" ${state.mode === "stable" ? "" : "hidden"}><input aria-label="${escape(d.label)} 权重下限" data-field="lower" type="number" min="0" max="100" step="5" value="${s.lower}">～<input aria-label="${escape(d.label)} 权重上限" data-field="upper" type="number" min="0" max="100" step="5" value="${s.upper}">%</div><details><summary>查看实验来源</summary><div>${escape(d.source.path)}</div><div>SHA-256: ${escape(d.source.sha256)}</div><div>few-shot: ${escape(d.source.evaluation_config.evaluation.num_fewshot ?? "任务默认")}</div>${d.source.provenance.converted_sources?.length ? "<div>已验证合并来源，分段数据不重复参与评分。</div>" : ""}<pre>${escape(JSON.stringify({configuration:d.source.evaluation_config, task:d.source.evaluation_task, provenance:d.source.provenance}, null, 2))}</pre></details></article>`;
     }).join("");
     updateLabels();
   }
@@ -233,25 +246,33 @@ window.LayerSelection = LayerSelection;
     return [row.name, ...data.datasets.map((d, i) => {
       const s = state.datasets[i];
       return `${d.label}${s.enabled ? "" : "（未参与）"} / ${s.metric}: 基线 ${percent(d.baseline[s.metric])} → ${percent(d.values[s.metric][row.index])}; 掉点 ${row.drops[i].toFixed(4)} pp`;
-    }), `参数节省 ${percent(row.saving)}`].join("\n");
+    }), `Spec ${JSON.stringify(row.target.spec)}`, `参数量 ${row.dense_parameters} → ${row.compressed_parameters}；压缩比 ${row.compression_ratio.toFixed(4)}`, `参数节省 ${percent(row.saving)}`].join("\n");
   }
   // 渲染原生 SVG 热力图，选层描边与焦点描边独立显示。
   function renderHeatmap(rows, selected, result) {
-    const names = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"];
+    if (rows.some(r => r.block === null)) {
+      $("legend").textContent = "模块列表";
+      $("heatmap").innerHTML = rows.map(r => `<button data-module="${r.index}" title="${escape(description(r))}">${escape(r.name)}</button>`).join(" ");
+      return;
+    }
+    const names = [...new Set(rows.map(r => r.type))];
+    const blocks = [...new Set(rows.map(r => r.block))].sort((a, b) => a - b);
+    const left = Math.max(100, ...names.map(n => n.length * 7 + 20));
+    const width = left + blocks.length * 31 + 30, height = names.length * 32 + 78;
     const stableMode = state.mode === "stable";
     const maximum = stableMode ? 1 : Math.max(.01, ...rows.filter(r => r.eligible).map(r => r.score));
     $("legend").textContent = stableMode ? (result ? "入选频率 · 0% → 100% · 深色更高" : "稳定性结果待计算") : `加权掉点 · 0 → ${maximum.toFixed(2)} pp · 深色更高`;
-    let svg = `<svg viewBox="0 0 1250 302" role="img" aria-label="模块敏感性热力图">`;
-    names.forEach((n, i) => {svg += `<text x="84" y="${53 + i * 32}" text-anchor="end" font-size="12" fill="#48655b">${n}</text>`;});
-    for (let b = 0; b < 36; b++) svg += `<text x="${114 + b * 31}" y="24" text-anchor="middle" font-size="11" fill="#627572">${b}</text>`;
+    let svg = `<svg style="width:${width}px;min-width:${Math.min(width, 950)}px;max-width:100%" viewBox="0 0 ${width} ${height}" role="img" aria-label="模块敏感性热力图">`;
+    names.forEach((n, i) => {svg += `<text x="${left - 16}" y="${53 + i * 32}" text-anchor="end" font-size="12" fill="#48655b">${escape(n)}</text>`;});
+    for (const [i, b] of blocks.entries()) svg += `<text x="${left + 14 + i * 31}" y="24" text-anchor="middle" font-size="11" fill="#627572">${b}</text>`;
     for (const row of rows) {
       const value = stableMode ? (result?.stats[row.index]?.frequency ?? null) : row.score;
       const t = value === null ? 0 : Math.min(1, Math.max(0, value / maximum));
       const fill = !row.eligible || value === null ? "#e4e9e4" : `hsl(157, ${25 + t * 20}%, ${96 - t * 67}%)`;
       const sel = selected.has(row.index);
-      svg += `<rect class="cell ${focused === row.index ? "focused" : ""}" tabindex="0" role="button" aria-label="${escape(row.name)}" data-module="${row.index}" x="${100 + row.block * 31}" y="${35 + names.indexOf(row.type) * 32}" width="28" height="28" rx="3" fill="${fill}" stroke="${sel ? "#122e27" : "#fff"}" stroke-width="${sel ? 2 : 1}"><title>${escape(description(row))}${value === null ? "" : `\n${stableMode ? "入选频率 " + percent(value) : "加权掉点 " + value.toFixed(4) + " pp"}`}</title></rect>`;
+      svg += `<rect class="cell ${focused === row.index ? "focused" : ""}" tabindex="0" role="button" aria-label="${escape(row.name)}" data-module="${row.index}" x="${left + blocks.indexOf(row.block) * 31}" y="${35 + names.indexOf(row.type) * 32}" width="28" height="28" rx="3" fill="${fill}" stroke="${sel ? "#122e27" : "#fff"}" stroke-width="${sel ? 2 : 1}"><title>${escape(description(row))}${value === null ? "" : `\n${stableMode ? "入选频率 " + percent(value) : "加权掉点 " + value.toFixed(4) + " pp"}`}</title></rect>`;
     }
-    svg += '<text x="657" y="286" text-anchor="middle" font-size="12" fill="#627572">Transformer block</text></svg>';
+    svg += `<text x="${width / 2}" y="${height - 16}" text-anchor="middle" font-size="12" fill="#627572">Block</text></svg>`;
     $("heatmap").innerHTML = svg;
   }
   // 根据当前排名生成表格，未通过阈值的模块仍可检查原始分数。
@@ -279,7 +300,7 @@ window.LayerSelection = LayerSelection;
       const selected = new Set(candidates.map(r => r.index));
       current = {rows: ordered, candidates, result: state.mode === "stable" ? result : null, ready};
       $("selected-count").textContent = ready ? candidates.length : "—";
-      $("eligible-count").textContent = `目标 ${state.requested_module_count} / 合格 ${rows.filter(r => r.eligible).length} / 总计 252`;
+      $("eligible-count").textContent = `目标 ${state.requested_module_count} / 合格 ${rows.filter(r => r.eligible).length} / 总计 ${data.modules.length}`;
       $("saving").textContent = ready ? percent(candidates.reduce((s, r) => s + r.saving, 0)) : "—";
       $("max-drop").textContent = candidates.length ? `${Math.max(...candidates.map(r => r.maxDrop)).toFixed(2)} pp` : "—";
       status(ready ? (state.mode === "fixed" ? "按归一化权重即时评分。负掉点按零计入综合分数。" : `已完成 ${result.count} 组权重 · 入选频率用于衡量权重稳定性。`) : (running ? "正在计算权重稳定性…" : stable ? "设置已改变，稳定性结果待更新。" : "请点击「计算稳定性」生成候选。"));
@@ -381,6 +402,13 @@ window.LayerSelection = LayerSelection;
     status("方案已导入，并通过来源、完整计划和结果校验。");
   }
 
+  document.title = `${data.model.name_or_path} · 敏感性选层`;
+  const specs = new Set(data.modules.map(m => JSON.stringify(m.target.spec)));
+  $("model-badge").textContent = `${data.model.name_or_path.split("/").pop()} · MPO · ${specs.size} 种 Spec · 离线计算`;
+  $("saving-basis").textContent = data.saving_basis === "parameter_counts" ? "按 Spec 参数量及原模型总参数量计算" : "按历史单层模型压缩比汇总";
+  $("requested_module_count").max = data.modules.length;
+  $("requested_module_count").value = state.requested_module_count;
+  document.querySelectorAll("[data-module-count]").forEach(button => {button.hidden = Number(button.dataset.moduleCount) > data.modules.length;});
   $("datasets").addEventListener("input", event => {
     const field = event.target.dataset.field, card = event.target.closest("[data-index]");
     if (!field || !card) return;
@@ -389,7 +417,7 @@ window.LayerSelection = LayerSelection;
     if (field === "enabled") LayerSelection.resetRanges(state);
     changed(field === "enabled");
   });
-  $("equal").onclick = () => {state.datasets.forEach(d => {d.weight = 20;}); changed(true);};
+  $("equal").onclick = () => {state.datasets.forEach(d => {d.weight = 100 / state.datasets.length;}); changed(true);};
   $("requested_module_count").oninput = event => {state.requested_module_count = event.target.valueAsNumber; changed();};
   document.querySelectorAll("[data-module-count]").forEach(b => {b.onclick = () => {state.requested_module_count = Number(b.dataset.moduleCount); $("requested_module_count").value = state.requested_module_count; changed();};});
   $("cap-enabled").onchange = event => {state.capEnabled = event.target.checked; $("cap").disabled = !state.capEnabled; changed();};
