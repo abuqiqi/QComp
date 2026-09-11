@@ -26,7 +26,7 @@ python scripts/run_qwen3_sensitivity.py \
   --limit 1 --max-layers 1
 ```
 
-敏感性脚本在模型加载前创建实验目录，自动保存 `console.log`（终端输出与异常）、`events.jsonl`（结构化记录）和 `report.md`（报告），终端仍同步显示进度。每次运行使用独立时间戳目录，采用 UTC+8、格式 `YYYYMMDDTHHMMSS`，精确到秒；指定 `--output` 时 `console.log` 和默认 `events.jsonl` 跟随报告目录。后台运行 BoolQ 全量，无需指定日志路径：
+敏感性脚本在模型加载前创建实验目录，自动保存 `console.log`（终端输出与异常）、`sensitivity_results.json`（完整结构化结果）和 `report.md`（报告），终端仍同步显示进度。每次运行使用独立时间戳目录，采用 UTC+8、格式 `YYYYMMDDTHHMMSS`，精确到秒；指定 `--output` 时 `console.log` 和默认 `sensitivity_results.json` 跟随报告目录。后台运行 BoolQ 全量，无需指定日志路径：
 
 ```bash
 nohup python -u scripts/run_qwen3_sensitivity.py --task boolq --metric acc --num-fewshot 0 --limit none >/dev/null 2>&1 &
@@ -39,7 +39,7 @@ python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num
 python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num-fewshot 0 --sample-start-index 8000 --limit none
 ```
 
-非零题目起点仅支持单 task，limit 使用整数或 none，越界起点会报错。分段沿用缓存数据的原始评测顺序；每段分别评测基线和所选 Linear，日志记录题目起点，报告记录实际范围与样本数。两段分别输出结果，暂不自动合并。为了与一次性全量评测使用相同 prompt，分段示例固定 `--num-fewshot 0`；非零 few-shot 的示例抽样可能随分段而变化。
+非零题目起点仅支持单 task，limit 使用整数或 none，越界起点会报错。分段沿用缓存数据的原始评测顺序；每段分别评测基线和所选 Linear，结果记录题目起点，报告记录实际范围与样本数。两段分别输出结果，暂不自动合并。为了与一次性全量评测使用相同 prompt，分段示例固定 `--num-fewshot 0`；非零 few-shot 的示例抽样可能随分段而变化。
 
 敏感性实验结束后自动生成热力图，横轴为 Transformer 块号，纵轴为七类投影模块。每张图标注 `Test samples: 本次条数 / 评测集总条数`；总数仅指任务使用的 test 或 validation split，group 按叶子任务汇总，不包含训练数据。图标题同时显示对应指标的 `Baseline` 得分，读取报告的 `Baseline Metrics` 表；准确率和 exact-match 等比例指标显示为百分比，其他指标保留原始单位。每个比较指标输出一张 `<报告名>-<指标>-heatmap.png`，与 Markdown 报告保存在同一实验目录，并嵌入报告末尾；默认目录为 `artifacts/sensitivity/<实验名>/<时间戳>/`，使用 `--output` 时跟随该报告路径。准确率和 exact-match 的掉点乘以 100，以百分点（pp）表示；困惑度等使用原始单位。`--heatmap-max` 默认 10，超出色标范围的格子标真实数值，负值表示改善，未评测格显示灰色。绘图依赖可通过 `python -m pip install -e ".[plotting]"` 安装，`[all]` 也包含此依赖。
 
@@ -47,8 +47,31 @@ python scripts/run_qwen3_sensitivity.py --task hellaswag --metric acc_norm --num
 
 ```bash
 python scripts/run_qwen3_sensitivity.py \
-  --plot-only artifacts/sensitivity/qwen3-mmlu-mpo-rank-96/20260905T182434/events.jsonl
+  --plot-only "artifacts/sensitivity/qwen3-mmlu-mpo-rank-96/<运行时间戳>/sensitivity_results.json"
 ```
+
+### 标准敏感性结果
+
+实验在基线完成及每个 case 完成后原子更新 `sensitivity_results.json`。文件包含运行状态、预期模块名单、模型配置快照及哈希、实际模型参数量、执行设置、完整 `EvaluationTaskConfig`、实际 `EvaluationTask`、基线和逐层结果。每个 case 保存 `compression_plan.targets`、模块及模型压缩统计、得分、退化、误差和耗时。
+
+状态为 `running`、`completed`、`failed` 或 `interrupted`；强制终止后保留最后一次成功保存的进度。完成结果可直接被页面读取，不支持自动续跑。`--results` 可指定结果文件，默认与报告同目录；已有结果不会覆盖。`SensitivityExperimentResult.results_path` 返回结果位置。报告或绘图失败不会改变已完成的评测状态。
+
+```python
+from qcomp.workflows import read_sensitivity_results
+
+result = read_sensitivity_results("sensitivity_results.json")
+print(result["evaluation_config"], result["cases"][0]["compression_plan"])
+```
+
+### 历史结果转换
+
+```bash
+python scripts/migrate_sensitivity_results.py
+```
+
+转换器默认扫描 `artifacts/sensitivity`，将已完成的历史 JSONL 与合并结果写入 `migrated-<北京时间戳>/`，内部保留原实验目录层级。它校验原来源哈希、合并关系、题数和基线，按历史 Qwen3 规则重建并核对 Spec；不运行评测。原文件保持不变，无法恢复的信息标记为未知，保留 few-shot 默认设置与分段说明。
+
+输出 `migration_manifest.json` 列出成功、跳过和失败及原文件哈希；未完成实验跳过，完整实验验证失败时返回非零。若当前页面配置的所有来源均转换成功，额外生成指向新结果的 `layer_selection.json`。可用 `--root`、`--output`、`--config` 指定扫描目录、新输出目录和原来源配置。
 
 ## 交互式敏感性选层
 
@@ -60,15 +83,27 @@ python scripts/build_layer_selection_dashboard.py
 python scripts/build_layer_selection_dashboard.py --config config/layer_selection.json --output artifacts/layer-selection/my-selection
 ```
 
-默认配置 `config/layer_selection.json` 为五个数据集各指定一份完整结果。相对路径基于配置文件目录；默认使用 BoolQ / MMLU 全量、HellaSwag 合并 2,000 条、GSM8K 合并 256 条和 TriviaQA 128 条。生成器验证完成状态、252 个模块、模型与压缩配置、指标基线及合并来源哈希。合并来源原先位于 `evaluations`、后来移到 `sensitivity` 时，按同任务下的原时间戳目录定位，并严格核对原哈希。缺失或不一致会报错。
+来源配置使用非空 `datasets` 数组，每项包含唯一 `id`、显示名称 `label`、默认指标 `default_metric` 和指向 `sensitivity_results.json` 的 `path`；相对路径基于配置文件目录。任务、指标方向、题数、基线、完整 MPO Spec 和模型配置由结果文件提供，不加载模型、数据集或原报告。`id` 可以与实际 task 不同，从而区分同任务的不同评测设置。
 
-默认输出 `artifacts/layer-selection/<北京时间戳>/index.html` 和 `sources.json`，显式输出目录必须尚不存在。将 `index.html` 下载到本机后用浏览器打开即可；页面内已嵌入全部数据和资源。来源配置采用绝对路径保存，便于在同一机器重建页面；换机器时修改来源路径。
+```json
+{
+  "datasets": [
+    {"id": "boolq", "label": "BoolQ", "default_metric": "acc", "path": "../results/boolq/sensitivity_results.json"}
+  ]
+}
+```
 
-页面默认全部勾选、等权、期望选择 32 个矩阵（`requested_module_count`）、rank=96。可切换各任务实际存在的指标，拖动权重即时更新；固定评分为 `Σ 归一化权重 × max(0, 基线−压缩得分) × 100`，不按题数加权。表格保留有符号掉点；可用单任务最大掉点上限过滤候选。热力图与排名表支持点击联动，悬停显示各任务得分。
+生成器要求各来源已完成，模型身份和执行配置一致，覆盖相同模块集合，且对应模块的完整 Spec、参数量和模型压缩比一致。不同模块允许不同 modes、核数和逐 bond ranks；每个模块只有一个已评测 Spec。缺少模块或 Spec 不同会明确报错。
 
-稳定性模式按 5% 步长枚举上下限内总和为 100% 的权重组合。默认五任务各 10%～30%，共 381 组。勾选数为 N 时，下限按 `50/N%` 向下取整至 5% 倍数，上限按 `150/N%` 向上取整并限制为 100%。点击计算后分批处理，可取消；设置改变后必须重新计算。期望选择数量的边界并列按剩余名额分摊入选频率，分数保留十位小数判定并列；排名统计使用平均名次和 nearest-rank 分位数。
+默认输出 `artifacts/layer-selection/<北京时间戳>/index.html` 和 `sources.json`，显式输出目录必须尚不存在。页面嵌入全部结果及资源，可直接离线打开。来源配置保存绝对结果路径，换机器重建时只需调整结果路径。
 
-固定模式依次按综合分数、最大掉点、参数收益及模块路径排序；稳定性模式依次按入选频率、最大掉点、最差加权分数、参数收益及模块路径排序。预计参数节省由各模块 `1−1/model_ratio` 求和。A/B 按钮保存当前页面内的完整方案快照，刷新页面会清空；CSV 导出所有模块当前排名及各任务指标。
+页面默认全部数据集勾选、等权，期望选择 `min(32, 模块数)` 个矩阵。支持 `higher` 和 `lower` 的 0～1 比例指标：前者退化为 `基线−压缩得分`，后者为 `压缩得分−基线`，乘以 100 转为百分点。综合分数为 `Σ 归一化权重 × max(0, 退化百分点)`，不按题数加权；表格保留负退化，可按最大单任务退化过滤。
+
+稳定性模式按 5% 步长枚举上下限内总和为 100% 的权重组合。勾选数为 N 时，下限按 `50/N%` 向下取整至 5% 倍数，上限按 `150/N%` 向上取整并限制为 100%；单任务固定为 100%。五任务默认各 10%～30%，共 381 组。枚举前检查组合数，超过 100,000 组需收窄范围或使用固定权重。计算可取消，设置改变后重新计算。边界并列按剩余名额分摊入选频率，分数保留十位小数判定并列，排名采用平均名次和 nearest-rank 分位数。
+
+固定模式依次按综合分数、最大退化、参数收益和模块路径排序；稳定性模式依次按入选频率、最大退化、最差加权退化、参数收益和路径排序。模块压缩比由 `MPOSpec` 的参数量属性计算并核对实际统计。新实验按节省参数量除以原模型总参数量计算收益；缺少总参数量的历史转换结果使用 `1−1/model_ratio` 汇总，页面和导出注明依据。
+
+模型标题、任务卡片、表格和模块数量动态生成。热力图根据模块路径中的块号及剩余路径分组；无法分组时提供模块列表。详情显示完整 Spec、参数量和压缩比。A/B 快照只在当前页面保留，CSV 导出所有模块的排名与各任务指标。
 
 ### 统一 JSON 与计划加载
 
@@ -77,21 +112,13 @@ python scripts/build_layer_selection_dashboard.py --config config/layer_selectio
 - `kind` 为 `qcomp_compression_selection`，`created_at` 和 `producer` 记录生成时间和入口。
 - `model` 保存 `name_or_path`、`model_type`、`config_sha256`；配置哈希不代表权重指纹。
 - `compression_plan.targets` 按入选顺序保存每个目标的 `module_path`、`representation` 和完整 `spec`。MPO spec 包含 `out_modes`、`in_modes`、`ranks`，允许不同矩阵独立配置。执行以 targets 为唯一依据。
-- `selection.method` 为 `fixed_weight` 或 `weight_stability`。`settings` 保存 `requested_module_count`、可空的 `max_task_drop_pp`、`weight_step_pp` 和五任务的勾选、指标、原始权重及上下限；`sources` 保存来源路径、题数、哈希及完整合并 provenance。
-- `selection.results` 保存候选总数、合格数量、实际入选数量 `selected_count`、整体参数节省比例、归一化权重，以及全部 252 个矩阵的资格、排名、掉点和参数收益。固定模式的 `stability` 为 null；稳定性模式增加权重组合数、各合格矩阵的入选频率、中位排名、P95 排名和最差加权掉点，不保存逐权重组合的完整排名。
+- `selection.method` 为 `fixed_weight` 或 `weight_stability`。`settings` 保存 `requested_module_count`、可空的 `max_task_drop_pp`、`weight_step_pp` 和各任务的勾选、指标、原始权重及上下限；`sources` 保存来源路径、题数、哈希、评测配置和完整 provenance。
+- `selection.results` 保存候选总数、合格数量、实际入选数量 `selected_count`、整体参数节省比例、归一化权重，以及全部候选矩阵的资格、排名、掉点和参数收益。固定模式的 `stability` 为 null；稳定性模式增加权重组合数、各合格矩阵的入选频率、中位排名、P95 排名和最差加权掉点，不保存逐权重组合的完整排名。
 - `evaluation.joint_compression_status` 为 `not_evaluated`，表示尚未进行联合评测。
 
 所有掉点使用百分点（`_pp`），保留原始负掉点；参数节省、频率和归一化权重使用 0～1 比例。不合格候选排名为 null。筛选后实际入选数可以小于期望数量。固定权重模式只保存固定评分；稳定性模式的 `weighted_drop_pp` 是滑块权重下的参考分数，排名由稳定性统计确定。
 
-生成器默认读取日志模型目录的 `config.json`。模型目录迁移后可指定本地配置：
-
-```bash
-python scripts/build_layer_selection_dashboard.py --model-config /infini-data/Qwen3-8B/config.json
-```
-
-显式 `--model-config` 相对于当前工作目录；生成的 `sources.json` 保存绝对 `model_config` 路径，重建时可直接使用该来源配置。生成器按配置推导七类投影形状，使用与实验脚本共享的 modes 规则，核对每个矩阵的压缩比。当前页面仍只处理 Qwen3 五任务、252 个模块和 rank 96。
-
-页面导入检查模型配置和来源哈希，并重新计算验证完整 targets、设置及结果。稳定性复算显示进度并支持取消；不一致时保留原页面状态。旧文件需通过最新版页面重新导出。当前页面没有对应敏感度数据的混合 rank 方案不能导入复算；Python 计划接口可解析混合 rank 的 MPO 计划。
+页面导入按当前模型配置、来源哈希及完整 Spec 验证并复算方案。稳定性复算显示进度且支持取消；不一致时保留原页面状态。页面只能对具有对应敏感性结果的目标与 Spec 复算，不能修改 Spec 后沿用原得分。
 
 压缩端将已经加载的模型传入一次调用即可，加载接口自动检查目标存在、无 bias Linear 类型和矩阵维度，不读取敏感度来源、不修改模型：
 
@@ -125,7 +152,7 @@ python scripts/run_compression_plan.py \
 
 `--dry-run` 只解析文件和展示实际执行配置，不加载模型、不创建产物目录；实际运行加载模型后由 `load_compression_plan()` 自动检查目标类型和维度。输入 JSON 原样复制并记录 SHA-256，压缩目标不会按评分再次筛选。
 
-默认评测 JSON 中勾选的数据集，使用 `selection.sources[].provenance.configuration` 中的 few-shot、limit、样本起点、seed、chat template、batch size 和上下文长度。原模型与联合压缩模型使用同一组 evaluator；基线重新评测，不将历史单矩阵分数当作本次基线。`num_fewshot: null` 表示沿用当前安装的 lm-eval 任务默认值，零保持为零。无需读取原敏感度日志，但评测需要本地模型及任务数据缓存。
+默认评测 JSON 中勾选的数据集，使用 `selection.sources[].provenance.evaluation_config` 中的 few-shot、limit、样本起点、seed、chat template、batch size 和上下文长度。原模型与联合压缩模型使用同一组 evaluator；基线重新评测，不将历史单矩阵分数当作本次基线。`num_fewshot: null` 表示沿用当前安装的 lm-eval 任务默认值，零保持为零。无需读取原敏感度日志，但评测需要本地模型及任务数据缓存。
 
 - `--eval-config config/compression_evaluation.json`：使用独立多任务配置，完整替代选层 JSON 的勾选任务。
 - `--no-plot`：不生成得分图；默认评测完成后输出 `scores.png`。
