@@ -1,13 +1,13 @@
 """统一定义敏感性分析常用评测指标的优化方向。
 
 本模块按规范化指标名称保存 ``higher`` 或 ``lower`` 语义，并把调用方选择的指标序列
-转换成 sensitivity workflow 已有的方向映射。这里只描述指标本身，不维护 lm-eval task
+转换成 通用压缩评测 workflow 使用的方向映射。这里只描述指标本身，不维护 lm-eval task
 与主指标之间的对应关系。
 
 主要内容：
 - ``MetricDirection``：限定指标优化方向。
 - ``metric_direction``：查询一个已注册指标的优化方向。
-- ``resolve_metric_directions``：批量构造 sensitivity 使用的指标方向映射。
+- ``resolve_metric_directions``：批量构造 压缩评测使用的指标方向映射。
 """
 
 from __future__ import annotations
@@ -77,7 +77,7 @@ def metric_direction(metric: str) -> MetricDirection:
 def resolve_metric_directions(
     metrics: Sequence[str],
 ) -> dict[str, MetricDirection]:
-    """把指标名称序列转换成 sensitivity 使用的方向映射。
+    """把指标名称序列转换成压缩评测使用的方向映射。
 
     参数：
         metrics: 一个或多个已注册指标名称。

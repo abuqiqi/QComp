@@ -114,9 +114,9 @@ class SensitivityExperimentTests(unittest.TestCase):
                     make_target=target,
                 )
             self.assertIs(model[2], original)
-            self.assertEqual(len(result.case_results), 1)
+            self.assertEqual(len(result.evaluation.plan_results), 1)
             self.assertEqual(
-                result.case_results[0].case.compression_plan.targets[0].module_path, "2"
+                result.evaluation.plan_results[0].plan.targets[0].module_path, "2"
             )
             self.assertEqual(
                 load.call_args_list[0].args[0].model_name_or_path, "/models/default"
@@ -201,7 +201,7 @@ class SensitivityExperimentTests(unittest.TestCase):
                 "load_causal_lm",
                 return_value=SimpleNamespace(model=nn.Sequential(), tokenizer=None),
             ),
-            patch.object(workflow, "analyze_sensitivity") as analyze,
+            patch.object(workflow, "evaluate_compression_plans") as analyze,
         ):
             with self.assertRaisesRegex(ValueError, "empty"):
                 run_sensitivity_experiment(

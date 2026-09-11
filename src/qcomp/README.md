@@ -27,17 +27,17 @@ qcomp/
 
 ### `logging.py`
 
-`log_event(path, event, **fields)` 自动创建父目录，将 UTC 时间、事件名称和 `fields` 对象序列化为一行 UTF-8 JSON，追加写入后关闭文件。字段使用 JSON 支持的类型及有限数值；同一文件保留历次记录，每轮实验可选择独立文件名。
+`log_event(path, event, **fields)` 自动创建父目录，将北京时间（UTC+8）、事件名称和 `fields` 对象序列化为一行 UTF-8 JSON，追加写入后关闭文件。字段使用 JSON 支持的类型及有限数值；同一文件保留历次记录，每轮实验可选择独立文件名。
 
 ```python
-from qcomp import SensitivityCaseResult, log_event, sensitivity_case_record
+from qcomp import CompressionPlanEvaluation, log_event, sensitivity_case_record
 
 path = "artifacts/evaluations/experiment.jsonl"
 log_event(path, "experiment_started", task="mmlu")
 
-def on_case_result(result: SensitivityCaseResult) -> None:
+def on_plan_result(result: CompressionPlanEvaluation) -> None:
     """将敏感性结果参数 result 整理后写入实验日志。"""
-    log_event(path, "case_completed", **sensitivity_case_record(result))
+    log_event(path, "case_completed", **sensitivity_case_record(result, "mmlu"))
 
 
 log_event(
@@ -48,7 +48,7 @@ log_event(
 )
 ```
 
-将 `on_case_result` 传给 `analyze_sensitivity()`，即可在每个 case 恢复模型后记录质量指标、退化量、逐层压缩率与误差、模型压缩率及耗时。
+将 `on_plan_result` 传给 `evaluate_compression_plans()`，即可在每个 case 恢复模型后记录质量指标、退化量、逐层压缩率与误差、模型压缩率及耗时。
 
 ### `runtime.py`
 

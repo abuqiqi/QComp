@@ -108,6 +108,73 @@ plan = load_compression_plan("layer-selection.json", model=model)
 
 验证生成器和计划接口使用 `python -m pytest tests/test_layer_selection_dashboard.py tests/test_compression_plan_io.py`。浏览器交互测试另需安装 `playwright` 和 `python -m playwright install chromium`，运行 `python -m pytest tests/test_layer_selection_browser.py`；未安装 Playwright 时该文件跳过，页面本身没有此依赖。
 
+## 按 JSON 联合压缩与评测
+
+`run_compression_plan.py` 读取页面导出的完整方案，通过 `evaluate_compression_plans()` 执行实验，按 `compression_plan.targets` 指定的矩阵、MPO modes 和逐层 ranks 联合压缩，不微调。模型来源优先使用 `--model`，其次为 JSON 的 `model.name_or_path`，最后为 runtime 配置。默认 TensorLy 分解和执行、CUDA 0、BF16 模型、FP32 分解；分解结果转回原层精度。
+
+从项目根目录先检查配置，再运行：
+
+```bash
+python scripts/run_compression_plan.py \
+  --selection-json artifacts/layer-selection/20260910T215301/layer-selection.json \
+  --dry-run
+
+python scripts/run_compression_plan.py \
+  --selection-json artifacts/layer-selection/20260910T215301/layer-selection.json
+```
+
+`--dry-run` 只解析文件和展示实际执行配置，不加载模型、不创建产物目录；实际运行加载模型后由 `load_compression_plan()` 自动检查目标类型和维度。输入 JSON 原样复制并记录 SHA-256，压缩目标不会按评分再次筛选。
+
+默认评测 JSON 中勾选的数据集，使用 `selection.sources[].provenance.configuration` 中的 few-shot、limit、样本起点、seed、chat template、batch size 和上下文长度。原模型与联合压缩模型使用同一组 evaluator；基线重新评测，不将历史单矩阵分数当作本次基线。`num_fewshot: null` 表示沿用当前安装的 lm-eval 任务默认值，零保持为零。无需读取原敏感度日志，但评测需要本地模型及任务数据缓存。
+
+- `--eval-config config/compression_evaluation.json`：使用独立多任务配置，完整替代选层 JSON 的勾选任务。
+- `--no-plot`：不生成得分图；默认评测完成后输出 `scores.png`。
+- `--skip-eval`：只压缩并保存，不需要 JSON 内的分析来源；报告明确标记未评测。
+- `--eval-limit 16`：临时覆盖每个任务的评测样本上限，保持原样本起点。对于 MMLU 等 group，该值是每个子任务的上限。
+- `--eval-batch-size 4`：覆盖评测 batch size。
+- `--model /path/to/model`、`--runtime-config ...`：调整模型或运行环境。
+- `--decomposition-provider`、`--execution-provider`、`--model-dtype`、`--decomposition-dtype`：控制执行后端与精度。
+- `--output ...`：指定新的产物目录，已有目录拒绝覆盖。
+
+独立配置示例见 `config/compression_evaluation.json`。每项必填 `task` 和非空 `metrics`；其他评测参数使用 `LMEvalConfig` 默认值，可明确指定不同任务的 few-shot、题数和样本起点。指标方向自动查询注册表，未知指标可提供完整 `metric_directions` 映射。
+
+```bash
+python scripts/run_compression_plan.py \
+  --selection-json artifacts/layer-selection/20260910T215301/layer-selection.json \
+  --eval-config config/compression_evaluation.json \
+  --dry-run
+```
+
+`--eval-limit` 和 `--eval-batch-size` 最后覆盖所有任务；`--skip-eval` 不能与 `--eval-config` 或评测覆盖参数同时使用。`summary.json` 的 `comparison` 按任务、指标两层组织，支持同一任务多个指标。任务列表来自独立配置时，不与选层 JSON 合并。库接口支持多个计划；本脚本一次读取一个计划文件。
+
+后台运行：
+
+```bash
+nohup python -u scripts/run_compression_plan.py \
+  --selection-json artifacts/layer-selection/20260910T215301/layer-selection.json \
+  > compression-start.log 2>&1 &
+```
+
+启动日志位于当前目录的 `compression-start.log`。默认产物位于 `artifacts/compression/<模型名>/<北京时间戳>/`，包含：
+
+| 文件 | 内容 |
+|---|---|
+| `selection.json` | 输入方案的原样副本 |
+| `experiment_config.json` | 实际模型、后端、精度、种子、评测配置及输入哈希 |
+| `decompositions/0000.pt` 等 | 按目标顺序保存的逐矩阵 artifact，保留各自 spec |
+| `artifacts.json` | 模块路径与相对 artifact 路径的对应关系 |
+| `events.jsonl`、`console.log` | 结构化事件、终端输出和异常 |
+| `summary.json`、`report.md` | 实测参数收益、两阶段得分、实际题数、退化和耗时 |
+| `scores.png` | 每个任务、每个关注指标独立子图，标注前后分数与指标方向 |
+
+退化按指标方向计算，正值表示变差，报告使用指标原单位。参数节省不代表推理加速。保存的是张量网络 artifact，不是独立的 Hugging Face 模型目录；后续使用需加载原模型，再通过 `load_artifact()`、执行后端的 `build_linear()` 和 `replace_linear()` 安装已保存的压缩层。
+
+联合评测前先保存 artifact，评测失败仍保留已写入产物并记录 `experiment_failed`。JSON 和 Markdown 在绘图前保存，绘图失败仍保留实测结果，失败事件记录 `stage=plotting`，不会记录整个实验成功。默认绘图依赖 Matplotlib，模型加载前检查；可用 `--no-plot` 禁用。脚本退出前恢复内存中的原始 Linear。测试使用小模型实际分解与前向，不运行真实语言模型：
+
+```bash
+python -m pytest tests/test_evaluate.py tests/test_compression_plan_script.py tests/test_compression_plan_io.py
+```
+
 ## Alpaca 联合压缩与微调
 
 联合压缩从零起始编号 `25`（含）到最后一个 Transformer block 的全部 attention / MLP proj，并用 Alpaca 只微调 MPO 参数：

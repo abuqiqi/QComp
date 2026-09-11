@@ -10,7 +10,7 @@
 2. **注册重建与公共入口。** 在 [representations registry](../src/qcomp/representations/registry.py) 的 `_RECONSTRUCTORS` 添加表示名到模块、函数名的映射，并在对应 `__init__.py` 导出公开对象；需要顶层调用的接口再加入 `qcomp/__init__.py`。这样 `reconstruct_tensor()` 和压缩误差评测可沿用通用入口。
 3. **定义可执行层。** 具体模型层继承 [TensorNetworkLinear](../src/qcomp/nn/base.py)，实现 forward、最新 artifact 导出，以及必要的 `close()`。多个后端确有共享输入处理或导出行为时，才在 `nn/<表示>.py` 提取中间基类。模型层使用 PyTorch 参数注册机制，以便设备迁移、训练参数选择和 checkpoint 工作。
 4. **实现实际后端。** 在 `backends/<provider>/<表示>.py` 实现 `TensorNetworkBackend[Spec]`，声明准确的 capabilities、probe 和版本查询；实现支持的分解及模型层构造，使用统一 artifact 交换数据。可选库延迟导入，在 [backend registry](../src/qcomp/backends/registry.py) 的 `_BACKENDS` 注册真实组合。计算库适配细节见 [backends](../src/qcomp/backends/README.md#新增计算后端)。
-5. **接入 workflow。** 用 `CompressionTarget(module_path, representation, spec)` 构造计划，通过按表示名索引的后端映射交给 `compress_model()` 或 `analyze_sensitivity()`。保留目标 Linear 的输入输出形状及设备、dtype 语义；混合表示复用已有计划和恢复逻辑。实验脚本只补参数和表示专属目标构造。
+5. **接入 workflow。** 用 `CompressionTarget(module_path, representation, spec)` 构造计划，通过按表示名索引的后端映射交给 `compress_model()` 或 `evaluate_compression_plans()`。保留目标 Linear 的输入输出形状及设备、dtype 语义；混合表示复用已有计划和恢复逻辑。实验脚本只补参数和表示专属目标构造。
 6. **验证。** 使用小型确定性张量检查非法格式、稠密重建与 forward 数值、实际支持的梯度、artifact 保存加载和后端互通；检查多层计划失败恢复、模型压缩指标与可选依赖懒加载。计时测量复用 evaluation 接口。
 
 ## 新增训练方法

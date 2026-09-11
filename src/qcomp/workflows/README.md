@@ -1,6 +1,6 @@
 # workflows
 
-`workflows` 组合 model、backend、representations 和 training 层，提供面向具体任务的调用入口。这里负责选择参数和导出任务产物。
+`workflows` 组合 model、backend、representations、evaluation 和 training 层。通用入口接收已构造的模型与配置并返回结果，具体实验入口负责资源组装及任务产物。
 
 当前包含：
 
@@ -8,7 +8,7 @@
 - `compress_model()`：按照 `CompressionPlan` 原子压缩一个或多个模型层。
 - `restore_compressed_model()`：关闭计划安装的压缩层并恢复原始 Linear。
 - `SensitivityExperimentConfig`、`run_sensitivity_experiment()`：配置资源并执行逐层 lm-eval 实验，统一输出日志和报告。
-- `analyze_sensitivity()`：使用外部 backend 和 evaluator 比较多个临时压缩方案。
+- `evaluate_compression_plans()`：使用外部 backend 和 evaluator 比较多个临时压缩方案。
 - `format_sensitivity_report()`：将敏感性分析结果转换为 Markdown，并按需写入文件。
 - `infer_causal_lm()`：执行正常自回归生成并返回 token、时间、吞吐和显存。
 - `finetune_tensor_network_causal_lm()`：选择张量网络参数，调用通用训练层并导出最新 artifacts。
@@ -62,51 +62,52 @@ restore_compressed_model(model, result)
 
 `result.layer_results` 与目标顺序一致，每项包含该层的 artifact 和替换记录。执行前会确认全部目标路径和 representation 对应的 backend；任一层失败时恢复本次已经替换的所有层。同一种 representation 在一次调用中共用一对外部 backend。
 
-三个公共入口 `compress_linear()`、`compress_model()` 和 `analyze_sensitivity()` 均接受 `decomposition_dtype`。例如设置 `decomposition_dtype=torch.float32`，会以 FP32 分解权重，并在构造压缩层前将 artifact 转回原层的设备和 dtype。这些底层入口默认 `None` 使用原权重类型；上层 `SensitivityExperimentConfig.decomposition_dtype` 默认 FP32。backend 直接使用 `get_backend()` 返回的对象。
+三个公共入口 `compress_linear()`、`compress_model()` 和 `evaluate_compression_plans()` 均接受 `decomposition_dtype`。例如设置 `decomposition_dtype=torch.float32`，会以 FP32 分解权重，并在构造压缩层前将 artifact 转回原层的设备和 dtype。这些底层入口默认 `None` 使用原权重类型；上层 `SensitivityExperimentConfig.decomposition_dtype` 默认 FP32。backend 直接使用 `get_backend()` 返回的对象。
 
-## 压缩敏感性分析
+## 多方案、多任务评测
 
-`SensitivityCase` 用名称和一个 `CompressionPlan` 描述一次实验。计划可以只包含一个 Linear，也可以包含多个层。`analyze_sensitivity()` 先评测未压缩 baseline，再逐 case 临时压缩、统计逐层及整模压缩指标、执行 evaluator，并始终恢复原始 Linear。
+`evaluate_compression_plans()` 接收已加载模型、具名 `CompressionPlan` 映射和多个 evaluator。每个任务的 baseline 只评测一次；每个方案只调用一次 `compress_model()` 联合替换全部目标，再在全部任务上评测，完成后恢复原模型。原始 Linear 及各模块调用前的训练状态在正常和异常退出时均恢复。工作流不创建 backend、不加载数据、不写文件。
 
-接续上例已经恢复的 `model`、`tokenizer` 和 `plan`：
+接续上例已恢复的 `model`、`tokenizer` 和 `plan`：
 
 ```python
-from qcomp import (
-    ArtifactPaths,
-    SensitivityCase,
-    analyze_sensitivity,
-    format_sensitivity_report,
-    get_backend,
-    resolve_metric_directions,
-)
+from qcomp import evaluate_compression_plans, resolve_metric_directions
 from qcomp.evaluation import LMEvalConfig, LMEvalEvaluator
 
-tensorly_mpo_backend = get_backend("tensorly", "mpo")
-benchmark_evaluator = LMEvalEvaluator(
-    tokenizer,
-    LMEvalConfig(task="mmlu", limit=1),
-)
-paths = ArtifactPaths()
-result = analyze_sensitivity(
+result = evaluate_compression_plans(
     model,
-    cases=(SensitivityCase("candidate-mpo", plan),),
-    decomposition_backends={"mpo": tensorly_mpo_backend},
-    execution_backends={"mpo": tensorly_mpo_backend},
-    evaluator=benchmark_evaluator,
+    plans={"candidate": plan},
+    evaluators={
+        "mmlu": LMEvalEvaluator(tokenizer, LMEvalConfig(task="mmlu", limit=1)),
+        "hellaswag": LMEvalEvaluator(tokenizer, LMEvalConfig(task="hellaswag", limit=16)),
+    },
+    metric_directions={
+        "mmlu": resolve_metric_directions(("acc",)),
+        "hellaswag": resolve_metric_directions(("acc", "acc_norm")),
+    },
+    decomposition_backends={"mpo": backend},
+    execution_backends={"mpo": backend},
     decomposition_dtype=torch.float32,
-    metric_directions=resolve_metric_directions(("acc",)),
 )
-report = format_sensitivity_report(
-    result,
-    paths.root / "sensitivity" / "qwen3-mmlu-sensitivity.md",
-)
+print(result.baseline["mmlu"].evaluation.metrics)
+print(result.plan_results[0].metric_degradations["hellaswag"])
 ```
 
-Evaluator 是接收当前模型并返回 `EvaluationResult` 的可调用对象。`LMEvalEvaluator` 在第一次调用时加载配置指定的 task 或 group，后续 case 复用同一任务对象，只重新执行当前模型；更换标准 benchmark 时修改 `LMEvalConfig.task`，并同步选择该任务返回的指标、更新 `metric_directions`。例如 GSM8K 使用 `resolve_metric_directions(("exact_match_strict_match",))`；上层实验入口对应设置 `SensitivityExperimentConfig.metrics=("exact_match_strict_match",)`，脚本对应传入 `--metric exact_match_strict_match`。原始指标保存在每个 `evaluation.metrics` 中，`metric_degradations` 保存指定指标相对 baseline 的退化量。`higher` 指标使用 `baseline - compressed`，`lower` 指标使用 `compressed - baseline`，因此正值统一表示性能下降。`format_sensitivity_report()` 始终返回 Markdown；指定输出路径时会创建父目录并写入相同内容。需要实时处理逐个 case 的结果时，可通过 `on_case_result` 传入回调；回调在该 case 恢复原模型后执行。`sensitivity_case_record(result)` 将单次结果整理为包含指标和耗时的独立字典，由调用方交给 `log_event(path, "case_completed", **record)` 或其他输出接口。
+任务键可以是自定义名称，前后 evaluator 必须返回同一个 `EvaluationTask`、实际题数及总题数。退化按 `higher: baseline - compressed`、`lower: compressed - baseline` 计算，正值表示变差；每项关注指标必须存在且有限。
+
+`CompressionEvaluationResult.baseline` 按任务保存 `TimedEvaluation`（`evaluation`、`seconds`）；`plan_results` 按输入顺序保存 `CompressionPlanEvaluation`，包含名称、计划、多任务评测与退化、整模和可选逐层压缩指标、分解耗时。结果不持有模型或 artifact。`collect_layer_metrics=True` 增加逐矩阵压缩比及权重重建误差，不额外运行数据集评测；默认关闭。`evaluators={}` 且 `metric_directions={}` 表示只压缩并统计。
+
+可选回调同步执行，失败立即停止并恢复模型：
+
+- `on_evaluation(plan_name, dataset_name, timed_result)`：任务评测校验通过后通知，baseline 的方案名为 None。
+- `on_compressed(plan_name, artifacts, model_compression, compression_seconds)`：联合压缩后提供模块路径到 artifact 的映射，用于提前保存；早于逐层误差统计和任务评测。回调不应跨方案保留张量。
+- `on_plan_result(plan_result)`：当前方案恢复原模型后通知，适合记录完整结果。
+
+`sensitivity_case_record(plan_result, task_name)` 和 `format_sensitivity_report(result, output_path, task_name=...)` 从通用结果中提取单个任务，保持敏感度日志与 Markdown 表格格式。需要逐矩阵误差字段时开启 `collect_layer_metrics`。
 
 ### 逐层实验入口
 
-`SensitivityExperimentConfig` 复用 `ModelLoadConfig` 和 `LMEvalConfig`，配置实验名称、指标、backend、分段和输出。`run_sensitivity_experiment()` 加载模型，先用 `select_linear(path, linear)` 筛选，再应用 `start_layer_index` 和 `max_layers`，最后用 `make_target(path, linear)` 为每层生成一个 `CompressionTarget`，包装成独立 case。回调必须保留选中层的模块路径。backend 根据实际 target 的 representation 创建。
+`SensitivityExperimentConfig` 复用 `ModelLoadConfig` 和 `LMEvalConfig`，配置实验名称、指标、backend、分段和输出。`run_sensitivity_experiment()` 加载模型，先用 `select_linear(path, linear)` 筛选，再应用 `start_layer_index` 和 `max_layers`，最后用 `make_target(path, linear)` 为每层生成一个 `CompressionTarget`，包装成以模块路径命名的单矩阵计划。回调必须保留选中层的模块路径。backend 根据实际 target 的 representation 创建。
 
 ```python
 from qcomp import (
@@ -132,9 +133,9 @@ result = run_sensitivity_experiment(
 )
 ```
 
-输出默认集中在 `artifacts/sensitivity/<name>/<timestamp>/`，报告为 `layers-<start>-<last>.md`，日志为同名 `.jsonl`。实验名称自动处理为安全的目录名，时间戳采用运行开始时的 UTC+8 时间，格式为 `YYYYMMDDTHHMMSS`（精确到秒）；`output` 和 `log` 可以覆盖路径。目录按需创建，日志追加写入，每次运行的开始、case 与完成记录共享 `run_id`。开始记录包含模型来源、backend、dtype 和评测配置。入口返回 `SensitivityResult`；case 使用模块路径命名，实验名称可包含 rank。
+输出默认集中在 `artifacts/sensitivity/<name>/<timestamp>/`，报告为 `layers-<start>-<last>.md`，日志为同名 `.jsonl`。实验名称自动处理为安全的目录名，时间戳采用运行开始时的 UTC+8 时间，格式为 `YYYYMMDDTHHMMSS`（精确到秒）；`output` 和 `log` 可以覆盖路径。目录按需创建，日志追加写入，每次运行的开始、case 与完成记录共享 `run_id`。开始记录包含模型来源、backend、dtype 和评测配置。入口返回 `SensitivityExperimentResult`，其中 `evaluation` 是通用评测结果、`report_path` 是报告路径；方案使用模块路径命名，实验名称可包含 rank。
 
-Qwen3 脚本保留命令行参数、层选择规则和 MPO spec 构造，调用上层入口完成执行与输出。多层联合方案或自定义 evaluator 继续使用底层 `analyze_sensitivity()`。
+Qwen3 脚本保留命令行参数、层选择规则和 MPO spec 构造，调用上层入口完成执行与输出。多层联合方案或自定义 evaluator 继续使用底层 `evaluate_compression_plans()`。
 
 ## 正常 Causal LM 推理
 

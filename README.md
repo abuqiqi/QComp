@@ -53,4 +53,5 @@ workflow 调用分解后端生成统一 artifact，再由执行后端构建压�
 
 - [Qwen3 敏感性分析](docs/experiments.md#qwen3-敏感性分析)：逐 Linear 分解与恢复、题目分段、日志和热力图。
 - [交互式敏感性选层](docs/experiments.md#交互式敏感性选层)：离线勾选数据集、调整权重、分析稳定性并导出候选模块。
+- [按 JSON 联合压缩与评测](docs/experiments.md#按-json-联合压缩与评测)：读取选层方案、联合压缩、前后评测并保存 artifact。
 - [Alpaca 联合压缩与微调](docs/experiments.md#alpaca-联合压缩与微调)：按 Transformer block 选择目标、三阶段评测和断点续训。
