@@ -5,6 +5,7 @@
 对象，并把结果转换为通用 ``EvaluationResult``；训练 DataLoader 不在这里处理。
 
 主要内容：
+- ``EvaluationTaskConfig``：组合评测执行参数和指标方向。
 - ``LMEvalConfig``：定义 task 名称和 lm-eval 执行参数。
 - ``LMEvalEvaluator``：复用已加载 task 评测不同模型状态。
 - ``lm_eval_dataset_size``：读取 task/group 的完整评测集规模。
@@ -21,6 +22,7 @@ from typing import Any
 from torch import nn
 
 from ..runtime import configure_runtime
+from .metrics import MetricDirection
 from .task import EvaluationResult, EvaluationTask
 
 
@@ -33,7 +35,7 @@ class LMEvalConfig:
     batch_size: int = 8
     max_length: int = 4096
     limit: int | float | None = None
-    seed: int = 42
+    evaluation_seed: int = 42
     apply_chat_template: bool = False
     sample_start_index: int = 0
 
@@ -68,14 +70,38 @@ class LMEvalConfig:
                 isinstance(self.limit, int)
                 and not isinstance(self.limit, bool)
                 and self.limit > 0
-            ) or (
-                isinstance(self.limit, float)
-                and 0 < self.limit < 1
-            )
+            ) or (isinstance(self.limit, float) and 0 < self.limit < 1)
             if not valid_limit:
                 raise ValueError(
                     "limit must be a positive integer, fraction in (0, 1), or None"
                 )
+
+
+@dataclass(frozen=True)
+class EvaluationTaskConfig:
+    """组合单任务执行参数与关注指标方向，不重复保存指标列表。"""
+
+    evaluation: LMEvalConfig
+    metric_directions: Mapping[str, MetricDirection]
+
+    def __post_init__(self) -> None:
+        """规范指标名称并复制方向映射，拒绝空指标、重名和非法方向。"""
+        if (
+            not isinstance(self.metric_directions, Mapping)
+            or not self.metric_directions
+        ):
+            raise ValueError("metric_directions must be a non-empty mapping")
+        directions = {}
+        for metric, direction in self.metric_directions.items():
+            if not isinstance(metric, str) or not metric.strip():
+                raise ValueError("metric name must not be empty")
+            name = metric.strip().lower()
+            if name in directions:
+                raise ValueError(f"duplicate normalized metric name: {name}")
+            if direction not in ("higher", "lower"):
+                raise ValueError(f"invalid metric direction: {direction}")
+            directions[name] = direction
+        object.__setattr__(self, "metric_directions", directions)
 
 
 def lm_eval_dataset_size(
@@ -208,7 +234,11 @@ def _extract_metrics(
     metrics: dict[str, float] = {}
     for raw_name, value in entry.items():
         name = _metric_name(str(raw_name))
-        if name is None or not isinstance(value, (int, float)) or isinstance(value, bool):
+        if (
+            name is None
+            or not isinstance(value, (int, float))
+            or isinstance(value, bool)
+        ):
             continue
         if name in metrics:
             raise ValueError(f"lm-eval result contains duplicate metric {name!r}")
@@ -329,10 +359,10 @@ class LMEvalEvaluator:
                 bootstrap_iters=0,
                 apply_chat_template=self.config.apply_chat_template,
                 log_samples=False,
-                random_seed=self.config.seed,
-                numpy_random_seed=self.config.seed,
-                torch_random_seed=self.config.seed,
-                fewshot_random_seed=self.config.seed,
+                random_seed=self.config.evaluation_seed,
+                numpy_random_seed=self.config.evaluation_seed,
+                torch_random_seed=self.config.evaluation_seed,
+                fewshot_random_seed=self.config.evaluation_seed,
             )
         finally:
             model.train(original_training)
@@ -346,7 +376,9 @@ class LMEvalEvaluator:
         if self._samples is not None and evaluated_examples != len(
             self._samples[self.config.task]
         ):
-            raise ValueError("evaluated sample count differs from requested sample range")
+            raise ValueError(
+                "evaluated sample count differs from requested sample range"
+            )
         fewshot = (
             "default"
             if self.config.num_fewshot is None
@@ -367,7 +399,8 @@ class LMEvalEvaluator:
         originals = [entry.get("original") for entry in counts.values()]
         total_examples = (
             sum(originals)
-            if originals and all(type(value) is int and value > 0 for value in originals)
+            if originals
+            and all(type(value) is int and value > 0 for value in originals)
             else None
         )
         return EvaluationResult(
