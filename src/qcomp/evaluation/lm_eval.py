@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, fields
 from pathlib import Path
 from typing import Any
 
@@ -102,6 +102,30 @@ class EvaluationTaskConfig:
                 raise ValueError(f"invalid metric direction: {direction}")
             directions[name] = direction
         object.__setattr__(self, "metric_directions", directions)
+
+
+def evaluation_task_config_to_dict(config: EvaluationTaskConfig) -> dict[str, Any]:
+    """把 config 的执行参数与指标方向转换为独立 JSON 对象。"""
+    return {
+        "evaluation": asdict(config.evaluation),
+        "metric_directions": dict(config.metric_directions),
+    }
+
+
+def evaluation_task_config_from_dict(data: Mapping[str, Any]) -> EvaluationTaskConfig:
+    """读取完整 data 配置，拒绝缺失字段，避免使用当前默认值冒充历史设置。"""
+    if not isinstance(data, Mapping) or set(data) != {
+        "evaluation",
+        "metric_directions",
+    }:
+        raise ValueError("评测配置必须包含 evaluation 和 metric_directions")
+    if not isinstance(data["evaluation"], Mapping) or set(data["evaluation"]) != {
+        f.name for f in fields(LMEvalConfig)
+    }:
+        raise ValueError("evaluation 必须保存完整 LMEvalConfig")
+    return EvaluationTaskConfig(
+        LMEvalConfig(**data["evaluation"]), data["metric_directions"]
+    )
 
 
 def lm_eval_dataset_size(
