@@ -1,9 +1,34 @@
 {
   "datasets": [
-    {"id":"boolq","label":"BoolQ","metric":"acc","path":"../artifacts/sensitivity/qwen3-boolq-mpo-rank-96/20260907T160151/events.jsonl"},
-    {"id":"mmlu","label":"MMLU","metric":"acc","path":"../artifacts/sensitivity/qwen3-mmlu-mpo-rank-96/20260905T182434/events.jsonl"},
-    {"id":"hellaswag","label":"HellaSwag","metric":"acc_norm","path":"../artifacts/sensitivity/qwen3-hellaswag-mpo-rank-96/merged-2000-20260908T143006/merged_results.json"},
-    {"id":"gsm8k","label":"GSM8K","metric":"exact_match_strict_match","path":"../artifacts/sensitivity/qwen3-gsm8k-mpo-rank-96/20260910T132526/events.jsonl"},
-    {"id":"triviaqa","label":"TriviaQA","metric":"exact_match_remove_whitespace","path":"../artifacts/sensitivity/qwen3-triviaqa-mpo-rank-96/20260908T224643/events.jsonl"}
+    {
+      "id": "boolq",
+      "label": "BoolQ",
+      "path": "../artifacts/sensitivity/qwen3-boolq-mpo-rank-96/20260907T160151/sensitivity_results.json",
+      "default_metric": "acc"
+    },
+    {
+      "id": "mmlu",
+      "label": "MMLU",
+      "path": "../artifacts/sensitivity/qwen3-mmlu-mpo-rank-96/20260905T182434/sensitivity_results.json",
+      "default_metric": "acc"
+    },
+    {
+      "id": "hellaswag",
+      "label": "HellaSwag",
+      "path": "../artifacts/sensitivity/qwen3-hellaswag-mpo-rank-96/merged-2000-20260908T143006/sensitivity_results.json",
+      "default_metric": "acc_norm"
+    },
+    {
+      "id": "gsm8k",
+      "label": "GSM8K",
+      "path": "../artifacts/sensitivity/qwen3-gsm8k-mpo-rank-96/20260910T132526/sensitivity_results.json",
+      "default_metric": "exact_match_strict_match"
+    },
+    {
+      "id": "triviaqa",
+      "label": "TriviaQA",
+      "path": "../artifacts/sensitivity/qwen3-triviaqa-mpo-rank-96/20260908T224643/sensitivity_results.json",
+      "default_metric": "exact_match_remove_whitespace"
+    }
   ]
 }
