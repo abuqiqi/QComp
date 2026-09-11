@@ -326,7 +326,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             batch_size=args.eval_batch_size,
             max_length=args.eval_max_length,
             limit=args.eval_limit,
-            seed=args.seed,
+            evaluation_seed=args.seed,
         )
         for task, fewshot, _ in EVAL_TASKS
     }
