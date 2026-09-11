@@ -1,4 +1,4 @@
-"""组织单矩阵敏感度实验，复用通用方案评测并输出既有日志与报告格式。
+"""组织单矩阵敏感度实验，复用通用评测并原子保存完整结果与报告。
 
 本模块负责资源组装、目标筛选和报告转换，实际压缩评测由 evaluate workflow 执行。
 主要内容：
@@ -11,25 +11,31 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from dataclasses import dataclass, field, replace
-from datetime import datetime, timedelta, timezone
+from dataclasses import asdict, dataclass, field, replace
+from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime as result_datetime
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 from torch import nn
 
-from ..evaluation import EvaluationTaskConfig, LMEvalEvaluator
+from ..evaluation import (
+    EvaluationTaskConfig,
+    LMEvalEvaluator,
+    evaluation_task_config_to_dict,
+)
 from ..model import ModelLoadConfig, list_linears, load_causal_lm
 from ..runtime import load_runtime_config
-from ..logging import log_event
 from ..storage import ArtifactPaths
 from .compress import CompressionExecutionConfig, CompressionPlan, CompressionTarget
+from .compression_plan_io import compression_plan_to_dict
 from .evaluate import (
     CompressionEvaluationResult,
     CompressionPlanEvaluation,
     evaluate_compression_plans,
 )
+from .sensitivity_io import model_config_digest, write_sensitivity_results
 
 
 def sensitivity_case_record(
@@ -42,19 +48,18 @@ def sensitivity_case_record(
         task_name: 通用结果中的任务键。
 
     返回：
-        包含实验名称、指标和耗时的字典，可交给日志或其他输出接口。
-        记录不包含模型、张量、文件路径或写入时间。
+        包含实验名称、指标和耗时的字典，可交给标准结果或其他输出接口。
+        记录包含完整计划和数值统计，不包含模型对象或张量。
     """
 
     return {
         "case": result.name,
+        "compression_plan": compression_plan_to_dict(result.plan),
+        "model_compression": asdict(result.model_compression),
         "metrics": dict(result.evaluations[task_name].evaluation.metrics),
         "degradations": dict(result.metric_degradations[task_name]),
         "layers": {
-            module_path: {
-                "compression_ratio": value.compression_ratio,
-                "relative_error": value.relative_error,
-            }
+            module_path: asdict(value)
             for module_path, value in result.layer_compressions.items()
         },
         "model_ratio": result.model_compression.compression_ratio,
@@ -69,6 +74,7 @@ class SensitivityExperimentResult:
 
     evaluation: CompressionEvaluationResult
     report_path: Path
+    results_path: Path
 
 
 @dataclass(frozen=True)
@@ -86,7 +92,7 @@ class SensitivityExperimentConfig:
     max_layers: int | None = None
     artifact_root: str | Path = "artifacts"
     output: str | Path | None = None
-    log: str | Path | None = None
+    results: str | Path | None = None
 
     def __post_init__(self) -> None:
         """校验实验名称、层范围和分解类型，无效时抛出 ValueError。"""
@@ -254,7 +260,7 @@ def run_sensitivity_experiment(
     select_linear: Callable[[str, nn.Linear], bool],
     make_target: Callable[[str, nn.Linear], CompressionTarget],
 ) -> SensitivityExperimentResult:
-    """加载模型，为选中层分别创建 case，执行 lm-eval 分析并保存日志和报告。
+    """加载模型，为选中层分别创建 case，执行 lm-eval 分析并保存标准结果和报告。
 
     参数：
         config: 模型、评测、backend、层范围和输出配置。
@@ -298,14 +304,6 @@ def run_sensitivity_experiment(
         if target.module_path != path:
             raise ValueError("make_target must preserve the selected module path")
         plans[path] = CompressionPlan(targets=(target,))
-    decomposition_backends, execution_backends = config.compression.build_backends(
-        plans
-    )
-    evaluator = LMEvalEvaluator(
-        resources.tokenizer,
-        evaluation,
-        runtime_config_path=config.runtime_config,
-    )
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", config.name).strip("-._") or "experiment"
     last_index = config.start_layer_index + len(selected) - 1
     output_path = (
@@ -319,59 +317,100 @@ def run_sensitivity_experiment(
             / f"layers-{config.start_layer_index:03d}-{last_index:03d}.md"
         )
     )
-    log_path = Path(config.log) if config.log else output_path.with_suffix(".jsonl")
-    run_id = uuid4().hex
-    log_event(
-        log_path,
-        "experiment_started",
-        run_id=run_id,
-        name=config.name,
-        task=evaluation.task,
-        metrics=tuple(directions),
-        metric_directions=directions,
-        layers=len(plans),
-        first=selected[0][0],
-        last=selected[-1][0],
-        model_name_or_path=model_config.model_name_or_path,
-        device=model_config.device,
-        model_dtype=str(model_config.dtype),
-        decomposition_dtype=str(config.compression.decomposition_dtype),
-        decomposition_provider=config.compression.decomposition_provider,
-        execution_provider=config.compression.execution_provider,
-        seed=evaluation.evaluation_seed,
-        num_fewshot=evaluation.num_fewshot,
-        batch_size=evaluation.batch_size,
-        max_length=evaluation.max_length,
-        limit=evaluation.limit,
-        sample_start_index=evaluation.sample_start_index,
-        apply_chat_template=evaluation.apply_chat_template,
-        trust_remote_code=model_config.trust_remote_code,
-        offline=runtime.offline,
-        start_layer_index=config.start_layer_index,
-        max_layers=config.max_layers,
+    results_path = (
+        Path(config.results)
+        if config.results
+        else output_path.parent / "sensitivity_results.json"
     )
+    if results_path.exists():
+        raise FileExistsError(f"结果已存在：{results_path}")
+    model_settings = getattr(resources.model, "config", None)
+    model_data = model_settings.to_dict() if model_settings is not None else {}
+    document = {
+        "kind": "qcomp_sensitivity_results",
+        "run_id": uuid4().hex,
+        "name": config.name,
+        "status": "running",
+        "started_at": result_datetime.now(UTC).isoformat(),
+        "finished_at": None,
+        "expected_cases": list(plans),
+        "model": {
+            "name_or_path": model_config.model_name_or_path,
+            "model_type": model_data.get("model_type"),
+            "config": model_data,
+            "config_sha256": model_config_digest(model_data),
+            "dense_parameters": sum(p.numel() for p in resources.model.parameters()),
+        },
+        "execution": {
+            "model_dtype": str(model_config.dtype),
+            "decomposition_dtype": str(config.compression.decomposition_dtype),
+            "decomposition_provider": config.compression.decomposition_provider,
+            "execution_provider": config.compression.execution_provider,
+            "trust_remote_code": model_config.trust_remote_code,
+        },
+        "evaluation_config": evaluation_task_config_to_dict(config.evaluation),
+        "evaluation_task": None,
+        "baseline": None,
+        "cases": [],
+        "provenance": {
+            "kind": "native",
+            "device": model_config.device,
+            "offline": runtime.offline,
+            "start_layer_index": config.start_layer_index,
+            "max_layers": config.max_layers,
+        },
+        "report_path": str(output_path.resolve()),
+    }
+    write_sensitivity_results(results_path, document)
+
+    def on_evaluation(name, task_name, timed) -> None:
+        """基线 name 为 None 时持久化 task_name 对应的 timed 评测及真实任务信息。"""
+        if name is None:
+            document["evaluation_task"] = asdict(timed.evaluation.task)
+            baseline_record = asdict(timed.evaluation)
+            baseline_record.pop("task")
+            document["baseline"] = {**baseline_record, "seconds": timed.seconds}
+            write_sensitivity_results(results_path, document)
 
     def on_plan_result(result: CompressionPlanEvaluation) -> None:
-        """将结果参数 result 转换为事件，关联当前运行并追加到日志。"""
+        """追加已完成 result 的完整单层计划及统计，并原子更新进度。"""
+        document["cases"].append(sensitivity_case_record(result, evaluation.task))
+        write_sensitivity_results(results_path, document)
 
-        log_event(
-            log_path,
-            "case_completed",
-            run_id=run_id,
-            **sensitivity_case_record(result, evaluation.task),
+    try:
+        decomposition_backends, execution_backends = config.compression.build_backends(
+            plans
         )
-
-    result = evaluate_compression_plans(
-        resources.model,
-        plans,
-        decomposition_backends=decomposition_backends,
-        execution_backends=execution_backends,
-        decomposition_dtype=config.compression.decomposition_dtype,
-        evaluators={evaluation.task: evaluator},
-        metric_directions={evaluation.task: directions},
-        collect_layer_metrics=True,
-        on_plan_result=on_plan_result,
-    )
+        evaluator = LMEvalEvaluator(
+            resources.tokenizer,
+            evaluation,
+            runtime_config_path=config.runtime_config,
+        )
+        result = evaluate_compression_plans(
+            resources.model,
+            plans,
+            decomposition_backends=decomposition_backends,
+            execution_backends=execution_backends,
+            decomposition_dtype=config.compression.decomposition_dtype,
+            evaluators={evaluation.task: evaluator},
+            metric_directions={evaluation.task: directions},
+            collect_layer_metrics=True,
+            on_evaluation=on_evaluation,
+            on_plan_result=on_plan_result,
+        )
+        document["status"] = "completed"
+        document["finished_at"] = result_datetime.now(UTC).isoformat()
+        write_sensitivity_results(results_path, document)
+    except (Exception, KeyboardInterrupt) as error:
+        document["status"] = (
+            "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
+        )
+        document["finished_at"] = result_datetime.now(UTC).isoformat()
+        document["error"] = {"type": type(error).__name__, "message": str(error)}
+        try:
+            write_sensitivity_results(results_path, document)
+        except Exception as save_error:  # noqa: BLE001 - 保存失败不得掩盖原实验异常
+            error.add_note(f"保存失败状态时出错：{save_error}")
+        raise
     format_sensitivity_report(result, output_path, task_name=evaluation.task)
-    log_event(log_path, "experiment_completed", run_id=run_id, report=str(output_path))
-    return SensitivityExperimentResult(result, output_path)
+    return SensitivityExperimentResult(result, output_path, results_path)
