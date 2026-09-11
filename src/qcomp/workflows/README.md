@@ -62,7 +62,7 @@ restore_compressed_model(model, result)
 
 `result.layer_results` 与目标顺序一致，每项包含该层的 artifact 和替换记录。执行前会确认全部目标路径和 representation 对应的 backend；任一层失败时恢复本次已经替换的所有层。同一种 representation 在一次调用中共用一对外部 backend。
 
-三个公共入口 `compress_linear()`、`compress_model()` 和 `evaluate_compression_plans()` 均接受 `decomposition_dtype`。例如设置 `decomposition_dtype=torch.float32`，会以 FP32 分解权重，并在构造压缩层前将 artifact 转回原层的设备和 dtype。这些底层入口默认 `None` 使用原权重类型；上层 `SensitivityExperimentConfig.decomposition_dtype` 默认 FP32。backend 直接使用 `get_backend()` 返回的对象。
+三个公共入口 `compress_linear()`、`compress_model()` 和 `evaluate_compression_plans()` 均接受 `decomposition_dtype`。例如设置 `decomposition_dtype=torch.float32`，会以 FP32 分解权重，并在构造压缩层前将 artifact 转回原层的设备和 dtype。这些底层入口默认 `None` 使用原权重类型；上层 `SensitivityExperimentConfig.compression.decomposition_dtype` 默认 FP32。backend 直接使用 `get_backend()` 返回的对象。
 
 ## 多方案、多任务评测
 
@@ -107,19 +107,24 @@ print(result.plan_results[0].metric_degradations["hellaswag"])
 
 ### 逐层实验入口
 
-`SensitivityExperimentConfig` 复用 `ModelLoadConfig` 和 `LMEvalConfig`，配置实验名称、指标、backend、分段和输出。`run_sensitivity_experiment()` 加载模型，先用 `select_linear(path, linear)` 筛选，再应用 `start_layer_index` 和 `max_layers`，最后用 `make_target(path, linear)` 为每层生成一个 `CompressionTarget`，包装成以模块路径命名的单矩阵计划。回调必须保留选中层的模块路径。backend 根据实际 target 的 representation 创建。
+`SensitivityExperimentConfig` 组合 `ModelLoadConfig`、`CompressionExecutionConfig` 和 `EvaluationTaskConfig`，配置实验名称、指标、backend、分段和输出。`run_sensitivity_experiment()` 加载模型，先用 `select_linear(path, linear)` 筛选，再应用 `start_layer_index` 和 `max_layers`，最后用 `make_target(path, linear)` 为每层生成一个 `CompressionTarget`，包装成以模块路径命名的单矩阵计划。回调必须保留选中层的模块路径。backend 根据实际 target 的 representation 创建。
 
 ```python
 from qcomp import (
     CompressionTarget, MPOSpec, ModelLoadConfig,
-    SensitivityExperimentConfig, run_sensitivity_experiment,
+    SensitivityExperimentConfig, run_sensitivity_experiment, CompressionExecutionConfig,
 )
-from qcomp.evaluation import LMEvalConfig
+from qcomp.evaluation import LMEvalConfig, EvaluationTaskConfig
 
 config = SensitivityExperimentConfig(
     name="linear-full-rank", model=ModelLoadConfig(device="cpu"),
-    evaluation=LMEvalConfig(task="mmlu", limit=1), metrics=("acc",),
-    decomposition_provider="native", execution_provider="native", max_layers=1,
+    evaluation=EvaluationTaskConfig(
+        LMEvalConfig(task="mmlu", limit=1, evaluation_seed=42), {"acc": "higher"}
+    ),
+    compression=CompressionExecutionConfig(
+        decomposition_provider="native", execution_provider="native"
+    ),
+    max_layers=1,
 )
 
 def make_target(path, linear):
@@ -223,3 +228,5 @@ checkpoint 只保存本次选择的参数、优化器、调度器、训练位置
 ## 选层 JSON 计划
 
 `load_compression_plan(path, model=model)` 读取统一选层 JSON 的执行部分，并自动检查目标无 bias Linear 和矩阵维度，成功后返回 `CompressionPlan`。它不读取敏感度来源、不修改模型。`compression_plan_to_dict()` 和 `compression_plan_from_dict()` 读写 `compression_plan` 对象，支持逐矩阵不同 modes 与 ranks 的 MPO spec。文件结构和使用示例见[实验文档](../../../docs/experiments.md#统一-json-与计划加载)。
+
+实验配置使用 `CompressionExecutionConfig.build_backends(plans)` 按实际表示构建并检查后端；它不改变随机状态。`EvaluationTaskConfig` 将任务参数和指标方向放在一起，调用公共评测流程时再构建 evaluator 与方向映射。敏感度的 `evaluation_seed` 控制 lm-eval，分解沿用评测结束后的随机状态，没有独立分解种子。

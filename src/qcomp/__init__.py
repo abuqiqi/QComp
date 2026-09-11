@@ -5,6 +5,8 @@
 只有通过 registry 选择后才会被加载。
 
 主要内容：
+- ``CompressionExecutionConfig``：组合分解、执行后端及分解精度。
+- ``EvaluationTaskConfig``：组合任务执行参数与关注指标方向。
 - ``evaluate_compression_plans``：共享 baseline 评测多个方案与任务。
 - ``load_compression_plan``、``compression_plan_to_dict``、``compression_plan_from_dict``：读写并验证压缩计划。
 - ``TensorNetworkArtifact``：保存与具体张量网络表示无关的数据。
@@ -47,6 +49,7 @@ from .data import (
     load_dataset_source,
 )
 from .evaluation import (
+    EvaluationTaskConfig,
     MetricDirection,
     metric_direction,
     resolve_metric_directions,
@@ -81,6 +84,7 @@ from .training import (
     train_causal_lm,
 )
 from .workflows import (
+    CompressionExecutionConfig,
     CompressionPlan,
     CompressionTarget,
     InferenceConfig,
@@ -116,6 +120,8 @@ from .workflows.evaluate import (
 )
 
 __all__ = [
+    "EvaluationTaskConfig",
+    "CompressionExecutionConfig",
     "TimedEvaluation",
     "CompressionPlanEvaluation",
     "CompressionEvaluationResult",

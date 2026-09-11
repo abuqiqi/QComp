@@ -4,6 +4,7 @@
 操作。当前提供单层与模型级压缩、压缩敏感性分析、已压缩 Causal LM 微调和正常生成流程。
 
 主要内容：
+- ``CompressionExecutionConfig``：组合分解、执行后端及分解精度。
 - ``evaluate_compression_plans``：共享 baseline 评测多个方案与任务。
 - ``load_compression_plan``、``compression_plan_to_dict``、``compression_plan_from_dict``：读写并验证压缩计划。
 - ``CompressionTarget``、``CompressionPlan``：描述模型级压缩目标。
@@ -21,6 +22,7 @@
 """
 
 from .compress import (
+    CompressionExecutionConfig,
     CompressionPlan,
     CompressionTarget,
     LinearCompressionResult,
@@ -63,6 +65,7 @@ from .evaluate import (
 )
 
 __all__ = [
+    "CompressionExecutionConfig",
     "TimedEvaluation",
     "CompressionPlanEvaluation",
     "CompressionEvaluationResult",

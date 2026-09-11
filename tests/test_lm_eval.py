@@ -94,7 +94,7 @@ class LMEvalEvaluatorTests(unittest.TestCase):
                         "acc_stderr,none": 0.02,
                         "sample_len": 40,
                     }
-                }
+                },
             }
 
         modules = _install_fake_lm_eval(
@@ -109,7 +109,7 @@ class LMEvalEvaluatorTests(unittest.TestCase):
             batch_size=4,
             max_length=2048,
             limit=40,
-            seed=17,
+            evaluation_seed=17,
         )
         with patch.dict(sys.modules, modules):
             evaluator = LMEvalEvaluator(tokenizer, config)
@@ -178,7 +178,7 @@ class LMEvalEvaluatorTests(unittest.TestCase):
         def evaluate(**kwargs: Any) -> dict[str, Any]:
             """记录选择的题目，返回实际评测数量。"""
             indices = kwargs["samples"]
-            chosen = indices["boolq"] if indices else task.eval_docs[:kwargs["limit"]]
+            chosen = indices["boolq"] if indices else task.eval_docs[: kwargs["limit"]]
             calls.append((list(chosen), kwargs))
             return {
                 "results": {"boolq": {"acc,none": 0.5}},
@@ -186,8 +186,10 @@ class LMEvalEvaluatorTests(unittest.TestCase):
             }
 
         modules = _install_fake_lm_eval(
-            evaluate, loaded={"tasks": {"boolq": task}},
-            wrapper_calls=[], load_calls=[],
+            evaluate,
+            loaded={"tasks": {"boolq": task}},
+            wrapper_calls=[],
+            load_calls=[],
         )
         model = nn.Linear(2, 2, bias=False)
         with patch.dict(sys.modules, modules):
@@ -222,7 +224,10 @@ class LMEvalEvaluatorTests(unittest.TestCase):
         ):
             evaluate = Mock()
             modules = _install_fake_lm_eval(
-                evaluate, loaded=loaded, wrapper_calls=[], load_calls=[],
+                evaluate,
+                loaded=loaded,
+                wrapper_calls=[],
+                load_calls=[],
             )
             with patch.dict(sys.modules, modules):
                 with self.assertRaisesRegex(ValueError, message):
@@ -234,10 +239,15 @@ class LMEvalEvaluatorTests(unittest.TestCase):
     def test_dataset_size_sums_leaf_evaluation_splits(self) -> None:
         """旧图补标注时汇总叶子任务的评测集，不加载模型或计入训练集。"""
         modules = _install_fake_lm_eval(
-            Mock(), loaded={"tasks": {
-                "a": SimpleNamespace(eval_docs=[1, 2]),
-                "b": SimpleNamespace(eval_docs=[1, 2, 3]),
-            }}, wrapper_calls=[], load_calls=[],
+            Mock(),
+            loaded={
+                "tasks": {
+                    "a": SimpleNamespace(eval_docs=[1, 2]),
+                    "b": SimpleNamespace(eval_docs=[1, 2, 3]),
+                }
+            },
+            wrapper_calls=[],
+            load_calls=[],
         )
         with patch.dict(sys.modules, modules):
             self.assertEqual(lm_eval_dataset_size("group"), 5)

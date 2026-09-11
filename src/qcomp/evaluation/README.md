@@ -139,7 +139,7 @@ evaluator = LMEvalEvaluator(
         batch_size=8,
         max_length=4096,
         limit=10,
-        seed=42,
+        evaluation_seed=42,
     ),
 )
 result = evaluator(model)
@@ -218,3 +218,5 @@ for provider in list_backends("mpo"):
 `infer_causal_lm()` 返回一次完整模型生成的 PyTorch peak allocated/reserved 显存，包含模型驻留参数和生成期间的分配；CPU 时为 `None`。统计边界为 PyTorch allocator，不包含 cuTensorNet 等库自行申请的 workspace。
 
 单层性能接口返回 warmup 后的重复计时样本。完整模型生成接口返回各 batch 的生成时间、总时间和吞吐。Alpaca 实验脚本在 `summary.json` 汇总原模型、压缩后及微调后三阶段的质量指标，具体用法见[实验指南](../../../docs/experiments.md)。
+
+`EvaluationTaskConfig(evaluation, metric_directions)` 组合单任务配置与关注指标，指标名称统一去除首尾空白并转为小写，拒绝重名和非法方向。`LMEvalConfig.evaluation_seed` 默认 42，同时传给 lm-eval 的 Python、NumPy、Torch 和 few-shot 种子，不改变题目起点或上限。

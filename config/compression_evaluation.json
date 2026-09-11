@@ -1,7 +1,33 @@
 {
   "datasets": [
-    {"task": "boolq", "metrics": ["acc"], "num_fewshot": 0, "limit": null},
-    {"task": "hellaswag", "metrics": ["acc", "acc_norm"], "num_fewshot": 0, "limit": 2000},
-    {"task": "gsm8k", "metrics": ["exact_match_strict_match", "exact_match_flexible_extract"], "num_fewshot": 5, "limit": 256}
+    {
+      "task": "boolq",
+      "metrics": [
+        "acc"
+      ],
+      "num_fewshot": 0,
+      "limit": null,
+      "evaluation_seed": 42
+    },
+    {
+      "task": "hellaswag",
+      "metrics": [
+        "acc",
+        "acc_norm"
+      ],
+      "num_fewshot": 0,
+      "limit": 2000,
+      "evaluation_seed": 42
+    },
+    {
+      "task": "gsm8k",
+      "metrics": [
+        "exact_match_strict_match",
+        "exact_match_flexible_extract"
+      ],
+      "num_fewshot": 5,
+      "limit": 256,
+      "evaluation_seed": 42
+    }
   ]
 }

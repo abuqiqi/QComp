@@ -26,7 +26,13 @@ from qcomp import (
     SensitivityExperimentConfig,
     run_sensitivity_experiment,
 )
-from qcomp.evaluation import EvaluationResult, EvaluationTask, LMEvalConfig
+from qcomp import CompressionExecutionConfig
+from qcomp.evaluation import (
+    EvaluationTaskConfig,
+    EvaluationResult,
+    EvaluationTask,
+    LMEvalConfig,
+)
 import qcomp.workflows.sensitivity as workflow
 
 
@@ -66,14 +72,35 @@ class SensitivityExperimentTests(unittest.TestCase):
                 MPOSpec.full_rank((linear.out_features,), (linear.in_features,)),
             )
 
+        import qcomp.workflows.evaluate as engine
+
+        original_compress = engine.compress_model
+        expected_random_state = None
+
+        def evaluate_with_random_state(model):
+            """模拟评测留下的随机状态，敏感度分解应直接沿用。"""
+            nonlocal expected_random_state
+            torch.manual_seed(17)
+            torch.rand(7)
+            expected_random_state = torch.get_rng_state().clone()
+            return evaluation
+
+        def compress_with_random_state(*args, **kwargs):
+            """确认没有插入独立分解种子，再执行真实压缩。"""
+            self.assertTrue(torch.equal(torch.get_rng_state(), expected_random_state))
+            return original_compress(*args, **kwargs)
+
         with TemporaryDirectory() as directory:
             config = SensitivityExperimentConfig(
                 name="test/task",
-                evaluation=LMEvalConfig(task="test", seed=17, num_fewshot=2),
-                metrics=("acc",),
+                evaluation=EvaluationTaskConfig(
+                    LMEvalConfig(task="test", evaluation_seed=17, num_fewshot=2),
+                    {"acc": "higher"},
+                ),
                 model=ModelLoadConfig(device="cpu", dtype=torch.float32),
-                decomposition_provider="native",
-                execution_provider="native",
+                compression=CompressionExecutionConfig(
+                    decomposition_provider="native", execution_provider="native"
+                ),
                 start_layer_index=1,
                 max_layers=1,
                 artifact_root=directory,
@@ -93,8 +120,11 @@ class SensitivityExperimentTests(unittest.TestCase):
                     return_value=SimpleNamespace(model=model, tokenizer=object()),
                 ) as load,
                 patch.object(
-                    workflow, "LMEvalEvaluator", return_value=lambda model: evaluation
+                    workflow, "LMEvalEvaluator", return_value=evaluate_with_random_state
                 ) as evaluator,
+                patch.object(
+                    engine, "compress_model", side_effect=compress_with_random_state
+                ),
             ):
                 clock.now.side_effect = [
                     datetime(2026, 9, 5, 12, 0, 0, tzinfo=timezone.utc),
@@ -124,7 +154,7 @@ class SensitivityExperimentTests(unittest.TestCase):
             self.assertEqual(
                 load.call_args_list[1].args[0].model_name_or_path, "custom/model"
             )
-            self.assertIs(evaluator.call_args.args[1], config.evaluation)
+            self.assertIs(evaluator.call_args.args[1], config.evaluation.evaluation)
             root = Path(directory)
             self.assertEqual({p.name for p in root.iterdir()}, {"sensitivity"})
             self.assertEqual(
@@ -172,20 +202,29 @@ class SensitivityExperimentTests(unittest.TestCase):
         """非法范围在加载前失败，空选择不进入分析。"""
 
         base = SensitivityExperimentConfig(
-            name="test", evaluation=LMEvalConfig(task="test"), metrics=("acc",)
+            name="test",
+            evaluation=EvaluationTaskConfig(
+                LMEvalConfig(task="test"), {"acc": "higher"}
+            ),
         )
         for values in (
             {"start_layer_index": -1},
             {"max_layers": 0},
             {"name": " "},
-            {"decomposition_dtype": torch.int32},
         ):
             with self.subTest(values=values), self.assertRaises(ValueError):
                 replace(base, **values)
+        with self.assertRaises(ValueError):
+            CompressionExecutionConfig(decomposition_dtype=torch.int32)
         with patch.object(workflow, "load_causal_lm") as load:
             with self.assertRaises(ValueError):
                 run_sensitivity_experiment(
-                    replace(base, metrics=("unknown_metric",)),
+                    replace(
+                        base,
+                        evaluation=EvaluationTaskConfig(
+                            base.evaluation.evaluation, {"acc": "invalid"}
+                        ),
+                    ),
                     select_linear=lambda p, l: True,
                     make_target=lambda p, l: None,
                 )

@@ -121,12 +121,14 @@ class SensitivityScriptTests(unittest.TestCase):
         config = run.call_args.args[0]
         self.assertEqual(config.model.model_name_or_path, "custom/model")
         self.assertEqual(config.model.dtype, torch.float32)
-        self.assertEqual(config.evaluation.task, "gsm8k")
-        self.assertEqual(config.evaluation.num_fewshot, 2)
-        self.assertEqual(config.evaluation.seed, 17)
-        self.assertEqual(config.evaluation.sample_start_index, 8000)
-        self.assertTrue(config.evaluation.apply_chat_template)
-        self.assertEqual(config.metrics, ("exact_match_strict_match",))
+        self.assertEqual(config.evaluation.evaluation.task, "gsm8k")
+        self.assertEqual(config.evaluation.evaluation.num_fewshot, 2)
+        self.assertEqual(config.evaluation.evaluation.evaluation_seed, 17)
+        self.assertEqual(config.evaluation.evaluation.sample_start_index, 8000)
+        self.assertTrue(config.evaluation.evaluation.apply_chat_template)
+        self.assertEqual(
+            tuple(config.evaluation.metric_directions), ("exact_match_strict_match",)
+        )
         self.assertEqual((config.start_layer_index, config.max_layers), (1, 2))
         self.assertEqual((config.output, config.log), ("out.md", "events.jsonl"))
         linear = nn.Linear(4096, 1024, bias=False, device="meta")
@@ -190,7 +192,11 @@ class SensitivityScriptTests(unittest.TestCase):
         """多指标图分别显示基线，比例转百分比且原始指标保留数值。"""
         from PIL import Image
 
-        metrics = ["exact_match_strict_match", "exact_match_flexible_extract", "word_perplexity"]
+        metrics = [
+            "exact_match_strict_match",
+            "exact_match_flexible_extract",
+            "word_perplexity",
+        ]
         with tempfile.TemporaryDirectory() as directory:
             report = Path(directory) / "report.md"
             report.write_text(
@@ -200,12 +206,17 @@ class SensitivityScriptTests(unittest.TestCase):
                 "| exact_match_flexible_extract | 0.9296875 |\n"
                 "| word_perplexity | 12.5 |\n"
             )
-            records = [{
-                "layers": {"model.layers.0.self_attn.q_proj": {}},
-                "degradations": dict.fromkeys(metrics, 0.01),
-            }]
+            records = [
+                {
+                    "layers": {"model.layers.0.self_attn.q_proj": {}},
+                    "degradations": dict.fromkeys(metrics, 0.01),
+                }
+            ]
             images = experiment.plot_heatmaps(
-                records, task="gsm8k", metrics=metrics, report_path=report,
+                records,
+                task="gsm8k",
+                metrics=metrics,
+                report_path=report,
             )
             for path, expected in zip(images, ["92.19%", "92.97%", "12.5"]):
                 with Image.open(path) as image:
@@ -213,14 +224,19 @@ class SensitivityScriptTests(unittest.TestCase):
             report.write_text(report.read_text().replace("0.921875", "nan"))
             with self.assertRaisesRegex(ValueError, "baseline metric must be finite"):
                 experiment.plot_heatmaps(
-                    records, task="gsm8k", metrics=metrics, report_path=report,
+                    records,
+                    task="gsm8k",
+                    metrics=metrics,
+                    report_path=report,
                 )
 
     def test_plot_only_creates_png_and_updates_report_without_model(self) -> None:
         """补图从日志读取任务和指标，生成 PNG 并幂等嵌入报告，不运行模型。"""
         with tempfile.TemporaryDirectory() as directory:
             report = Path(directory) / "report.md"
-            report.write_text("# Existing report\n\n- Evaluated examples: 2\n- Total evaluation examples: 3270\n\n## Baseline Metrics\n\n| Metric | Value |\n|---|---:|\n| acc | 0.75 |\n")
+            report.write_text(
+                "# Existing report\n\n- Evaluated examples: 2\n- Total evaluation examples: 3270\n\n## Baseline Metrics\n\n| Metric | Value |\n|---|---:|\n| acc | 0.75 |\n"
+            )
             log = Path(directory) / "events.jsonl"
             entries = [
                 (

@@ -41,7 +41,13 @@ from qcomp import (
     run_sensitivity_experiment,
 )
 from qcomp.logging import capture_console
-from qcomp.evaluation import LMEvalConfig, lm_eval_dataset_size
+from qcomp.evaluation import (
+    EvaluationTaskConfig,
+    LMEvalConfig,
+    lm_eval_dataset_size,
+    resolve_metric_directions,
+)
+from qcomp import CompressionExecutionConfig
 from qcomp.workflows import sensitivity_case_record
 
 
@@ -147,7 +153,17 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         default=0,
         help="评测题目起始索引（从 0 开始，仅支持单 task）；limit 为从此处取的题数。",
     )
-    parser.add_argument("--seed", type=int, default=42)
+    seeds = parser.add_mutually_exclusive_group()
+    seeds.add_argument(
+        "--evaluation-seed", type=int, default=42, help="lm-eval 评测种子"
+    )
+    seeds.add_argument(
+        "--seed",
+        dest="evaluation_seed",
+        type=int,
+        default=argparse.SUPPRESS,
+        help="兼容参数；请使用 --evaluation-seed",
+    )
     parser.add_argument("--apply-chat-template", action="store_true")
     parser.add_argument("--artifact-root", default="artifacts")
     parser.add_argument("--output")
@@ -198,20 +214,24 @@ def main(argv: Sequence[str] | None = None) -> None:
             ],
             trust_remote_code=args.trust_remote_code,
         ),
-        evaluation=LMEvalConfig(
-            task=args.task,
-            num_fewshot=args.num_fewshot,
-            batch_size=args.batch_size,
-            max_length=args.max_length,
-            limit=args.limit,
-            sample_start_index=args.sample_start_index,
-            seed=args.seed,
-            apply_chat_template=args.apply_chat_template,
+        evaluation=EvaluationTaskConfig(
+            evaluation=LMEvalConfig(
+                task=args.task,
+                num_fewshot=args.num_fewshot,
+                batch_size=args.batch_size,
+                max_length=args.max_length,
+                limit=args.limit,
+                sample_start_index=args.sample_start_index,
+                evaluation_seed=args.evaluation_seed,
+                apply_chat_template=args.apply_chat_template,
+            ),
+            metric_directions=resolve_metric_directions(tuple(args.metric)),
         ),
-        metrics=tuple(args.metric),
         runtime_config=args.runtime_config,
-        decomposition_provider=args.decomposition_provider,
-        execution_provider=args.execution_provider,
+        compression=CompressionExecutionConfig(
+            decomposition_provider=args.decomposition_provider,
+            execution_provider=args.execution_provider,
+        ),
         start_layer_index=args.start_layer_index,
         max_layers=args.max_layers,
         artifact_root=args.artifact_root,
@@ -248,7 +268,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                 for case in result.evaluation.plan_results
             ],
             task=args.task,
-            metrics=config.metrics,
+            metrics=tuple(config.evaluation.metric_directions),
             report_path=result.report_path,
             vmax=args.heatmap_max,
             evaluated_examples=result.evaluation.baseline[

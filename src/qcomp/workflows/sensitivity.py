@@ -17,16 +17,14 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-import torch
 from torch import nn
 
-from ..backends import get_backend
-from ..evaluation import LMEvalConfig, LMEvalEvaluator, resolve_metric_directions
+from ..evaluation import EvaluationTaskConfig, LMEvalEvaluator
 from ..model import ModelLoadConfig, list_linears, load_causal_lm
 from ..runtime import load_runtime_config
 from ..logging import log_event
 from ..storage import ArtifactPaths
-from .compress import CompressionPlan, CompressionTarget
+from .compress import CompressionExecutionConfig, CompressionPlan, CompressionTarget
 from .evaluate import (
     CompressionEvaluationResult,
     CompressionPlanEvaluation,
@@ -78,13 +76,12 @@ class SensitivityExperimentConfig:
     """配置逐层 lm-eval 敏感性实验的模型、评测、范围和输出。"""
 
     name: str
-    evaluation: LMEvalConfig
-    metrics: tuple[str, ...]
+    evaluation: EvaluationTaskConfig
     model: ModelLoadConfig = field(default_factory=ModelLoadConfig)
     runtime_config: str | Path | None = None
-    decomposition_provider: str = "tensorly"
-    execution_provider: str = "tensorly"
-    decomposition_dtype: torch.dtype = torch.float32
+    compression: CompressionExecutionConfig = field(
+        default_factory=CompressionExecutionConfig
+    )
     start_layer_index: int = 0
     max_layers: int | None = None
     artifact_root: str | Path = "artifacts"
@@ -100,8 +97,6 @@ class SensitivityExperimentConfig:
             raise ValueError("start_layer_index must be non-negative")
         if self.max_layers is not None and self.max_layers <= 0:
             raise ValueError("max_layers must be positive")
-        if not self.decomposition_dtype.is_floating_point:
-            raise ValueError("decomposition_dtype must be floating-point")
 
 
 def _format_number(value: float) -> str:
@@ -275,7 +270,8 @@ def run_sensitivity_experiment(
     """
 
     timestamp = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%dT%H%M%S")
-    directions = resolve_metric_directions(config.metrics)
+    evaluation = config.evaluation.evaluation
+    directions = config.evaluation.metric_directions
     runtime = load_runtime_config(config.runtime_config)
     model_config = replace(
         config.model,
@@ -302,20 +298,12 @@ def run_sensitivity_experiment(
         if target.module_path != path:
             raise ValueError("make_target must preserve the selected module path")
         plans[path] = CompressionPlan(targets=(target,))
-    representations = dict.fromkeys(
-        plan.targets[0].representation for plan in plans.values()
+    decomposition_backends, execution_backends = config.compression.build_backends(
+        plans
     )
-    decomposition_backends = {
-        representation: get_backend(config.decomposition_provider, representation)
-        for representation in representations
-    }
-    execution_backends = {
-        representation: get_backend(config.execution_provider, representation)
-        for representation in representations
-    }
     evaluator = LMEvalEvaluator(
         resources.tokenizer,
-        config.evaluation,
+        evaluation,
         runtime_config_path=config.runtime_config,
     )
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", config.name).strip("-._") or "experiment"
@@ -338,7 +326,7 @@ def run_sensitivity_experiment(
         "experiment_started",
         run_id=run_id,
         name=config.name,
-        task=config.evaluation.task,
+        task=evaluation.task,
         metrics=tuple(directions),
         metric_directions=directions,
         layers=len(plans),
@@ -347,16 +335,16 @@ def run_sensitivity_experiment(
         model_name_or_path=model_config.model_name_or_path,
         device=model_config.device,
         model_dtype=str(model_config.dtype),
-        decomposition_dtype=str(config.decomposition_dtype),
-        decomposition_provider=config.decomposition_provider,
-        execution_provider=config.execution_provider,
-        seed=config.evaluation.seed,
-        num_fewshot=config.evaluation.num_fewshot,
-        batch_size=config.evaluation.batch_size,
-        max_length=config.evaluation.max_length,
-        limit=config.evaluation.limit,
-        sample_start_index=config.evaluation.sample_start_index,
-        apply_chat_template=config.evaluation.apply_chat_template,
+        decomposition_dtype=str(config.compression.decomposition_dtype),
+        decomposition_provider=config.compression.decomposition_provider,
+        execution_provider=config.compression.execution_provider,
+        seed=evaluation.evaluation_seed,
+        num_fewshot=evaluation.num_fewshot,
+        batch_size=evaluation.batch_size,
+        max_length=evaluation.max_length,
+        limit=evaluation.limit,
+        sample_start_index=evaluation.sample_start_index,
+        apply_chat_template=evaluation.apply_chat_template,
         trust_remote_code=model_config.trust_remote_code,
         offline=runtime.offline,
         start_layer_index=config.start_layer_index,
@@ -370,7 +358,7 @@ def run_sensitivity_experiment(
             log_path,
             "case_completed",
             run_id=run_id,
-            **sensitivity_case_record(result, config.evaluation.task),
+            **sensitivity_case_record(result, evaluation.task),
         )
 
     result = evaluate_compression_plans(
@@ -378,12 +366,12 @@ def run_sensitivity_experiment(
         plans,
         decomposition_backends=decomposition_backends,
         execution_backends=execution_backends,
-        decomposition_dtype=config.decomposition_dtype,
-        evaluators={config.evaluation.task: evaluator},
-        metric_directions={config.evaluation.task: directions},
+        decomposition_dtype=config.compression.decomposition_dtype,
+        evaluators={evaluation.task: evaluator},
+        metric_directions={evaluation.task: directions},
         collect_layer_metrics=True,
         on_plan_result=on_plan_result,
     )
-    format_sensitivity_report(result, output_path, task_name=config.evaluation.task)
+    format_sensitivity_report(result, output_path, task_name=evaluation.task)
     log_event(log_path, "experiment_completed", run_id=run_id, report=str(output_path))
     return SensitivityExperimentResult(result, output_path)

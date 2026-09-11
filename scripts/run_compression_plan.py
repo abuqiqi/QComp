@@ -37,14 +37,19 @@ from qcomp import (
     CompressionPlanEvaluation,
     TimedEvaluation,
     compression_plan_from_dict,
-    get_backend,
+    CompressionExecutionConfig,
     load_causal_lm,
     load_compression_plan,
     load_runtime_config,
     log_event,
     save_artifact,
 )
-from qcomp.evaluation import LMEvalConfig, LMEvalEvaluator, resolve_metric_directions
+from qcomp.evaluation import (
+    EvaluationTaskConfig,
+    LMEvalConfig,
+    LMEvalEvaluator,
+    resolve_metric_directions,
+)
 from qcomp.logging import capture_console
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -69,8 +74,19 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--decomposition-provider", default="tensorly")
     parser.add_argument("--execution-provider", default="tensorly")
     parser.add_argument("--trust-remote-code", action="store_true")
-    parser.add_argument(
-        "--seed", type=int, default=42, help="分解随机种子；评测种子沿用各任务来源"
+    seeds = parser.add_mutually_exclusive_group()
+    seeds.add_argument(
+        "--decomposition-seed",
+        type=int,
+        default=42,
+        help="分解随机种子；评测种子沿用各任务来源",
+    )
+    seeds.add_argument(
+        "--seed",
+        dest="decomposition_seed",
+        type=int,
+        default=argparse.SUPPRESS,
+        help="兼容参数；请使用 --decomposition-seed",
     )
     parser.add_argument(
         "--eval-limit",
@@ -102,16 +118,17 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def evaluation_configs(
     document: Mapping[str, Any], args: argparse.Namespace
-) -> tuple[dict[str, LMEvalConfig], dict[str, dict[str, str]]]:
+) -> dict[str, EvaluationTaskConfig]:
     """从 JSON 的勾选项和 provenance 还原评测配置，不访问原敏感度文件。
 
     返回：
-        按任务索引的 LMEvalConfig 和关注指标及方向。关闭评测时均为空。
+        按任务索引的完整评测配置。关闭评测时为空。
     """
     if args.skip_eval:
-        return {}, {}
+        return {}
     if args.eval_config is not None:
-        return independent_evaluation_configs(args)
+        configs = independent_evaluation_configs(args)
+        return apply_evaluation_overrides(configs, args)
     selection = document.get("selection", {})
     datasets = selection.get("settings", {}).get("datasets")
     sources = selection.get("sources")
@@ -123,7 +140,7 @@ def evaluation_configs(
         if key in source_map:
             raise ValueError(f"重复数据来源：{key}")
         source_map[key] = source
-    configs, metrics = {}, {}
+    configs = {}
     for item in datasets:
         if type(item.get("enabled")) is not bool:
             raise ValueError("数据集 enabled 必须为布尔值")
@@ -151,29 +168,27 @@ def evaluation_configs(
         ):
             raise ValueError(f"{task}: 无法确认指标 {metric} 及其方向")
         config = LMEvalConfig(
-            **{field: source[field] for field in fields},
+            **{
+                ("evaluation_seed" if field == "seed" else field): source[field]
+                for field in fields
+            },
             sample_start_index=source.get("sample_start_index", 0),
         )
-        if args.eval_limit is not None:
-            config = replace(config, limit=args.eval_limit)
-        if args.eval_batch_size is not None:
-            config = replace(config, batch_size=args.eval_batch_size)
-        configs[task] = config
-        metrics[task] = {metric: direction}
+        configs[task] = EvaluationTaskConfig(config, {metric: direction})
     if not configs:
         raise ValueError("没有勾选的评测任务；只压缩请使用 --skip-eval")
-    return configs, metrics
+    return apply_evaluation_overrides(configs, args)
 
 
 def independent_evaluation_configs(
     args: argparse.Namespace,
-) -> tuple[dict[str, LMEvalConfig], dict[str, dict[str, str]]]:
-    """读取独立多任务配置，复用 LMEvalConfig 默认值并应用最后的 CLI 覆盖。"""
+) -> dict[str, EvaluationTaskConfig]:
+    """读取独立多任务配置，规范种子字段并复用 LMEvalConfig 默认值。"""
     document = json.loads(args.eval_config.read_text(encoding="utf-8"))
     entries = document.get("datasets") if isinstance(document, dict) else None
     if not isinstance(entries, list) or not entries:
         raise ValueError("评测配置必须包含非空 datasets 数组")
-    configs, directions = {}, {}
+    configs = {}
     for entry in entries:
         if not isinstance(entry, dict) or "task" not in entry or "metrics" not in entry:
             raise ValueError("每个评测项必须包含 task 和 metrics")
@@ -207,16 +222,31 @@ def independent_evaluation_configs(
                     "metric_directions 必须准确覆盖 metrics 且方向为 higher/lower"
                 )
             resolved = {m: explicit[m] for m in metrics}
-        if args.eval_limit is not None:
-            values["limit"] = args.eval_limit
-        if args.eval_batch_size is not None:
-            values["batch_size"] = args.eval_batch_size
+        if "seed" in values:
+            if "evaluation_seed" in values:
+                raise ValueError("seed 和 evaluation_seed 不能同时指定")
+            values["evaluation_seed"] = values.pop("seed")
         config = LMEvalConfig(**values)
         if not config.task.strip() or config.task in configs:
             raise ValueError("评测 task 必须非空且不能重复")
-        configs[config.task] = config
-        directions[config.task] = resolved
-    return configs, directions
+        configs[config.task] = EvaluationTaskConfig(config, resolved)
+    return configs
+
+
+def apply_evaluation_overrides(
+    configs: Mapping[str, EvaluationTaskConfig],
+    args: argparse.Namespace,
+) -> dict[str, EvaluationTaskConfig]:
+    """对已经统一的任务配置最后应用 CLI 题数及 batch size 覆盖。"""
+    overrides = {}
+    if args.eval_limit is not None:
+        overrides["limit"] = args.eval_limit
+    if args.eval_batch_size is not None:
+        overrides["batch_size"] = args.eval_batch_size
+    return {
+        task: replace(config, evaluation=replace(config.evaluation, **overrides))
+        for task, config in configs.items()
+    }
 
 
 def plotting_module() -> Any:
@@ -318,7 +348,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         raise ValueError("请使用最新版选层页面导出的 JSON")
     # 昂贵模型加载前检查执行结构；加载后公共入口再检查实际目标维度。
     parsed = compression_plan_from_dict(document["compression_plan"])
-    configs, metrics = evaluation_configs(document, args)
+    configs = evaluation_configs(document, args)
+    compression_config = CompressionExecutionConfig(
+        decomposition_provider=args.decomposition_provider,
+        execution_provider=args.execution_provider,
+        decomposition_dtype=DTYPES[args.decomposition_dtype],
+    )
     runtime = load_runtime_config(args.runtime_config)
     model_name = (
         args.model
@@ -357,12 +392,16 @@ def main(argv: Sequence[str] | None = None) -> None:
         decomposition_provider=args.decomposition_provider,
         execution_provider=args.execution_provider,
         trust_remote_code=args.trust_remote_code,
-        seed=args.seed,
+        decomposition_seed=args.decomposition_seed,
         offline=runtime.offline,
         runtime_config=args.runtime_config,
         target_count=len(parsed.targets),
-        evaluation_configs={task: asdict(config) for task, config in configs.items()},
-        selected_metrics=metrics,
+        evaluation_configs={
+            task: asdict(config.evaluation) for task, config in configs.items()
+        },
+        selected_metrics={
+            task: dict(config.metric_directions) for task, config in configs.items()
+        },
         skip_eval=args.skip_eval,
         eval_config=str(args.eval_config.resolve()) if args.eval_config else None,
         no_plot=args.no_plot,
@@ -382,25 +421,20 @@ def main(argv: Sequence[str] | None = None) -> None:
         artifacts = []
         phase = "loading"
         try:
-            torch.manual_seed(args.seed)
+            torch.manual_seed(args.decomposition_seed)
             print(f"产物目录：{output}\n加载模型：{model_name}", flush=True)
             resources = load_causal_lm(
                 model_config, runtime_config_path=args.runtime_config
             )
             model = resources.model
             plan = load_compression_plan(output / "selection.json", model=model)
-            representations = {target.representation for target in plan.targets}
-            decomposition = {
-                rep: get_backend(args.decomposition_provider, rep)
-                for rep in representations
-            }
-            execution = {
-                rep: get_backend(args.execution_provider, rep)
-                for rep in representations
-            }
+            plans = {"selected": plan}
+            decomposition, execution = compression_config.build_backends(plans)
             evaluators = {
                 task: LMEvalEvaluator(
-                    resources.tokenizer, config, runtime_config_path=args.runtime_config
+                    resources.tokenizer,
+                    config.evaluation,
+                    runtime_config_path=args.runtime_config,
                 )
                 for task, config in configs.items()
             }
@@ -424,7 +458,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                 print(f"[{stage}] {task}: {record['metrics']}", flush=True)
                 if plan_name is None and task == next(reversed(configs)):
                     # baseline 使用任务自己的种子，分解恢复独立的执行种子。
-                    torch.manual_seed(args.seed)
+                    torch.manual_seed(args.decomposition_seed)
 
             def on_compressed(name, tensors, model_metrics, seconds) -> None:
                 """在任务评测前保存逐矩阵 artifact，不保留张量引用。"""
@@ -458,15 +492,17 @@ def main(argv: Sequence[str] | None = None) -> None:
                 log_event(log_path, "plan_completed", name=completed.name)
 
             phase = "evaluation"
-            torch.manual_seed(args.seed)
+            torch.manual_seed(args.decomposition_seed)
             measured = evaluate_compression_plans(
                 model,
-                {"selected": plan},
+                plans,
                 evaluators=evaluators,
-                metric_directions=metrics,
+                metric_directions={
+                    task: config.metric_directions for task, config in configs.items()
+                },
                 decomposition_backends=decomposition,
                 execution_backends=execution,
-                decomposition_dtype=DTYPES[args.decomposition_dtype],
+                decomposition_dtype=compression_config.decomposition_dtype,
                 on_evaluation=on_evaluation,
                 on_compressed=on_compressed,
                 on_plan_result=on_plan_result,
@@ -501,9 +537,9 @@ def main(argv: Sequence[str] | None = None) -> None:
                             task
                         ].evaluation.evaluated_examples,
                     )
-                    for metric, direction in selected.items()
+                    for metric, direction in task_config.metric_directions.items()
                 }
-                for task, selected in metrics.items()
+                for task, task_config in configs.items()
             }
             summary = dict(
                 model=model_name,

@@ -201,3 +201,9 @@ python scripts/run_alpaca_finetune.py \
 默认产物目录为 `artifacts/alpaca-finetune/<模型名>_blocks-<起点>-<终点>_rank-<rank>/<YYYYMMDDTHHMMSS>/`，例如 `artifacts/alpaca-finetune/Qwen3-8B_blocks-25-36_rank-96/20260908T143025/`。模型名取模型来源路径的最后一段，终点为实际使用的不包含端点的 block 编号，时间戳使用本地时间。显式传入 `--artifact-root <目录>` 时直接使用该目录。
 
 产物目录包含三阶段结果 `summary.json`、配置 `experiment_config.json`、日志 `experiment.jsonl`、`decompositions/initial/` 和 `decompositions/finetuned/` 下的逐层 artifact，以及 `checkpoints/` 下的训练状态。产物需配合原始模型和相同执行后端使用。断点续训时，在原命令上追加 `--resume-from <checkpoint路径>`，保持模型、数据、层范围、rank、后端及训练配置一致；续训仍会先评测原模型和初始压缩模型，再由训练接口恢复 checkpoint。
+
+### 压缩与评测的种子
+
+敏感度入口使用 `--evaluation-seed 42`，联合压缩入口使用 `--decomposition-seed 42`。两个入口仍接受 `--seed`，分别保持各自的评测或分解语义；不能同时传入新旧参数。敏感度没有独立分解种子，分解沿用评测结束后的随机状态。联合压缩的分解种子保留模型加载前及分解前的设置时机，任务评测种子独立来自评测配置。
+
+独立评测 JSON 使用 `evaluation_seed`，默认 42；也接受旧 `seed`，但两者不能同时出现。历史敏感度事件及选层来源中的 `seed` 字段保持不变，在读取时转换。新联合压缩 `experiment_config.json` 保存 `decomposition_seed`，每个任务的执行配置保存 `evaluation_seed`，包括解析后的默认值与 CLI 覆盖结果。

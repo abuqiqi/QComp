@@ -179,8 +179,11 @@ def test_dry_run_and_overrides(experiment, capsys):
     assert '"model": "override-model"' in text and '"limit": 1' in text
     assert not e.root.exists() and not e.calls
     args = script.parse_args(e.argv + ["--eval-limit", "1"])
-    configs, _ = script.evaluation_configs(e.document, args)
-    assert configs["boolq"].limit == 1 and configs["boolq"].sample_start_index == 3
+    configs = script.evaluation_configs(e.document, args)
+    assert (
+        configs["boolq"].evaluation.limit == 1
+        and configs["boolq"].evaluation.sample_start_index == 3
+    )
 
 
 def test_skip_evaluation_without_sources(experiment):
@@ -434,7 +437,10 @@ def test_skip_eval_config_conflict_and_no_plot(experiment, monkeypatch):
 
 
 @pytest.mark.parametrize("skip", [False, True])
-def test_decomposition_seed_independent_of_evaluator(experiment, monkeypatch, skip):
+@pytest.mark.parametrize("seed_flag", ["--seed", "--decomposition-seed"])
+def test_decomposition_seed_independent_of_evaluator(
+    experiment, monkeypatch, skip, seed_flag
+):
     """任务评测与模型加载消耗随机数后，压缩仍从指定分解种子开始。"""
     import qcomp.workflows.evaluate as workflow
 
@@ -459,4 +465,46 @@ def test_decomposition_seed_independent_of_evaluator(experiment, monkeypatch, sk
         return original(*args, **kwargs)
 
     monkeypatch.setattr(workflow, "compress_model", compress)
-    script.main(e.argv + ["--seed", "123"] + (["--skip-eval"] if skip else []))
+    script.main(e.argv + [seed_flag, "123"] + (["--skip-eval"] if skip else []))
+
+
+@pytest.mark.parametrize("field", ["seed", "evaluation_seed"])
+def test_evaluation_seed_json_and_persisted_config(experiment, field):
+    """独立配置的新旧种子字段等价，最终配置仅使用明确的新名称。"""
+    e = experiment
+    config = e.root.parent / "evaluation.json"
+    config.write_text(
+        json.dumps({"datasets": [{"task": "boolq", "metrics": ["acc"], field: 31}]})
+    )
+    script.main(
+        e.argv
+        + ["--eval-config", str(config), "--decomposition-seed", "23", "--no-plot"]
+    )
+    assert e.configs[0].evaluation_seed == 31
+    saved = json.loads((e.root / "experiment_config.json").read_text())
+    assert saved["decomposition_seed"] == 23 and "seed" not in saved
+    assert saved["evaluation_configs"]["boolq"]["evaluation_seed"] == 31
+    assert "seed" not in saved["evaluation_configs"]["boolq"]
+
+
+def test_evaluation_seed_json_conflict(experiment):
+    """同时给出两种种子字段时在加载前失败。"""
+    e = experiment
+    config = e.root.parent / "evaluation.json"
+    config.write_text(
+        json.dumps(
+            {
+                "datasets": [
+                    {
+                        "task": "boolq",
+                        "metrics": ["acc"],
+                        "seed": 1,
+                        "evaluation_seed": 1,
+                    }
+                ]
+            }
+        )
+    )
+    with pytest.raises(ValueError, match="不能同时"):
+        script.main(e.argv + ["--eval-config", str(config)])
+    assert not e.calls and not e.root.exists()

@@ -4,6 +4,7 @@
 训练计时函数。evaluation 不访问具体 Provider 的内部实现。
 
 主要内容：
+- ``EvaluationTaskConfig``：组合任务执行参数与关注指标方向。
 - ``CompressionMetrics``、``compression_metrics``：计算单张量规模和重建误差。
 - ``ModelCompressionMetrics``、``model_compression_metrics``：计算完整模型压缩率。
 - ``EvaluationTask``：描述数据集、split、预处理方式和请求的指标名称。
@@ -25,7 +26,12 @@ from .compression import (
     compression_metrics,
     model_compression_metrics,
 )
-from .lm_eval import LMEvalConfig, LMEvalEvaluator, lm_eval_dataset_size
+from .lm_eval import (
+    EvaluationTaskConfig,
+    LMEvalConfig,
+    LMEvalEvaluator,
+    lm_eval_dataset_size,
+)
 from .metrics import MetricDirection, metric_direction, resolve_metric_directions
 from .performance import (
     TimingResult,
@@ -36,6 +42,7 @@ from .performance import (
 from .task import EvaluationResult, EvaluationTask
 
 __all__ = [
+    "EvaluationTaskConfig",
     "EvaluationResult",
     "EvaluationTask",
     "LMEvalConfig",
