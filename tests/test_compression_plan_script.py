@@ -5,9 +5,8 @@
 - 验证 dry-run、跳过评测、输出保护及失败日志，不使用 GPU 或外部数据。
 """
 
-from contextlib import nullcontext
 import json
-from pathlib import Path
+from contextlib import nullcontext
 from types import SimpleNamespace
 
 import pytest
@@ -29,30 +28,30 @@ def experiment(tmp_path, monkeypatch):
         for index, layer in enumerate(model.values()):
             layer.weight.copy_(torch.arange(16).reshape(4, 4) / 16 + index)
     targets = [
-        dict(
-            module_path=name,
-            representation="mpo",
-            spec=dict(out_modes=[2, 2], in_modes=[2, 2], ranks=[1, rank, 1]),
-        )
+        {
+            "module_path": name,
+            "representation": "mpo",
+            "spec": {"out_modes": [2, 2], "in_modes": [2, 2], "ranks": [1, rank, 1]},
+        }
         for name, rank in [("second", 2), ("first", 1)]
     ]
-    config = dict(
-        task="boolq",
-        num_fewshot=None,
-        limit=4,
-        seed=17,
-        batch_size=2,
-        max_length=64,
-        sample_start_index=3,
-        apply_chat_template=False,
-        metrics=["acc"],
-        metric_directions={"acc": "higher"},
-    )
-    document = dict(
-        kind="qcomp_compression_selection",
-        model={"name_or_path": "fixture-model"},
-        compression_plan={"targets": targets},
-        selection={
+    config = {
+        "task": "boolq",
+        "num_fewshot": None,
+        "limit": 4,
+        "seed": 17,
+        "batch_size": 2,
+        "max_length": 64,
+        "sample_start_index": 3,
+        "apply_chat_template": False,
+        "metrics": ["acc"],
+        "metric_directions": {"acc": "higher"},
+    }
+    document = {
+        "kind": "qcomp_compression_selection",
+        "model": {"name_or_path": "fixture-model"},
+        "compression_plan": {"targets": targets},
+        "selection": {
             "settings": {
                 "datasets": [{"id": "boolq", "enabled": True, "metric": "acc"}]
             },
@@ -64,7 +63,7 @@ def experiment(tmp_path, monkeypatch):
                 }
             ],
         },
-    )
+    }
     path = tmp_path / "selection.json"
     path.write_text(json.dumps(document))
     calls, configs, outputs = [], [], []
@@ -508,3 +507,42 @@ def test_evaluation_seed_json_conflict(experiment):
     with pytest.raises(ValueError, match="不能同时"):
         script.main(e.argv + ["--eval-config", str(config)])
     assert not e.calls and not e.root.exists()
+
+
+def test_new_source_config_keeps_entry_id_and_actual_task():
+    """新版来源以条目 ID 区分同任务实验，执行时保留真实 task 和完整参数。"""
+    from qcomp.evaluation import (
+        EvaluationTaskConfig,
+        LMEvalConfig,
+        evaluation_task_config_to_dict,
+    )
+
+    args = script.parse_args(["--selection-json", "plan.json"])
+    document = {
+        "selection": {
+            "settings": {
+                "datasets": [
+                    {"id": "boolq-zero", "enabled": True, "metric": "acc"},
+                    {"id": "boolq-few", "enabled": True, "metric": "acc"},
+                ]
+            },
+            "sources": [
+                {
+                    "dataset_id": entry,
+                    "provenance": {
+                        "evaluation_config": evaluation_task_config_to_dict(
+                            EvaluationTaskConfig(
+                                LMEvalConfig("boolq", num_fewshot=shots),
+                                {"acc": "higher"},
+                            )
+                        )
+                    },
+                }
+                for entry, shots in [("boolq-zero", 0), ("boolq-few", 3)]
+            ],
+        }
+    }
+    configs = script.evaluation_configs(document, args)
+    assert list(configs) == ["boolq-zero", "boolq-few"]
+    assert configs["boolq-zero"].evaluation.task == "boolq"
+    assert configs["boolq-few"].evaluation.num_fewshot == 3

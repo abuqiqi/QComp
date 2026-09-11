@@ -6,15 +6,14 @@
 - ``SensitivityScriptTests``：验证实验入口与公共能力的连接。
 """
 
-import unittest
-import tempfile
 import json
-from pathlib import Path
+import tempfile
+import unittest
 from contextlib import nullcontext
-
-import numpy as np
+from pathlib import Path
 from unittest.mock import patch
 
+import numpy as np
 import torch
 from torch import nn
 
@@ -110,8 +109,8 @@ class SensitivityScriptTests(unittest.TestCase):
                     "2",
                     "--output",
                     "out.md",
-                    "--log",
-                    "events.jsonl",
+                    "--results",
+                    "sensitivity_results.json",
                 ]
             )
         plot.assert_called_once()
@@ -130,7 +129,9 @@ class SensitivityScriptTests(unittest.TestCase):
             tuple(config.evaluation.metric_directions), ("exact_match_strict_match",)
         )
         self.assertEqual((config.start_layer_index, config.max_layers), (1, 2))
-        self.assertEqual((config.output, config.log), ("out.md", "events.jsonl"))
+        self.assertEqual(
+            (config.output, config.results), ("out.md", "sensitivity_results.json")
+        )
         linear = nn.Linear(4096, 1024, bias=False, device="meta")
         select = run.call_args.kwargs["select_linear"]
         self.assertTrue(select("block", linear))
@@ -156,7 +157,7 @@ class SensitivityScriptTests(unittest.TestCase):
             self.assertEqual(report.name, "report.md")
             self.assertRegex(report.parent.name, r"^\d{8}T\d{6}$")
             self.assertEqual(report.parent.parent.name, "qwen3-mmlu-mpo-rank-96")
-            self.assertEqual(Path(config.log), report.parent / "events.jsonl")
+            self.assertIsNone(config.results)
             capture.assert_called_once_with(report.parent / "console.log")
             capture.return_value.__enter__.assert_called_once()
             capture.return_value.__exit__.assert_called_once()
@@ -237,27 +238,14 @@ class SensitivityScriptTests(unittest.TestCase):
             report.write_text(
                 "# Existing report\n\n- Evaluated examples: 2\n- Total evaluation examples: 3270\n\n## Baseline Metrics\n\n| Metric | Value |\n|---|---:|\n| acc | 0.75 |\n"
             )
-            log = Path(directory) / "events.jsonl"
-            entries = [
-                (
-                    "experiment_started",
-                    {"task": "boolq", "metrics": ["acc"], "layers": 1},
-                ),
-                (
-                    "case_completed",
-                    {
-                        "layers": {"model.layers.0.self_attn.q_proj": {}},
-                        "degradations": {"acc": 0.451},
-                    },
-                ),
-                ("experiment_completed", {"report": str(report)}),
-            ]
-            log.write_text(
-                "\n".join(
-                    json.dumps({"event": event, "fields": {"run_id": "test", **fields}})
-                    for event, fields in entries
-                )
-            )
+            from test_layer_selection_dashboard import make_sources
+
+            data_config = make_sources(Path(directory), count=1, modules=1)
+            log = Path(directory) / data_config["datasets"][0]["path"]
+            data = json.loads(log.read_text())
+            data["report_path"] = str(report)
+            data["baseline"]["total_examples"] = 3270
+            log.write_text(json.dumps(data))
             with patch.object(experiment, "run_sensitivity_experiment") as run:
                 experiment.main(["--plot-only", str(log)])
                 experiment.main(["--plot-only", str(log)])
@@ -273,15 +261,10 @@ class SensitivityScriptTests(unittest.TestCase):
                 )
             self.assertEqual(report.read_text().count("![acc heatmap]"), 1)
             self.assertTrue(report.read_text().startswith("# Existing report"))
-            entries[0][1]["layers"] = 2
-            log.write_text(
-                "\n".join(
-                    json.dumps({"event": event, "fields": {"run_id": "test", **fields}})
-                    for event, fields in entries
-                )
-            )
-            with self.assertRaisesRegex(ValueError, "case count"):
-                experiment.plot_log(log)
+            data["expected_cases"].append("missing")
+            log.write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError, "case 不完整"):
+                experiment.plot_results(log)
 
 
 if __name__ == "__main__":

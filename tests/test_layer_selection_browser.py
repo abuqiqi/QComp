@@ -10,9 +10,9 @@ import json
 from pathlib import Path
 
 import pytest
+from test_layer_selection_dashboard import make_sources
 
 from scripts.build_layer_selection_dashboard import build_dashboard
-from test_layer_selection_dashboard import make_sources
 
 playwright = pytest.importorskip(
     "playwright.sync_api", reason="浏览器测试需要 playwright 和 Chromium"
@@ -24,17 +24,16 @@ def dashboard(tmp_path_factory):
     """生成包含多指标 GSM8K 的确定性页面，避免依赖真实实验文件。"""
     root = tmp_path_factory.mktemp("dashboard")
     config = make_sources(root)
-    log = root / "gsm8k/events.jsonl"
-    events = [json.loads(s) for s in log.read_text().splitlines()]
+    log = root / "gsm8k/sensitivity_results.json"
+    data = json.loads(log.read_text())
     metric = "exact_match_flexible_extract"
-    events[0]["fields"]["metrics"].append(metric)
-    events[0]["fields"]["metric_directions"][metric] = "higher"
-    for event in events[1:-1]:
-        event["fields"]["metrics"][metric] = 0.625
-        event["fields"]["degradations"][metric] = 0.125
-    log.write_text("\n".join(json.dumps(e) for e in events))
-    report = root / "gsm8k/report.md"
-    report.write_text(report.read_text() + f"| {metric} | 0.75 |\n")
+    data["evaluation_config"]["metric_directions"][metric] = "higher"
+    data["baseline"]["metrics"][metric] = 0.75
+    data["evaluation_task"]["requested_metrics"].append(metric)
+    for case in data["cases"]:
+        case["metrics"][metric] = 0.625
+        case["degradations"][metric] = 0.125
+    log.write_text(json.dumps(data))
     source = root / "sources.json"
     source.write_text(json.dumps(config))
     return build_dashboard(source, root / "output")
@@ -90,8 +89,8 @@ def test_math_negative_drops_filter_and_order(page):
     result = page.evaluate(
         """() => {
       const p={modules:[{name:'a',saving:.1},{name:'b',saving:.2}], datasets:[
-        {id:'x',defaultMetric:'acc',baseline:{acc:.5},values:{acc:[.6,.4]}},
-        {id:'y',defaultMetric:'acc',baseline:{acc:.8},values:{acc:[.6,.8]}}]};
+        {id:'x',defaultMetric:'acc',directions:{acc:'higher'},baseline:{acc:.5},values:{acc:[.6,.4]}},
+        {id:'y',defaultMetric:'acc',directions:{acc:'higher'},baseline:{acc:.8},values:{acc:[.6,.8]}}]};
       const s=LayerSelection.defaults(p);s.requested_module_count=1;
       const rows=LayerSelection.evaluate(p,s);
       const ordered=LayerSelection.fixedOrder(rows).map(r=>r.name);
@@ -340,3 +339,76 @@ def test_import_stability_can_cancel_without_replacing_state(page):
     assert page.locator("#selected-count").inner_text() == "16"
     assert page.locator("#fixed-mode").get_attribute("aria-pressed") == "true"
     assert not page.locator("#export-json").is_disabled()
+
+
+def test_lower_metric_and_weight_combination_limit(page):
+    """lower 指标以变大为退化，多任务组合超限在枚举前报错。"""
+    result = page.evaluate(
+        """() => {
+          const p = {modules:[{name:'projection',saving:.1}],datasets:[
+            {id:'error',defaultMetric:'error',directions:{error:'lower'},baseline:{error:.2},values:{error:[.3]}}
+          ]};
+          const state = LayerSelection.defaults(p);
+          let message = '';
+          try { LayerSelection.weightGrid(Array.from({length:10}, () => ({enabled:true,lower:0,upper:100}))); }
+          catch (error) { message = error.message; }
+          return {score:LayerSelection.evaluate(p,state)[0].score, weights:LayerSelection.weightGrid(state.datasets),count:state.requested_module_count,message};
+        }"""
+    )
+    assert result["score"] == pytest.approx(10)
+    assert result["weights"] == [[1]] and result["count"] == 1
+    assert "100,000" in result["message"]
+
+
+@pytest.mark.parametrize("count", [1, 2, 6])
+def test_dynamic_page_and_export_plan(page, tmp_path, count):
+    """少量无 block 模块动态显示任务数，导出计划可在真实小模型上加载。"""
+    from torch import nn
+
+    from qcomp import load_compression_plan
+
+    config = make_sources(tmp_path, count=count, modules=1)
+    for entry in config["datasets"]:
+        path = tmp_path / entry["path"]
+        data = json.loads(path.read_text())
+        case = data["cases"][0]
+        old_name = case["case"]
+        case["case"] = "projection"
+        case["layers"]["projection"] = case["layers"].pop(old_name)
+        case["compression_plan"]["targets"][0]["module_path"] = "projection"
+        data["expected_cases"] = ["projection"]
+        path.write_text(json.dumps(data))
+    config_path = tmp_path / "sources.json"
+    config_path.write_text(json.dumps(config))
+    html = build_dashboard(config_path, tmp_path / "page")
+    page.goto(html.as_uri())
+    assert page.locator(".dataset-card").count() == count
+    assert page.locator("#selected-count").inner_text() == "1"
+    assert page.locator("#requested_module_count").get_attribute("max") == "1"
+    page.locator("#heatmap [data-module='0']").click()
+    assert "Spec" in page.locator("#detail").inner_text()
+    assert "20" in page.locator("#detail").inner_text()
+    with page.expect_download() as download:
+        page.locator("#export-json").click()
+    downloaded = Path(download.value.path())
+    plan = load_compression_plan(
+        downloaded, model=nn.ModuleDict({"projection": nn.Linear(8, 8, bias=False)})
+    )
+    assert plan.targets[0].spec.num_parameters == 20
+    snapshot = json.loads(downloaded.read_text())
+    assert (
+        snapshot["selection"]["results"]["parameter_saving_basis"] == "parameter_counts"
+    )
+    assert sum(
+        snapshot["selection"]["results"]["normalized_weights"].values()
+    ) == pytest.approx(1)
+    page.locator("#import-file").set_input_files(
+        {
+            "name": "plan.json",
+            "mimeType": "application/json",
+            "buffer": downloaded.read_bytes(),
+        }
+    )
+    page.wait_for_function(
+        "document.getElementById('status').textContent.includes('导入')"
+    )

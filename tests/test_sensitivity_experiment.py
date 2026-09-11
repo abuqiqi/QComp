@@ -1,46 +1,46 @@
 """验证敏感性上层入口的资源组装、逐层计划与输出。
 
 本模块用小型 CPU 模型执行 native 压缩，mock 模型加载与 lm-eval 评测，检查筛选分段、
-运行配置、模型恢复及报告和 JSON Lines 输出，不依赖模型下载。
+运行配置、模型恢复及报告和标准 JSON 输出，不依赖模型下载。
 
 主要内容：
 - ``SensitivityExperimentTests``：验证高层实验与底层分析的连接。
 """
 
 import json
+import unittest
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
-import unittest
 from unittest.mock import patch
 
 import torch
 from torch import nn
 
+import qcomp.workflows.sensitivity as workflow
 from qcomp import (
+    CompressionExecutionConfig,
     CompressionTarget,
-    MPOSpec,
     ModelLoadConfig,
+    MPOSpec,
     SensitivityExperimentConfig,
     run_sensitivity_experiment,
 )
-from qcomp import CompressionExecutionConfig
 from qcomp.evaluation import (
-    EvaluationTaskConfig,
     EvaluationResult,
     EvaluationTask,
+    EvaluationTaskConfig,
     LMEvalConfig,
 )
-import qcomp.workflows.sensitivity as workflow
 
 
 class SensitivityExperimentTests(unittest.TestCase):
     """检查上层接口的公共行为。"""
 
     def test_run_selects_slices_restores_and_records(self) -> None:
-        """先筛选再分段，执行真实压缩并恢复；日志保留配置且区分两次运行。"""
+        """先筛选再分段，执行真实压缩并恢复；结果保留配置且区分两次运行。"""
 
         model = nn.Sequential(
             nn.Linear(2, 2, bias=False),
@@ -127,8 +127,8 @@ class SensitivityExperimentTests(unittest.TestCase):
                 ),
             ):
                 clock.now.side_effect = [
-                    datetime(2026, 9, 5, 12, 0, 0, tzinfo=timezone.utc),
-                    datetime(2026, 9, 5, 12, 0, 1, tzinfo=timezone.utc),
+                    datetime(2026, 9, 5, 12, 0, 0, tzinfo=UTC),
+                    datetime(2026, 9, 5, 12, 0, 1, tzinfo=UTC),
                 ]
                 result = run_sensitivity_experiment(
                     config,
@@ -168,35 +168,33 @@ class SensitivityExperimentTests(unittest.TestCase):
                 self.assertRegex(run_dir.name, r"^\d{8}T\d{6}$")
                 report = run_dir / "layers-001-001.md"
                 self.assertIn("Sensitivity Report", report.read_text())
-                run_records = [
-                    json.loads(line)
-                    for line in report.with_suffix(".jsonl").read_text().splitlines()
-                ]
-                self.assertEqual(len(run_records), 3)
-                self.assertEqual(run_records[0]["fields"]["start_layer_index"], 1)
-                self.assertNotIn("start_index", run_records[0]["fields"])
-                records.extend(run_records)
-            self.assertEqual(
-                [r["event"] for r in records],
-                ["experiment_started", "case_completed", "experiment_completed"] * 2,
-            )
-            self.assertNotEqual(
-                records[0]["fields"]["run_id"], records[3]["fields"]["run_id"]
-            )
-            for offset in (0, 3):
-                self.assertEqual(
-                    len({r["fields"]["run_id"] for r in records[offset : offset + 3]}),
-                    1,
+                document = json.loads(
+                    (run_dir / "sensitivity_results.json").read_text()
                 )
-            fields = records[0]["fields"]
-            for key, value in {
-                "seed": 17,
-                "num_fewshot": 2,
-                "decomposition_provider": "native",
-                "model_dtype": "torch.float32",
-                "model_name_or_path": "/models/default",
-            }.items():
-                self.assertEqual(fields[key], value)
+                self.assertEqual(document["status"], "completed")
+                self.assertEqual(document["expected_cases"], ["2"])
+                self.assertEqual(document["provenance"]["start_layer_index"], 1)
+                self.assertEqual(
+                    document["cases"][0]["compression_plan"]["targets"][0]["spec"][
+                        "ranks"
+                    ],
+                    [1, 1],
+                )
+                self.assertEqual(document["model"]["dense_parameters"], 12)
+                self.assertFalse(list(run_dir.glob("*.jsonl")))
+                records.append(document)
+            self.assertNotEqual(records[0]["run_id"], records[1]["run_id"])
+            self.assertEqual(
+                records[0]["evaluation_config"]["evaluation"]["evaluation_seed"], 17
+            )
+            self.assertEqual(
+                records[0]["evaluation_config"]["evaluation"]["num_fewshot"], 2
+            )
+            self.assertEqual(
+                records[0]["execution"]["decomposition_provider"], "native"
+            )
+            self.assertEqual(records[0]["execution"]["model_dtype"], "torch.float32")
+            self.assertEqual(records[0]["model"]["name_or_path"], "/models/default")
 
     def test_invalid_config_and_empty_selection(self) -> None:
         """非法范围在加载前失败，空选择不进入分析。"""
