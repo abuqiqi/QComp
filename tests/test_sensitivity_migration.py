@@ -12,8 +12,14 @@ import unittest
 from pathlib import Path
 
 from qcomp.workflows.sensitivity_io import read_sensitivity_results
-from scripts.legacy_sensitivity import MODULES, digest, read_source
-from scripts.migrate_sensitivity_results import convert_source, migrate
+from scripts.migrate_sensitivity_results import (
+    convert_source,
+    digest,
+    migrate,
+    read_source,
+)
+
+MODULES = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj")
 
 
 def make_legacy_sources(root: Path) -> dict:
