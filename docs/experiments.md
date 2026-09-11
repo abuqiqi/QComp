@@ -107,7 +107,7 @@ python scripts/build_layer_selection_dashboard.py --config config/layer_selectio
 
 ### 统一 JSON 与计划加载
 
-页面只下载一个 `layer-selection.json`，与未来自动选层共用结构，不保存格式或算法版本号：
+页面下载的 JSON 文件名包含模型、压缩格式、最大秩、选层数和时间戳（如 `qwen3-8b-mpo-rank96-32layers-20260911T143923.json`），与未来自动选层共用结构，不保存格式或算法版本号：
 
 - `kind` 为 `qcomp_compression_selection`，`created_at` 和 `producer` 记录生成时间和入口。
 - `model` 保存 `name_or_path`、`model_type`、`config_sha256`；配置哈希不代表权重指纹。

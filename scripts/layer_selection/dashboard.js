@@ -341,6 +341,18 @@ window.LayerSelection = LayerSelection;
     if (running || !current?.ready || !current.candidates.length) throw Error("当前没有可导出的有效候选。");
     return LayerSelection.buildSnapshot(data, state, current.rows, current.result);
   }
+  // 根据模型、压缩格式、秩、选层数和时间戳生成导出文件名，避免重复保存时覆盖。
+  function exportName(extension) {
+    const model = data.model.name_or_path.split("/").pop().toLowerCase().replace(/[^a-z0-9.-]/g, "-").replace(/-+/g, "-").replace(/(^-|-$)/g, "");
+    const repr = data.modules[0]?.target.representation ?? "unknown";
+    const ranks = [...new Set(data.modules.map(m => Math.max(...m.target.spec.ranks)))];
+    const rankPart = ranks.length === 1 ? `-rank${ranks[0]}` : "";
+    const count = state.requested_module_count;
+    const now = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    const ts = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}T${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    return `${model}-${repr}${rankPart}-${count}layers-${ts}.${extension}`;
+  }
   // 用浏览器下载保存文件，不依赖服务或网络。
   function download(name, content, mime) {
     const url = URL.createObjectURL(new Blob([content], {type: mime}));
@@ -356,7 +368,7 @@ window.LayerSelection = LayerSelection;
       const stat = current.result?.stats[r.index];
       return [r.eligible ? index + 1 : "", r.name, selected.has(r.name), r.eligible, r.score, r.maxDrop, r.saving, stat?.frequency ?? "", stat?.medianRank ?? "", stat?.p95Rank ?? "", stat?.worst ?? "", ...data.datasets.flatMap((d, i) => [d.baseline[state.datasets[i].metric], d.values[state.datasets[i].metric][r.index], r.drops[i]])];
     });
-    download("layer-ranking.csv", "\ufeff" + [fields, ...rows].map(row => row.map(v => '"' + String(v).replaceAll('"', '""') + '"').join(",")).join("\r\n"), "text/csv;charset=utf-8");
+    download(exportName("csv"), "\ufeff" + [fields, ...rows].map(row => row.map(v => '"' + String(v).replaceAll('"', '""') + '"').join(",")).join("\r\n"), "text/csv;charset=utf-8");
   }
   // 比较完整快照，模块集合直接从执行计划派生。
   function renderComparison() {
@@ -431,7 +443,7 @@ window.LayerSelection = LayerSelection;
     $(id).addEventListener("keydown", event => {if (["Enter", " "].includes(event.key) && event.target.matches("[data-module]")) {event.preventDefault(); focusModule(Number(event.target.dataset.module), id === "heatmap");}});
   });
   ["A", "B"].forEach(key => {$("save-" + key.toLowerCase()).onclick = () => {snapshots[key] = snapshot(); renderComparison();};});
-  $("export-json").onclick = () => download("layer-selection.json", JSON.stringify(snapshot(), null, 2), "application/json");
+  $("export-json").onclick = () => download(exportName("json"), JSON.stringify(snapshot(), null, 2), "application/json");
   $("export-csv").onclick = exportCSV;
   $("import-json").onclick = () => $("import-file").click();
   $("import-file").onchange = async event => {
