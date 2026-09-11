@@ -28,6 +28,8 @@ class SensitivityScriptTests(unittest.TestCase):
 
         defaults = experiment.parse_args([])
         self.assertEqual(defaults.task, "mmlu")
+        self.assertEqual(defaults.rank, 96)
+        self.assertFalse(defaults.module_ranks)
         self.assertEqual(defaults.metric, ["acc"])
         self.assertIsNone(defaults.num_fewshot)
         gsm8k = experiment.parse_args(
@@ -44,6 +46,42 @@ class SensitivityScriptTests(unittest.TestCase):
         self.assertTrue(gsm8k.apply_chat_template)
         with self.assertRaises(SystemExit):
             experiment.parse_args(["--task", "gsm8k"])
+
+    def test_rank_strategies(self) -> None:
+        """验证分模块、统一和满秩策略及互斥参数。"""
+        for argv, suffix, rank in [
+            ([], "rank-96", 96),
+            (["--module-ranks"], "module-ranks", 64),
+            (["--rank", "32"], "rank-32", 32),
+            (["--full-rank"], "full-rank", 256),
+        ]:
+            with (
+                self.subTest(argv=argv),
+                patch.object(experiment, "run_sensitivity_experiment") as run,
+                patch.object(experiment, "plot_heatmaps"),
+                patch.object(experiment, "capture_console", return_value=nullcontext()),
+            ):
+                experiment.main(argv)
+                self.assertTrue(run.call_args.args[0].name.endswith(suffix))
+                target = run.call_args.kwargs["make_target"](
+                    "model.layers.0.self_attn.k_proj",
+                    nn.Linear(2048, 1024, device="meta"),
+                )
+                self.assertEqual(target.spec.ranks, (1, rank, rank, 1))
+                self.assertEqual(target.spec.in_modes, (16, 8, 16))
+        for argv in [
+            ["--rank", "32", "--full-rank"],
+            ["--rank", "32", "--module-ranks"],
+            ["--module-ranks", "--full-rank"],
+        ]:
+            with self.subTest(argv=argv), self.assertRaises(SystemExit):
+                experiment.parse_args(argv)
+        with self.assertRaises(ValueError):
+            experiment.make_qwen3_mpo_spec(nn.Linear(2048, 6144, device="meta"), 257)
+        spec = experiment.make_qwen3_mpo_spec(
+            nn.Linear(4096, 12288, device="meta"), None
+        )
+        self.assertEqual(spec.ranks, (1, 256, 768, 1))
 
     def test_layer_range_names_reject_legacy_cli(self) -> None:
         """明确区分 Linear 起点与题目起点，并拒绝旧参数和缩写。"""
@@ -140,7 +178,7 @@ class SensitivityScriptTests(unittest.TestCase):
         self.assertEqual(target.module_path, "block")
         self.assertEqual(target.representation, "mpo")
         self.assertEqual(target.spec.in_modes, (16, 16, 16))
-        self.assertEqual(target.spec.out_modes, (8, 8, 16))
+        self.assertEqual(target.spec.out_modes, (16, 4, 16))
         self.assertEqual(target.spec.ranks, (1, 3, 3, 1))
 
     def test_default_paths_are_shared_before_model_loading(self) -> None:

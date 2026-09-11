@@ -19,7 +19,12 @@
       --plot-only artifacts/sensitivity/<实验>/<时间戳>/sensitivity_results.json
 
 第一条命令用于快速验证，第二条运行完整 BoolQ 实验，第三条从标准结果 JSON 重新绘图。
-默认 task 为 MMLU、MPO rank 为 96；非 MMLU task 需要显式指定 ``--metric``。
+默认 task 为 MMLU，所有模块统一使用 rank 96。
+分模块：``python scripts/run_qwen3_sensitivity.py --module-ranks``，
+使用 q/o=96、k/v=64、gate/up/down=160。
+统一 rank：``python scripts/run_qwen3_sensitivity.py --rank 96``。
+满秩：``python scripts/run_qwen3_sensitivity.py --full-rank``。
+非 MMLU task 需要显式指定 ``--metric``。
 ``--results`` 可指定标准结果 JSON，``--output`` 可指定 Markdown 报告；完整参数见
 ``python scripts/run_qwen3_sensitivity.py --help``。
 """
@@ -40,9 +45,9 @@ import torch
 from torch import nn
 
 if __package__:
-    from .qwen3_mpo_config import qwen3_mpo_spec_dict
+    from .qwen3_mpo_config import MODULE_RANKS, qwen3_modes, qwen3_mpo_spec_dict
 else:
-    from qwen3_mpo_config import qwen3_mpo_spec_dict
+    from qwen3_mpo_config import MODULE_RANKS, qwen3_modes, qwen3_mpo_spec_dict
 
 from qcomp import (
     CompressionExecutionConfig,
@@ -80,17 +85,22 @@ def is_target_linear(path: str, linear: nn.Linear) -> bool:
     return path != "lm_head"
 
 
-def make_qwen3_mpo_spec(linear: nn.Linear, rank: int) -> MPOSpec:
+def make_qwen3_mpo_spec(linear: nn.Linear, rank: int | None) -> MPOSpec:
     """为一个 Qwen3 Linear 创建三核 MPO spec。
 
     参数：
         linear: 待压缩的 Qwen3 Linear。
-        rank: 两条内部 MPO bonds 使用的统一 rank。
+        rank: 两条内部 MPO bonds 使用的统一 rank；None 使用满秩。
 
     返回：
         与 Linear 输入输出维度匹配的 MPO spec。
     """
 
+    if rank is None:
+        return MPOSpec.full_rank(
+            out_modes=qwen3_modes(linear.out_features),
+            in_modes=qwen3_modes(linear.in_features),
+        )
     return MPOSpec(**qwen3_mpo_spec_dict(linear.out_features, linear.in_features, rank))
 
 
@@ -120,7 +130,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
-        allow_abbrev=False, description="逐层运行 Qwen3-8B MPO 的 lm-eval 敏感性分析。"
+        allow_abbrev=False, description="逐层运行 Qwen3 MPO 的 lm-eval 敏感性分析。"
     )
     parser.add_argument(
         "--runtime-config",
@@ -134,7 +144,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--model-dtype", choices=("bfloat16", "float32"), default="bfloat16"
     )
-    parser.add_argument("--rank", type=int, default=96)
+    ranks = parser.add_mutually_exclusive_group()
+    ranks.add_argument("--rank", type=int, help="统一内部 rank；默认 96。")
+    ranks.add_argument(
+        "--module-ranks", action="store_true", help="使用共享配置中的分模块 rank。"
+    )
+    ranks.add_argument(
+        "--full-rank", action="store_true", help="使用 MPO 满秩，不截断内部键维。"
+    )
     parser.add_argument("--decomposition-provider", default="tensorly")
     parser.add_argument("--execution-provider", default="tensorly")
     parser.add_argument(
@@ -192,6 +209,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="热力图色标上限；准确率类指标单位为百分点，默认 10。",
     )
     args = parser.parse_args(argv)
+    if args.rank is None and not args.module_ranks and not args.full_rank:
+        args.rank = 96
     if not math.isfinite(args.heatmap_max) or args.heatmap_max <= 0:
         parser.error("--heatmap-max must be finite and positive")
     args.task = args.task.strip()
@@ -215,10 +234,15 @@ def main(argv: Sequence[str] | None = None) -> None:
     if args.plot_only is not None:
         plot_results(args.plot_only, args.heatmap_max)
         return
-    if args.rank <= 0:
+    if args.rank is not None and args.rank <= 0:
         raise ValueError("rank must be positive")
+    rank_strategy = (
+        "full-rank"
+        if args.full_rank
+        else f"rank-{args.rank}" if args.rank is not None else "module-ranks"
+    )
     config = SensitivityExperimentConfig(
-        name=f"qwen3-{args.task}-mpo-rank-{args.rank}",
+        name=f"qwen3-{args.task}-mpo-{rank_strategy}",
         model=ModelLoadConfig(
             model_name_or_path=args.model,
             device=args.device,
@@ -255,10 +279,13 @@ def main(argv: Sequence[str] | None = None) -> None:
     def make_target(path: str, linear: nn.Linear) -> CompressionTarget:
         """将路径 path 与层 linear 转换为本次 rank 对应的 MPO 压缩目标。"""
 
+        rank = args.rank
+        if args.module_ranks:
+            rank = MODULE_RANKS[path.rsplit(".", 1)[-1]]
         return CompressionTarget(
             module_path=path,
             representation="mpo",
-            spec=make_qwen3_mpo_spec(linear, args.rank),
+            spec=make_qwen3_mpo_spec(linear, rank),
         )
 
     if config.output is None:
