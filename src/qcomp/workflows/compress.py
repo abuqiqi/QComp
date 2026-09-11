@@ -6,6 +6,7 @@
 它复用 model 层的结构操作，不实现张量分解、张量收缩或评测逻辑。
 
 主要内容：
+- ``CompressionExecutionConfig``：配置并构造实验使用的后端。
 - ``CompressionTarget``：保存一个目标层的模块路径、表示名称和结构配置。
 - ``CompressionPlan``：保存可以采用不同表示的有序压缩目标。
 - ``LinearCompressionResult``：保存压缩 artifact 和可用于恢复模型的替换记录。
@@ -24,7 +25,7 @@ from typing import Any, Generic, TypeVar
 import torch
 from torch import nn
 
-from ..backends import TensorNetworkBackend
+from ..backends import TensorNetworkBackend, get_backend
 from ..model import LinearReplacement, find_linear, replace_linear, restore_linear
 from ..representations import TensorNetworkArtifact
 
@@ -72,6 +73,48 @@ class CompressionPlan:
         paths = tuple(target.module_path for target in self.targets)
         if len(set(paths)) != len(paths):
             raise ValueError("target module paths must be unique")
+
+
+@dataclass(frozen=True)
+class CompressionExecutionConfig:
+    """配置分解与执行后端及分解精度，不改变计划或随机状态。"""
+
+    decomposition_provider: str = "tensorly"
+    execution_provider: str = "tensorly"
+    decomposition_dtype: torch.dtype = torch.float32
+
+    def __post_init__(self) -> None:
+        """校验提供方名称和浮点分解精度，无效时抛出 ValueError。"""
+        for provider in (self.decomposition_provider, self.execution_provider):
+            if not isinstance(provider, str) or not provider.strip():
+                raise ValueError("backend provider must not be empty")
+        if (
+            not isinstance(self.decomposition_dtype, torch.dtype)
+            or not self.decomposition_dtype.is_floating_point
+        ):
+            raise ValueError("decomposition_dtype must be floating-point")
+
+    def build_backends(
+        self, plans: Mapping[str, CompressionPlan]
+    ) -> tuple[
+        dict[str, TensorNetworkBackend[Any]], dict[str, TensorNetworkBackend[Any]]
+    ]:
+        """按 plans 实际使用的表示构造分解和执行后端，未知或不匹配组合报错。"""
+        representations = dict.fromkeys(
+            target.representation for plan in plans.values() for target in plan.targets
+        )
+        mappings = []
+        for provider in (self.decomposition_provider, self.execution_provider):
+            backends = {}
+            for representation in representations:
+                backend = get_backend(provider, representation)
+                if backend.representation != representation:
+                    raise ValueError(
+                        f"backend representation mismatch: {representation}"
+                    )
+                backends[representation] = backend
+            mappings.append(backends)
+        return mappings[0], mappings[1]
 
 
 @dataclass(frozen=True)
@@ -192,9 +235,7 @@ def compress_model(
                     model,
                     target.module_path,
                     target.spec,
-                    decomposition_backend=decomposition_backends[
-                        target.representation
-                    ],
+                    decomposition_backend=decomposition_backends[target.representation],
                     execution_backend=execution_backends[target.representation],
                     trainable=trainable,
                     decomposition_dtype=decomposition_dtype,
