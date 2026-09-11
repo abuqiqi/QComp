@@ -10,6 +10,15 @@
       "evaluation_seed": 42
     },
     {
+      "task": "mmlu",
+      "metrics": [
+        "acc"
+      ],
+      "num_fewshot": null,
+      "limit": null,
+      "evaluation_seed": 42
+    },
+    {
       "task": "hellaswag",
       "metrics": [
         "acc",
@@ -27,6 +36,15 @@
       ],
       "num_fewshot": 5,
       "limit": 256,
+      "evaluation_seed": 42
+    },
+    {
+      "task": "triviaqa",
+      "metrics": [
+        "exact_match_remove_whitespace"
+      ],
+      "num_fewshot": 0,
+      "limit": 128,
       "evaluation_seed": 42
     }
   ]
