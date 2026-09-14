@@ -202,6 +202,21 @@ class SensitivityScriptTests(unittest.TestCase):
             run.assert_called_once()
             plot.assert_called_once()
 
+    def test_model_name_in_experiment_directory(self) -> None:
+        """带具体模型名时目录标识应区分 1.7B、8B 等变体。"""
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(experiment, "run_sensitivity_experiment") as run,
+            patch.object(experiment, "plot_heatmaps") as plot,
+            patch.object(experiment, "capture_console") as capture,
+        ):
+            experiment.main(["--artifact-root", directory, "--model", "Qwen/Qwen3-1.7B"])
+            config = run.call_args.args[0]
+            report = Path(config.output)
+            self.assertEqual(report.parent.parent.name, "qwen3-1.7b-mmlu-mpo-rank-96")
+            self.assertEqual(config.model.model_name_or_path, "Qwen/Qwen3-1.7B")
+            plot.assert_called_once()
+
     def test_heatmap_coordinates_units_and_missing_values(self) -> None:
         """乱序模块映射到真实块号，保留缺失格和带符号百分点。"""
         records = [

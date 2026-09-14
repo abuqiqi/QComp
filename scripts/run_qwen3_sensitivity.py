@@ -119,6 +119,31 @@ def parse_limit(value: str) -> int | float | None:
     return float(value) if "." in value else int(value)
 
 
+def _model_slug(model_name: str | None) -> str:
+    """从模型名称中提取目录安全的模型标识。
+
+    参数：
+        model_name: 可能为 Hugging Face 名称、本地路径或检查点目录。
+
+    返回：
+        用于实验名拼接的模型标记。
+    """
+
+    default = "qwen3"
+    if model_name is None:
+        return default
+    candidate = model_name.strip().rstrip("/")
+    if not candidate:
+        return default
+    candidate = candidate.rsplit("/", 1)[-1].lower()
+    match = re.search(r"qwen3-[0-9.]+b", candidate)
+    if match is not None:
+        return match[0]
+    if candidate.startswith("qwen3"):
+        return re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-._")
+    return default
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """解析模型、backend、lm-eval task、层范围和输出配置。
 
@@ -242,7 +267,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         else f"rank-{args.rank}" if args.rank is not None else "module-ranks"
     )
     config = SensitivityExperimentConfig(
-        name=f"qwen3-{args.task}-mpo-{rank_strategy}",
+        name=f"{_model_slug(args.model)}-{args.task}-mpo-{rank_strategy}",
         model=ModelLoadConfig(
             model_name_or_path=args.model,
             device=args.device,
