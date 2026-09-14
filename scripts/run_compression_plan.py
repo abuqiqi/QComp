@@ -1,8 +1,8 @@
 """根据选层 JSON 联合压缩模型，评测前后得分并保存逐矩阵 artifact。
 
-输入完整选层文件，复用 qcomp 的模型加载、计划校验、压缩、lm-eval 和存储接口；
-默认评测 JSON 中勾选的任务，使用同一 evaluator 重测原模型和联合压缩模型。
-输出输入快照、执行配置、artifact 清单、事件日志、summary.json 与 report.md；不微调。
+输入一个或多个完整选层文件，复用 qcomp 的模型加载、计划校验、压缩、lm-eval 和存储
+接口；默认只评测联合压缩模型，可复用已有 baseline 或显式要求现场评测。输出输入快照、
+执行配置、artifact 清单、事件日志、summary.json 与 report.md；不微调。
 
 主要内容：
 - ``parse_args``、``evaluation_configs``：解析执行参数并还原来源中的评测设置。
@@ -15,11 +15,13 @@
     python scripts/run_compression_plan.py \
       --selection-json path/to/layer-selection.json --dry-run
     python scripts/run_compression_plan.py \
-      --selection-json path/to/layer-selection.json \
-      --eval-config config/compression_evaluation.json
+      --selection-json plan-a.json plan-b.json \
+      --eval-config config/compression_evaluation.json \
+      --baseline-events path/to/baseline/events.jsonl
 
-``--dry-run`` 只检查文件与配置，不加载模型或创建产物目录；``--skip-eval`` 只压缩并
-保存；``--eval-limit`` 仅用于临时覆盖各任务评测上限。完整参数见
+``--dry-run`` 只检查文件与配置，不加载模型或创建产物目录；``--evaluate-baseline``
+现场评测原模型；``--baseline-events`` 复用已有 baseline；``--skip-eval`` 只压缩并保存。
+完整参数见
 ``python scripts/run_compression_plan.py --help``。
 """
 
@@ -28,6 +30,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, replace
@@ -51,6 +54,8 @@ from qcomp import (
     save_artifact,
 )
 from qcomp.evaluation import (
+    EvaluationResult,
+    EvaluationTask,
     EvaluationTaskConfig,
     LMEvalConfig,
     LMEvalEvaluator,
@@ -68,7 +73,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="按选层 JSON 联合压缩、评测并保存，不微调。", allow_abbrev=False
     )
-    parser.add_argument("--selection-json", type=Path, required=True)
+    parser.add_argument("--selection-json", type=Path, nargs="+", required=True)
     parser.add_argument(
         "--model", help="覆盖 JSON 模型来源；未提供时使用 JSON，再使用 runtime 配置"
     )
@@ -104,6 +109,17 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--eval-config", type=Path, help="独立的多任务评测 JSON，替代选层来源设置"
     )
+    baselines = parser.add_mutually_exclusive_group()
+    baselines.add_argument(
+        "--evaluate-baseline",
+        action="store_true",
+        help="现场评测原始模型；默认只评测压缩模型",
+    )
+    baselines.add_argument(
+        "--baseline-events",
+        type=Path,
+        help="复用另一次实验 events.jsonl 中的完整 baseline",
+    )
     parser.add_argument("--no-plot", action="store_true", help="不生成得分图")
     parser.add_argument("--skip-eval", action="store_true")
     parser.add_argument(
@@ -118,8 +134,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         args.eval_limit is not None
         or args.eval_batch_size is not None
         or args.eval_config is not None
+        or args.evaluate_baseline
+        or args.baseline_events is not None
     ):
-        parser.error("--skip-eval 不能与 --eval-config 或评测覆盖参数同时使用")
+        parser.error(
+            "--skip-eval 不能与 --eval-config、baseline 或评测覆盖参数同时使用"
+        )
     return args
 
 
@@ -268,6 +288,123 @@ def apply_evaluation_overrides(
     }
 
 
+def baseline_from_events(
+    path: Path,
+    configs: Mapping[str, EvaluationTaskConfig],
+    model_name: str,
+) -> dict[str, TimedEvaluation]:
+    """读取并验证另一实验已落盘的 baseline，转换为工作流通用结果。
+
+    参数：
+        path: ``events.jsonl`` 路径。
+        configs: 本次实际使用的评测配置。
+        model_name: 本次模型来源，必须与 baseline 实验完全一致。
+
+    返回：
+        按本次任务键索引的完整 baseline。
+
+    异常：
+        ValueError: 来源模型、配置、任务、指标或样本统计不一致。
+    """
+    records = []
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"baseline 事件第 {line_number} 行不是有效 JSON") from error
+        if not isinstance(record, dict):
+            raise ValueError(f"baseline 事件第 {line_number} 行必须是对象")
+        records.append(record)
+    starts = [record for record in records if record.get("event") == "experiment_started"]
+    if len(starts) != 1 or not isinstance(starts[0].get("fields"), dict):
+        raise ValueError("baseline 事件必须包含唯一 experiment_started")
+    source = starts[0]["fields"]
+    expected_evaluations = {
+        task: asdict(config.evaluation) for task, config in configs.items()
+    }
+    expected_metrics = {
+        task: dict(config.metric_directions) for task, config in configs.items()
+    }
+    if source.get("model") != model_name:
+        raise ValueError("baseline 模型与本次模型不一致")
+    if source.get("evaluation_configs") != expected_evaluations:
+        raise ValueError("baseline 评测配置与本次配置不一致")
+    if source.get("selected_metrics") != expected_metrics:
+        raise ValueError("baseline 指标配置与本次配置不一致")
+
+    baseline: dict[str, TimedEvaluation] = {}
+    for record in records:
+        fields = record.get("fields")
+        if (
+            record.get("event") != "evaluation_completed"
+            or not isinstance(fields, dict)
+            or fields.get("stage") != "baseline"
+        ):
+            continue
+        task = fields.get("task")
+        if task not in configs:
+            continue
+        if task in baseline:
+            raise ValueError(f"baseline 任务重复：{task}")
+        metrics = fields.get("metrics")
+        count = fields.get("evaluated_examples")
+        total = fields.get("total_examples")
+        seconds = fields.get("seconds")
+        if (
+            not isinstance(metrics, dict)
+            or any(
+                not isinstance(value, (int, float))
+                or isinstance(value, bool)
+                or not math.isfinite(float(value))
+                for value in metrics.values()
+            )
+            or any(metric not in metrics for metric in configs[task].metric_directions)
+        ):
+            raise ValueError(f"baseline {task} 缺少有限数值指标")
+        if type(count) is not int or count <= 0:
+            raise ValueError(f"baseline {task} 的评测题数无效")
+        if total is not None and (type(total) is not int or total < count):
+            raise ValueError(f"baseline {task} 的总题数无效")
+        if (
+            not isinstance(seconds, (int, float))
+            or isinstance(seconds, bool)
+            or not math.isfinite(float(seconds))
+            or seconds < 0
+        ):
+            raise ValueError(f"baseline {task} 的耗时无效")
+        evaluation = configs[task].evaluation
+        fewshot = (
+            "default"
+            if evaluation.num_fewshot is None
+            else str(evaluation.num_fewshot)
+        )
+        preprocessing = f"lm-eval-{fewshot}-shot"
+        if evaluation.sample_start_index:
+            start = evaluation.sample_start_index
+            preprocessing += f"-samples-{start}:{start + count}"
+        baseline[task] = TimedEvaluation(
+            EvaluationResult(
+                task=EvaluationTask(
+                    name=evaluation.task,
+                    dataset=evaluation.task,
+                    split="lm-eval",
+                    preprocessing=preprocessing,
+                    requested_metrics=tuple(metrics),
+                ),
+                metrics={name: float(value) for name, value in metrics.items()},
+                evaluated_examples=count,
+                total_examples=total,
+            ),
+            float(seconds),
+        )
+    missing = set(configs) - set(baseline)
+    if missing:
+        raise ValueError(f"baseline 缺少任务：{', '.join(sorted(missing))}")
+    return baseline
+
+
 def plotting_module() -> Any:
     """在模型加载前检查可选 Matplotlib 依赖，使用不需要显示器的 Agg 后端。"""
     import matplotlib
@@ -336,6 +473,16 @@ def write_report(path: Path, summary: Mapping[str, Any]) -> None:
     ]
     if summary["evaluation_status"] == "skipped":
         lines.append("本次跳过评测，联合压缩得分尚未评测。")
+    elif summary["baseline_status"] == "skipped":
+        lines += [
+            "| 任务 | 指标 | 题数 | 联合压缩 |",
+            "|---|---|---:|---:|",
+        ]
+        for task, values in summary["evaluations"]["compressed"].items():
+            for metric, value in values["metrics"].items():
+                lines.append(
+                    f"| {task} | {metric} | {values['evaluated_examples']} | {value:.6f} |"
+                )
     else:
         lines += [
             "| 任务 | 指标 | 题数 | 原模型 | 联合压缩 | 退化（指标原单位，正值为变差） |",
@@ -346,45 +493,81 @@ def write_report(path: Path, summary: Mapping[str, Any]) -> None:
                 lines.append(
                     f"| {task} | {metric} | {value['evaluated_examples']} | {value['baseline']:.6f} | {value['compressed']:.6f} | {value['degradation']:.6f} |"
                 )
+    baseline_note = {
+        "evaluated": "本次现场评测 baseline。",
+        "reused": "本次复用已验证的 baseline 事件。",
+        "skipped": "本次未评测或载入 baseline。",
+    }[summary["baseline_status"]]
     lines += [
         "",
         "参数节省不代表推理加速。本次未微调；artifact 需与原始模型和执行后端配合使用。",
-        "评测配置见 experiment_config.json；本次 baseline 重新评测，不直接使用单矩阵分析的历史分数。",
+        f"评测配置见 experiment_config.json；{baseline_note}",
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def main(argv: Sequence[str] | None = None) -> None:
-    """编排 JSON 驱动的压缩实验；dry-run 不加载模型，输出目录禁止覆盖。"""
+    """编排一个或多个 JSON 压缩方案；默认只评测压缩模型。"""
     args = parse_args(argv)
-    source_bytes = args.selection_json.read_bytes()
-    document = json.loads(source_bytes)
-    if (
-        not isinstance(document, dict)
-        or document.get("kind") != "qcomp_compression_selection"
-    ):
-        raise ValueError("请使用最新版选层页面导出的 JSON")
-    # 昂贵模型加载前检查执行结构；加载后公共入口再检查实际目标维度。
-    parsed = compression_plan_from_dict(document["compression_plan"])
-    configs = evaluation_configs(document, args)
+    inputs = []
+    for source_path in args.selection_json:
+        source_bytes = source_path.read_bytes()
+        document = json.loads(source_bytes)
+        if (
+            not isinstance(document, dict)
+            or document.get("kind") != "qcomp_compression_selection"
+        ):
+            raise ValueError(f"请使用最新版选层页面导出的 JSON：{source_path}")
+        parsed = compression_plan_from_dict(document["compression_plan"])
+        inputs.append((source_path, source_bytes, document, parsed))
+
+    configs = evaluation_configs(inputs[0][2], args)
+    for source_path, _, document, _ in inputs[1:]:
+        if evaluation_configs(document, args) != configs:
+            raise ValueError(f"多个方案的评测配置不一致：{source_path}")
     compression_config = CompressionExecutionConfig(
         decomposition_provider=args.decomposition_provider,
         execution_provider=args.execution_provider,
         decomposition_dtype=DTYPES[args.decomposition_dtype],
     )
     runtime = load_runtime_config(args.runtime_config)
-    model_name = (
-        args.model
-        or document.get("model", {}).get("name_or_path")
-        or runtime.model_name_or_path
-    )
+    if args.model:
+        model_name = args.model
+    else:
+        model_names = {
+            document.get("model", {}).get("name_or_path") or runtime.model_name_or_path
+            for _, _, document, _ in inputs
+        }
+        if len(model_names) != 1:
+            raise ValueError("多个方案的模型来源不一致；请使用 --model 明确覆盖")
+        model_name = model_names.pop()
     model_config = ModelLoadConfig(
         model_name_or_path=model_name,
         device=args.device,
         dtype=DTYPES[args.model_dtype],
         trust_remote_code=args.trust_remote_code,
     )
+    multiple = len(inputs) > 1
+    plan_names = [
+        source_path.stem if multiple else "selected"
+        for source_path, _, _, _ in inputs
+    ]
+    if len(set(plan_names)) != len(plan_names):
+        raise ValueError("多个选层 JSON 的文件名必须唯一")
+    baseline = (
+        baseline_from_events(args.baseline_events, configs, model_name)
+        if args.baseline_events is not None
+        else None
+    )
+    baseline_status = (
+        "evaluated"
+        if args.evaluate_baseline
+        else "reused"
+        if baseline is not None
+        else "skipped"
+    )
+
     output = args.output
     if output is None:
         slug = (
@@ -402,8 +585,11 @@ def main(argv: Sequence[str] | None = None) -> None:
         raise FileExistsError(f"产物目录必须不存在：{output}")
     experiment = {
         "model": model_name,
-        "selection_json": str(args.selection_json.resolve()),
-        "selection_sha256": hashlib.sha256(source_bytes).hexdigest(),
+        "selection_jsons": [str(item[0].resolve()) for item in inputs],
+        "selection_sha256s": {
+            name: hashlib.sha256(item[1]).hexdigest()
+            for name, item in zip(plan_names, inputs, strict=True)
+        },
         "output": str(output),
         "device": args.device,
         "model_dtype": args.model_dtype,
@@ -414,13 +600,25 @@ def main(argv: Sequence[str] | None = None) -> None:
         "decomposition_seed": args.decomposition_seed,
         "offline": runtime.offline,
         "runtime_config": args.runtime_config,
-        "target_count": len(parsed.targets),
+        "target_counts": {
+            name: len(item[3].targets)
+            for name, item in zip(plan_names, inputs, strict=True)
+        },
         "evaluation_configs": {
             task: asdict(config.evaluation) for task, config in configs.items()
         },
         "selected_metrics": {
             task: dict(config.metric_directions) for task, config in configs.items()
         },
+        "evaluate_baseline": args.evaluate_baseline,
+        "baseline_events": (
+            str(args.baseline_events.resolve()) if args.baseline_events else None
+        ),
+        "baseline_events_sha256": (
+            hashlib.sha256(args.baseline_events.read_bytes()).hexdigest()
+            if args.baseline_events
+            else None
+        ),
         "skip_eval": args.skip_eval,
         "eval_config": str(args.eval_config.resolve()) if args.eval_config else None,
         "no_plot": args.no_plot,
@@ -431,13 +629,26 @@ def main(argv: Sequence[str] | None = None) -> None:
         return
     if not args.skip_eval and not args.no_plot:
         plotting_module()
+
     output.mkdir(parents=True, exist_ok=False)
-    (output / "selection.json").write_bytes(source_bytes)
+    plan_directories = {
+        name: output / "plans" / f"{index:02d}-{name}" if multiple else output
+        for index, name in enumerate(plan_names)
+    }
+    snapshot_paths = {}
+    for name, item in zip(plan_names, inputs, strict=True):
+        directory = plan_directories[name]
+        directory.mkdir(parents=True, exist_ok=True)
+        snapshot = directory / "selection.json"
+        snapshot.write_bytes(item[1])
+        snapshot_paths[name] = snapshot
     write_json(output / "experiment_config.json", experiment)
     log_path = output / "events.jsonl"
     with capture_console(output / "console.log"):
         log_event(log_path, "experiment_started", **experiment)
-        artifacts = []
+        artifacts_by_plan: dict[str, list[dict[str, str]]] = {
+            name: [] for name in plan_names
+        }
         phase = "loading"
         try:
             torch.manual_seed(args.decomposition_seed)
@@ -446,8 +657,10 @@ def main(argv: Sequence[str] | None = None) -> None:
                 model_config, runtime_config_path=args.runtime_config
             )
             model = resources.model
-            plan = load_compression_plan(output / "selection.json", model=model)
-            plans = {"selected": plan}
+            plans = {
+                name: load_compression_plan(snapshot_paths[name], model=model)
+                for name in plan_names
+            }
             decomposition, execution = compression_config.build_backends(plans)
             evaluators = {
                 task: LMEvalEvaluator(
@@ -461,38 +674,41 @@ def main(argv: Sequence[str] | None = None) -> None:
             def on_evaluation(
                 plan_name: str | None, task: str, timed: TimedEvaluation
             ) -> None:
-                """逐任务追加日志；耗时、指标和样本范围由工作流负责。"""
+                """逐任务追加日志，并在现场 baseline 后恢复分解随机种子。"""
                 stage = "baseline" if plan_name is None else "compressed"
                 record = asdict(timed.evaluation)
                 log_event(
                     log_path,
                     "evaluation_completed",
                     stage=stage,
+                    plan=plan_name,
                     task=task,
                     metrics=record["metrics"],
                     evaluated_examples=record["evaluated_examples"],
                     total_examples=record["total_examples"],
                     seconds=timed.seconds,
                 )
-                print(f"[{stage}] {task}: {record['metrics']}", flush=True)
+                label = task if plan_name is None else f"{plan_name}/{task}"
+                print(f"[{stage}] {label}: {record['metrics']}", flush=True)
                 if plan_name is None and task == next(reversed(configs)):
-                    # baseline 使用任务自己的种子，分解恢复独立的执行种子。
                     torch.manual_seed(args.decomposition_seed)
 
             def on_compressed(name, tensors, model_metrics, seconds) -> None:
-                """在任务评测前保存逐矩阵 artifact，不保留张量引用。"""
+                """按方案目录保存逐矩阵 artifact，并立即更新清单。"""
+                artifacts = artifacts_by_plan[name]
+                directory = plan_directories[name]
                 for index, (module_path, artifact) in enumerate(tensors.items()):
-                    relative = f"decompositions/{index:04d}.pt"
-                    save_artifact(output / relative, artifact)
+                    artifact_path = directory / "decompositions" / f"{index:04d}.pt"
+                    save_artifact(artifact_path, artifact)
                     artifacts.append(
                         {
                             "module_path": module_path,
                             "representation": artifact.representation,
-                            "path": relative,
+                            "path": str(artifact_path.relative_to(output)),
                         }
                     )
                 write_json(
-                    output / "artifacts.json",
+                    directory / "artifacts.json",
                     {
                         "model": model_name,
                         "execution_provider": args.execution_provider,
@@ -502,13 +718,15 @@ def main(argv: Sequence[str] | None = None) -> None:
                 log_event(
                     log_path,
                     "compression_completed",
+                    plan=name,
                     **asdict(model_metrics),
                     seconds=seconds,
                 )
 
             def on_plan_result(completed: CompressionPlanEvaluation) -> None:
-                """完整方案在恢复模型后记录完成事件。"""
+                """完整方案恢复后记录事件，并为下一方案重置分解随机种子。"""
                 log_event(log_path, "plan_completed", name=completed.name)
+                torch.manual_seed(args.decomposition_seed)
 
             phase = "evaluation"
             torch.manual_seed(args.decomposition_seed)
@@ -521,15 +739,17 @@ def main(argv: Sequence[str] | None = None) -> None:
                 },
                 decomposition_backends=decomposition,
                 execution_backends=execution,
+                baseline=baseline,
+                evaluate_baseline=args.evaluate_baseline,
                 decomposition_dtype=compression_config.decomposition_dtype,
                 on_evaluation=on_evaluation,
                 on_compressed=on_compressed,
                 on_plan_result=on_plan_result,
             )
-            completed = measured.plan_results[0]
-            cm = asdict(completed.model_compression)
-            evaluations = {
-                stage: {
+
+            def serialized(records: Mapping[str, TimedEvaluation]) -> dict[str, Any]:
+                """把任务评测映射转换为 JSON 可持久化结构。"""
+                return {
                     task: {
                         "metrics": dict(timed.evaluation.metrics),
                         "evaluated_examples": timed.evaluation.evaluated_examples,
@@ -538,44 +758,78 @@ def main(argv: Sequence[str] | None = None) -> None:
                     }
                     for task, timed in records.items()
                 }
-                for stage, records in (
-                    ("baseline", measured.baseline),
-                    ("compressed", completed.evaluations),
-                )
-            }
-            comparison = {
-                task: {
-                    metric: {
-                        "direction": direction,
-                        "baseline": measured.baseline[task].evaluation.metrics[metric],
-                        "compressed": completed.evaluations[task].evaluation.metrics[
-                            metric
-                        ],
-                        "degradation": completed.metric_degradations[task][metric],
-                        "evaluated_examples": measured.baseline[
-                            task
-                        ].evaluation.evaluated_examples,
+
+            baseline_records = serialized(measured.baseline)
+            plan_summaries = {}
+            for completed in measured.plan_results:
+                cm = asdict(completed.model_compression)
+                evaluations = {"compressed": serialized(completed.evaluations)}
+                if measured.baseline:
+                    evaluations = {"baseline": baseline_records, **evaluations}
+                comparison = {
+                    task: {
+                        metric: {
+                            "direction": direction,
+                            "baseline": measured.baseline[task].evaluation.metrics[metric],
+                            "compressed": completed.evaluations[task].evaluation.metrics[metric],
+                            "degradation": completed.metric_degradations[task][metric],
+                            "evaluated_examples": measured.baseline[task].evaluation.evaluated_examples,
+                        }
+                        for metric, direction in task_config.metric_directions.items()
                     }
-                    for metric, direction in task_config.metric_directions.items()
+                    for task, task_config in configs.items()
+                } if measured.baseline else {}
+                plan_summaries[completed.name] = {
+                    "model": model_name,
+                    "compression": cm,
+                    "compression_seconds": completed.compression_seconds,
+                    "parameter_saving_fraction": 1 - 1 / cm["compression_ratio"],
+                    "evaluation_status": "skipped" if args.skip_eval else "completed",
+                    "baseline_status": baseline_status,
+                    "baseline_events": experiment["baseline_events"],
+                    "evaluations": evaluations,
+                    "comparison": comparison,
+                    "artifacts": artifacts_by_plan[completed.name],
                 }
-                for task, task_config in configs.items()
-            }
-            summary = {
-                "model": model_name,
-                "compression": cm,
-                "compression_seconds": completed.compression_seconds,
-                "parameter_saving_fraction": 1 - 1 / cm["compression_ratio"],
-                "evaluation_status": "skipped" if args.skip_eval else "completed",
-                "evaluations": evaluations,
-                "comparison": comparison,
-                "artifacts": artifacts,
-            }
+
             phase = "output"
-            write_json(output / "summary.json", summary)
-            write_report(output / "report.md", summary)
-            if not args.skip_eval and not args.no_plot:
-                phase = "plotting"
-                plot_scores(output / "scores.png", summary)
+            if multiple:
+                index = {
+                    "model": model_name,
+                    "evaluation_status": "skipped" if args.skip_eval else "completed",
+                    "baseline_status": baseline_status,
+                    "baseline_events": experiment["baseline_events"],
+                    "baseline": baseline_records,
+                    "plans": {},
+                }
+                report_lines = ["# 多方案联合压缩评测", ""]
+                for name, summary in plan_summaries.items():
+                    directory = plan_directories[name]
+                    write_json(directory / "summary.json", summary)
+                    write_report(directory / "report.md", summary)
+                    if not args.skip_eval and not args.no_plot and summary["comparison"]:
+                        phase = "plotting"
+                        plot_scores(directory / "scores.png", summary)
+                        phase = "output"
+                    index["plans"][name] = {
+                        "summary": str((directory / "summary.json").relative_to(output)),
+                        "report": str((directory / "report.md").relative_to(output)),
+                    }
+                    report_lines.append(
+                        f"- `{name}`：[报告]({index['plans'][name]['report']})，"
+                        f"压缩比 {summary['compression']['compression_ratio']:.6f}"
+                    )
+                write_json(output / "summary.json", index)
+                (output / "report.md").write_text(
+                    "\n".join(report_lines) + "\n", encoding="utf-8"
+                )
+            else:
+                summary = plan_summaries[plan_names[0]]
+                write_json(output / "summary.json", summary)
+                write_report(output / "report.md", summary)
+                if not args.skip_eval and not args.no_plot and summary["comparison"]:
+                    phase = "plotting"
+                    plot_scores(output / "scores.png", summary)
             log_event(
                 log_path,
                 "experiment_completed",

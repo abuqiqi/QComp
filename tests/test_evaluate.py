@@ -302,6 +302,43 @@ def test_inputs_empty_evaluators_and_optional_metrics(setup, monkeypatch):
         )
 
 
+def test_skip_or_reuse_baseline(setup):
+    """关闭现场 baseline 时只评测压缩模型，已有 baseline 可继续计算退化量。"""
+    model, plans, kwargs = setup
+    calls = []
+
+    def evaluator(current):
+        """记录每次评测时的压缩层数量。"""
+        calls.append(len(list_tensor_network_linears(current)))
+        return evaluation(current)
+
+    compressed_only = evaluate_compression_plans(
+        model,
+        {"one": plans["one"]},
+        evaluators={"task": evaluator},
+        metric_directions={"task": {"acc": "higher"}},
+        evaluate_baseline=False,
+        **kwargs,
+    )
+    assert calls == [1]
+    assert not compressed_only.baseline
+    assert compressed_only.plan_results[0].metric_degradations == {}
+
+    baseline = workflow.TimedEvaluation(evaluation(model), 1.5)
+    reused = evaluate_compression_plans(
+        model,
+        {"one": plans["one"]},
+        evaluators={"task": evaluator},
+        metric_directions={"task": {"acc": "higher"}},
+        baseline={"task": baseline},
+        evaluate_baseline=False,
+        **kwargs,
+    )
+    assert calls == [1, 1]
+    assert reused.baseline["task"] is baseline
+    assert reused.plan_results[0].metric_degradations["task"]["acc"] == pytest.approx(0.1)
+
+
 def test_float32_decomposition_bfloat16_execution(setup, monkeypatch):
     """FP32 分解后执行精度仍为 BF16，输入输出与原权重保持。"""
     model, plans, kwargs = setup

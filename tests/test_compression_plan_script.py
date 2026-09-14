@@ -92,7 +92,13 @@ def experiment(tmp_path, monkeypatch):
             self.calls += 1
             outputs.append(current["first"](torch.ones(1, 4)).detach().clone())
             return EvaluationResult(
-                task=EvaluationTask("boolq", "synthetic", "test", "fixed", ("acc",)),
+                task=EvaluationTask(
+                    "boolq",
+                    "boolq",
+                    "lm-eval",
+                    "lm-eval-default-shot-samples-3:7",
+                    ("acc",),
+                ),
                 metrics={"acc": 0.75 if self.calls == 1 else 0.5},
                 evaluated_examples=4,
                 total_examples=10,
@@ -114,6 +120,7 @@ def experiment(tmp_path, monkeypatch):
         "native",
         "--execution-provider",
         "native",
+        "--evaluate-baseline",
     ]
     return SimpleNamespace(
         model=model,
@@ -190,11 +197,84 @@ def test_skip_evaluation_without_sources(experiment):
     e = experiment
     del e.document["selection"]
     e.path.write_text(json.dumps(e.document))
-    script.main(e.argv + ["--skip-eval"])
+    script.main(e.argv[:-1] + ["--skip-eval"])
     summary = json.loads((e.root / "summary.json").read_text())
     assert summary["evaluation_status"] == "skipped" and summary["comparison"] == {}
     assert not e.configs and not e.outputs
     assert "跳过评测" in (e.root / "report.md").read_text()
+
+
+def test_multiple_plans_reuse_baseline_without_original_evaluation(experiment):
+    """多个 JSON 共享已有 baseline，每个方案只调用一次压缩模型 evaluator。"""
+    e = experiment
+    second = e.path.parent / "second-plan.json"
+    second.write_bytes(e.path.read_bytes())
+    parsed = script.parse_args(e.argv)
+    configs = script.evaluation_configs(e.document, parsed)
+    baseline_path = e.path.parent / "baseline-events.jsonl"
+    records = [
+        {
+            "event": "experiment_started",
+            "fields": {
+                "model": "fixture-model",
+                "evaluation_configs": {
+                    task: script.asdict(config.evaluation)
+                    for task, config in configs.items()
+                },
+                "selected_metrics": {
+                    task: dict(config.metric_directions)
+                    for task, config in configs.items()
+                },
+            },
+        },
+        {
+            "event": "evaluation_completed",
+            "fields": {
+                "stage": "baseline",
+                "task": "boolq",
+                "metrics": {"acc": 0.75},
+                "evaluated_examples": 4,
+                "total_examples": 10,
+                "seconds": 1.0,
+            },
+        },
+    ]
+    baseline_path.write_text("\n".join(json.dumps(record) for record in records) + "\n")
+    argv = (
+        ["--selection-json", str(e.path), str(second)]
+        + e.argv[2:-1]
+        + ["--baseline-events", str(baseline_path)]
+    )
+    script.main(argv)
+
+    assert len(e.configs) == 1
+    assert len(e.outputs) == 2
+    summary = json.loads((e.root / "summary.json").read_text())
+    assert summary["baseline_status"] == "reused"
+    assert set(summary["plans"]) == {"selection", "second-plan"}
+    for index, name in enumerate(("selection", "second-plan")):
+        directory = e.root / "plans" / f"{index:02d}-{name}"
+        plan_summary = json.loads((directory / "summary.json").read_text())
+        assert plan_summary["baseline_status"] == "reused"
+        assert plan_summary["comparison"]["boolq"]["acc"]["baseline"] == 0.75
+        assert (directory / "artifacts.json").is_file()
+    stages = [
+        record["fields"]["stage"]
+        for record in map(json.loads, (e.root / "events.jsonl").read_text().splitlines())
+        if record["event"] == "evaluation_completed"
+    ]
+    assert stages == ["compressed", "compressed"]
+
+
+def test_default_skips_baseline(experiment):
+    """未配置 baseline 时只输出压缩模型指标，不调用原模型 evaluator。"""
+    e = experiment
+    script.main(e.argv[:-1])
+    assert len(e.outputs) == 1
+    summary = json.loads((e.root / "summary.json").read_text())
+    assert summary["baseline_status"] == "skipped"
+    assert summary["comparison"] == {}
+    assert set(summary["evaluations"]) == {"compressed"}
 
 
 def test_evaluation_failure_preserves_artifacts_and_restores(experiment, monkeypatch):
@@ -464,7 +544,8 @@ def test_decomposition_seed_independent_of_evaluator(
         return original(*args, **kwargs)
 
     monkeypatch.setattr(workflow, "compress_model", compress)
-    script.main(e.argv + [seed_flag, "123"] + (["--skip-eval"] if skip else []))
+    argv = e.argv[:-1] if skip else e.argv
+    script.main(argv + [seed_flag, "123"] + (["--skip-eval"] if skip else []))
 
 
 @pytest.mark.parametrize("field", ["seed", "evaluation_seed"])

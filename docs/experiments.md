@@ -137,7 +137,7 @@ plan = load_compression_plan("layer-selection.json", model=model)
 
 ## 按 JSON 联合压缩与评测
 
-`run_compression_plan.py` 读取页面导出的完整方案，通过 `evaluate_compression_plans()` 执行实验，按 `compression_plan.targets` 指定的矩阵、MPO modes 和逐层 ranks 联合压缩，不微调。模型来源优先使用 `--model`，其次为 JSON 的 `model.name_or_path`，最后为 runtime 配置。默认 TensorLy 分解和执行、CUDA 0、BF16 模型、FP32 分解；分解结果转回原层精度。
+`run_compression_plan.py` 读取页面导出的一个或多个完整方案，通过 `evaluate_compression_plans()` 在一次模型加载中依次执行，按各自 `compression_plan.targets` 指定的矩阵、MPO modes 和逐层 ranks 联合压缩，不微调。模型来源优先使用 `--model`，其次为 JSON 的 `model.name_or_path`，最后为 runtime 配置；多个方案必须使用同一模型和评测配置。默认 TensorLy 分解和执行、CUDA 0、BF16 模型、FP32 分解；分解结果转回原层精度。
 
 从项目根目录先检查配置，再运行：
 
@@ -152,9 +152,11 @@ python scripts/run_compression_plan.py \
 
 `--dry-run` 只解析文件和展示实际执行配置，不加载模型、不创建产物目录；实际运行加载模型后由 `load_compression_plan()` 自动检查目标类型和维度。输入 JSON 原样复制并记录 SHA-256，压缩目标不会按评分再次筛选。
 
-默认评测 JSON 中勾选的数据集，使用 `selection.sources[].provenance.evaluation_config` 中的 few-shot、limit、样本起点、seed、chat template、batch size 和上下文长度。原模型与联合压缩模型使用同一组 evaluator；基线重新评测，不将历史单矩阵分数当作本次基线。`num_fewshot: null` 表示沿用当前安装的 lm-eval 任务默认值，零保持为零。无需读取原敏感度日志，但评测需要本地模型及任务数据缓存。
+默认评测 JSON 中勾选的数据集，使用 `selection.sources[].provenance.evaluation_config` 中的 few-shot、limit、样本起点、seed、chat template、batch size 和上下文长度。脚本默认只评测压缩模型；`--evaluate-baseline` 在压缩前现场评测一次原模型，`--baseline-events` 则读取另一实验的完整 baseline 并用于样本范围校验和掉点计算。baseline 来源必须与本次模型、完整评测配置和指标一致。`num_fewshot: null` 表示沿用当前安装的 lm-eval 任务默认值，零保持为零。评测需要本地模型及任务数据缓存。
 
 - `--eval-config config/compression_evaluation.json`：使用独立多任务配置，完整替代选层 JSON 的勾选任务。
+- `--evaluate-baseline`：现场评测一次原模型；默认关闭。
+- `--baseline-events path/to/events.jsonl`：复用已完成的 baseline，与 `--evaluate-baseline` 互斥。
 - `--no-plot`：不生成得分图；默认评测完成后输出 `scores.png`。
 - `--skip-eval`：只压缩并保存，不需要 JSON 内的分析来源；报告明确标记未评测。
 - `--eval-limit 16`：临时覆盖每个任务的评测样本上限，保持原样本起点。对于 MMLU 等 group，该值是每个子任务的上限。
@@ -172,13 +174,14 @@ python scripts/run_compression_plan.py \
   --dry-run
 ```
 
-`--eval-limit` 和 `--eval-batch-size` 最后覆盖所有任务；`--skip-eval` 不能与 `--eval-config` 或评测覆盖参数同时使用。`summary.json` 的 `comparison` 按任务、指标两层组织，支持同一任务多个指标。任务列表来自独立配置时，不与选层 JSON 合并。库接口支持多个计划；本脚本一次读取一个计划文件。
+`--eval-limit` 和 `--eval-batch-size` 最后覆盖所有任务；`--skip-eval` 不能与 `--eval-config`、baseline 或评测覆盖参数同时使用。传入 baseline 时，`summary.json` 的 `comparison` 按任务、指标两层组织；未提供 baseline 时只保存压缩模型指标。`--selection-json` 可一次接收多个方案路径，脚本共享模型、evaluator 和 baseline，完成一个方案并恢复原模型后再执行下一个。
 
 后台运行：
 
 ```bash
 nohup python -u scripts/run_compression_plan.py \
-  --selection-json artifacts/layer-selection/20260910T215301/layer-selection.json \
+  --selection-json plan-a.json plan-b.json \
+  --baseline-events path/to/baseline/events.jsonl \
   > compression-start.log 2>&1 &
 ```
 
@@ -186,12 +189,12 @@ nohup python -u scripts/run_compression_plan.py \
 
 | 文件 | 内容 |
 |---|---|
-| `selection.json` | 输入方案的原样副本 |
+| `selection.json` 或 `plans/*/selection.json` | 单方案或多方案的输入原样副本 |
 | `experiment_config.json` | 实际模型、后端、精度、种子、评测配置及输入哈希 |
-| `decompositions/0000.pt` 等 | 按目标顺序保存的逐矩阵 artifact，保留各自 spec |
+| `decompositions/` 或 `plans/*/decompositions/` | 按方案和目标顺序保存 artifact，保留各自 spec |
 | `artifacts.json` | 模块路径与相对 artifact 路径的对应关系 |
 | `events.jsonl`、`console.log` | 结构化事件、终端输出和异常 |
-| `summary.json`、`report.md` | 实测参数收益、两阶段得分、实际题数、退化和耗时 |
+| `summary.json`、`report.md` | 单方案完整结果，或多方案结果索引与共享 baseline |
 | `scores.png` | 每个任务、每个关注指标独立子图，标注前后分数与指标方向 |
 
 退化按指标方向计算，正值表示变差，报告使用指标原单位。参数节省不代表推理加速。保存的是张量网络 artifact，不是独立的 Hugging Face 模型目录；后续使用需加载原模型，再通过 `load_artifact()`、执行后端的 `build_linear()` 和 `replace_linear()` 安装已保存的压缩层。

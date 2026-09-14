@@ -66,7 +66,7 @@ restore_compressed_model(model, result)
 
 ## 多方案、多任务评测
 
-`evaluate_compression_plans()` 接收已加载模型、具名 `CompressionPlan` 映射和多个 evaluator。每个任务的 baseline 只评测一次；每个方案只调用一次 `compress_model()` 联合替换全部目标，再在全部任务上评测，完成后恢复原模型。原始 Linear 及各模块调用前的训练状态在正常和异常退出时均恢复。工作流不创建 backend、不加载数据、不写文件。
+`evaluate_compression_plans()` 接收已加载模型、具名 `CompressionPlan` 映射和多个 evaluator。默认每个任务的 baseline 只评测一次；`evaluate_baseline=False` 可只评测压缩模型，也可同时传入已有 `baseline` 来校验样本范围并计算退化量。每个方案只调用一次 `compress_model()` 联合替换全部目标，再在全部任务上评测，完成后恢复原模型。原始 Linear 及各模块调用前的训练状态在正常和异常退出时均恢复。工作流不创建 backend、不加载数据、不写文件。
 
 接续上例已恢复的 `model`、`tokenizer` 和 `plan`：
 
@@ -93,7 +93,7 @@ print(result.baseline["mmlu"].evaluation.metrics)
 print(result.plan_results[0].metric_degradations["hellaswag"])
 ```
 
-任务键可以是自定义名称，前后 evaluator 必须返回同一个 `EvaluationTask`、实际题数及总题数。退化按 `higher: baseline - compressed`、`lower: compressed - baseline` 计算，正值表示变差；每项关注指标必须存在且有限。
+任务键可以是自定义名称。现场或传入 baseline 时，压缩评测必须返回同一个 `EvaluationTask`、实际题数及总题数；退化按 `higher: baseline - compressed`、`lower: compressed - baseline` 计算，正值表示变差。没有 baseline 时 `metric_degradations` 为空；每项关注指标必须存在且有限。
 
 `CompressionEvaluationResult.baseline` 按任务保存 `TimedEvaluation`（`evaluation`、`seconds`）；`plan_results` 按输入顺序保存 `CompressionPlanEvaluation`，包含名称、计划、多任务评测与退化、整模和可选逐层压缩指标、分解耗时。结果不持有模型或 artifact。`collect_layer_metrics=True` 增加逐矩阵压缩比及权重重建误差，不额外运行数据集评测；默认关闭。`evaluators={}` 且 `metric_directions={}` 表示只压缩并统计。
 

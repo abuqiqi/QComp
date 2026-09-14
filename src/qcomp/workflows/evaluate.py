@@ -1,7 +1,8 @@
 """评测多个压缩方案在多个任务上的效果，复用压缩操作并保证恢复原模型。
 
-调用方提供已加载模型、具名计划、evaluator 和 backend；本模块只编排、计时和统计，
-不加载资源或写文件。回调允许调用方及时保存产物，返回结果不保留压缩张量。
+调用方提供已加载模型、具名计划、evaluator 和 backend，也可选择现场评测或传入已有
+baseline；本模块只编排、计时和统计，不加载资源或写文件。回调允许调用方及时保存
+产物，返回结果不保留压缩张量。
 主要内容：
 - ``TimedEvaluation``、``CompressionPlanEvaluation``、``CompressionEvaluationResult``：通用结果。
 - ``ModelEvaluator``：接收模型并返回 EvaluationResult 的可调用接口。
@@ -143,6 +144,8 @@ def evaluate_compression_plans(
     metric_directions: Mapping[str, Mapping[str, MetricDirection]],
     decomposition_backends: Mapping[str, TensorNetworkBackend[Any]],
     execution_backends: Mapping[str, TensorNetworkBackend[Any]],
+    baseline: Mapping[str, TimedEvaluation] | None = None,
+    evaluate_baseline: bool = True,
     decomposition_dtype: torch.dtype | None = None,
     collect_layer_metrics: bool = False,
     on_evaluation: Callable[[str | None, str, TimedEvaluation], None] | None = None,
@@ -155,7 +158,7 @@ def evaluate_compression_plans(
     ) = None,
     on_plan_result: Callable[[CompressionPlanEvaluation], None] | None = None,
 ) -> CompressionEvaluationResult:
-    """共享各任务 baseline，按 plans 顺序执行联合压缩及多指标评测。
+    """按 plans 顺序联合压缩并评测，可共享现场评测或预先提供的 baseline。
 
     参数：
         model: 已加载模型；成功或失败均恢复原始 Linear 和各模块训练状态。
@@ -164,6 +167,9 @@ def evaluate_compression_plans(
         metric_directions: 每个任务关注的指标到 higher/lower 的映射。
         decomposition_backends: 各表示的分解后端。
         execution_backends: 各表示的执行后端。
+        baseline: 可选的已有 baseline；仅用于校验样本范围和计算退化量。
+        evaluate_baseline: 是否现场评测原始模型。为假且未提供 baseline 时只返回压缩
+            模型指标，不计算退化量。
         decomposition_dtype: 分解精度；结果由压缩接口转回原层精度。
         collect_layer_metrics: 是否额外重建逐矩阵权重以统计误差，不增加任务评测。
         on_evaluation: 一项评测通过校验后通知；baseline 的方案名为 None。
@@ -188,6 +194,12 @@ def evaluate_compression_plans(
     if set(evaluators) != set(metric_directions):
         raise ValueError("metric_directions keys must match evaluators")
     directions = {name: _directions(metric_directions[name]) for name in evaluators}
+    if not isinstance(evaluate_baseline, bool):
+        raise TypeError("evaluate_baseline must be bool")
+    if baseline is not None and evaluate_baseline:
+        raise ValueError("baseline and evaluate_baseline cannot be used together")
+    if baseline is not None and set(baseline) != set(evaluators):
+        raise ValueError("baseline keys must match evaluators")
     if decomposition_dtype is not None and not decomposition_dtype.is_floating_point:
         raise ValueError("decomposition_dtype must be floating-point")
     for plan in plans.values():
@@ -204,12 +216,38 @@ def evaluate_compression_plans(
                         f"invalid {role} backend for {target.representation!r}"
                     )
     training = [(module, module.training) for module in model.modules()]
-    baseline, results = {}, []
+    shared_baseline, results = dict(baseline or {}), []
     try:
-        for task, evaluator in evaluators.items():
-            baseline[task] = _evaluate(model, evaluator, directions[task], None)
-            if on_evaluation is not None:
-                on_evaluation(None, task, baseline[task])
+        if evaluate_baseline:
+            for task, evaluator in evaluators.items():
+                shared_baseline[task] = _evaluate(
+                    model, evaluator, directions[task], None
+                )
+                if on_evaluation is not None:
+                    on_evaluation(None, task, shared_baseline[task])
+        else:
+            for task, timed in shared_baseline.items():
+                if not isinstance(timed, TimedEvaluation):
+                    raise ValueError("baseline must contain TimedEvaluation values")
+                if not math.isfinite(timed.seconds) or timed.seconds < 0:
+                    raise ValueError("baseline seconds must be finite and non-negative")
+                evaluation = timed.evaluation
+                if any(
+                    metric not in evaluation.metrics
+                    or not math.isfinite(float(evaluation.metrics[metric]))
+                    for metric in directions[task]
+                ):
+                    raise ValueError("baseline has missing or non-finite metrics")
+                if (
+                    type(evaluation.evaluated_examples) is not int
+                    or evaluation.evaluated_examples <= 0
+                ):
+                    raise ValueError("baseline evaluated_examples must be positive")
+                if evaluation.total_examples is not None and (
+                    type(evaluation.total_examples) is not int
+                    or evaluation.total_examples < evaluation.evaluated_examples
+                ):
+                    raise ValueError("baseline total_examples is invalid")
         for name, plan in plans.items():
             compression = None
             try:
@@ -253,21 +291,22 @@ def evaluate_compression_plans(
                 evaluations, degradations = {}, {}
                 for task, evaluator in evaluators.items():
                     timed = _evaluate(
-                        model, evaluator, directions[task], baseline[task]
+                        model, evaluator, directions[task], shared_baseline.get(task)
                     )
                     evaluations[task] = timed
-                    before, after = (
-                        baseline[task].evaluation.metrics,
-                        timed.evaluation.metrics,
-                    )
-                    degradations[task] = {
-                        metric: (
-                            before[metric] - after[metric]
-                            if direction == "higher"
-                            else after[metric] - before[metric]
+                    if task in shared_baseline:
+                        before, after = (
+                            shared_baseline[task].evaluation.metrics,
+                            timed.evaluation.metrics,
                         )
-                        for metric, direction in directions[task].items()
-                    }
+                        degradations[task] = {
+                            metric: (
+                                before[metric] - after[metric]
+                                if direction == "higher"
+                                else after[metric] - before[metric]
+                            )
+                            for metric, direction in directions[task].items()
+                        }
                     if on_evaluation is not None:
                         on_evaluation(name, task, timed)
                 result = CompressionPlanEvaluation(
@@ -291,4 +330,4 @@ def evaluate_compression_plans(
     finally:
         for module, was_training in training:
             module.training = was_training
-    return CompressionEvaluationResult(baseline, tuple(results))
+    return CompressionEvaluationResult(shared_baseline, tuple(results))
