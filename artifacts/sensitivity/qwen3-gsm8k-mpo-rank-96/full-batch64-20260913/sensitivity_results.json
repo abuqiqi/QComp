@@ -5674,6 +5674,66 @@
       "model_ratio": 1.0017573536898479,
       "compression_seconds": 0.05063306214287877,
       "evaluation_seconds": 1026.3900661389343
+    },
+    {
+      "case": "model.layers.12.mlp.gate_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.12.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8142861312,
+        "compression_ratio": 1.0058792660424474,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16285722624,
+        "tensor_size_compression_ratio": 1.0058792660424474,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8142532221379833,
+        "exact_match_flexible_extract": 0.8188021228203184
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.07050796057619402,
+        "exact_match_flexible_extract": 0.06823351023502655
+      },
+      "layers": {
+        "model.layers.12.mlp.gate_proj": {
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600,
+          "compression_ratio": 20.48,
+          "dense_tensor_bytes": 100663296,
+          "compressed_tensor_bytes": 4915200,
+          "tensor_size_compression_ratio": 20.48,
+          "relative_error": 0.96484375
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13919441401958466,
+      "evaluation_seconds": 1029.3228348628618
     }
   ],
   "provenance": {
