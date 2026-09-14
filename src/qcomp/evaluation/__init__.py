@@ -34,7 +34,12 @@ from .lm_eval import (
     evaluation_task_config_to_dict,
     lm_eval_dataset_size,
 )
-from .metrics import MetricDirection, metric_direction, resolve_metric_directions
+from .metrics import (
+    MetricDirection,
+    compute_nmse,
+    metric_direction,
+    resolve_metric_directions,
+)
 from .performance import (
     TimingResult,
     time_decomposition,
@@ -59,6 +64,7 @@ __all__ = [
     "lm_eval_dataset_size",
     "metric_direction",
     "model_compression_metrics",
+    "compute_nmse",
     "resolve_metric_directions",
     "time_decomposition",
     "time_inference",

@@ -8,12 +8,16 @@
 - ``MetricDirection``：限定指标优化方向。
 - ``metric_direction``：查询一个已注册指标的优化方向。
 - ``resolve_metric_directions``：批量构造 压缩评测使用的指标方向映射。
+- ``compute_nmse``：计算归一化均方误差（NMSE）和辅助量。
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Literal, TypeAlias
+
+import torch
+from torch import Tensor
 
 MetricDirection: TypeAlias = Literal["higher", "lower"]
 
@@ -98,3 +102,41 @@ def resolve_metric_directions(
     if len(set(normalized)) != len(normalized):
         raise ValueError("metrics must not contain duplicates")
     return {name: metric_direction(name) for name in normalized}
+
+
+def compute_nmse(
+    predictions: Tensor,
+    targets: Tensor,
+    *,
+    eps: float = 1e-12,
+) -> dict[str, Tensor]:
+    """计算 NMSE 并返回常用辅助指标。
+
+    参数：
+        predictions: 预测张量。
+        targets: 真值张量。
+        eps: 归一化分母下界。
+
+    返回：
+        包含 ``nmse``、``mse``、``target_power`` 的字典，值均为标量张量。
+
+    异常：
+        ValueError: ``targets`` 的功率小于 ``eps`` 或广播失败时抛出。
+    """
+    try:
+        pred_b, tgt_b = torch.broadcast_tensors(predictions, targets)
+    except RuntimeError as exc:
+        raise ValueError("predictions 和 targets 无法广播到同一形状") from exc
+
+    pred = pred_b.to(dtype=torch.float64)
+    tgt = tgt_b.to(dtype=torch.float64)
+    diff = pred - tgt
+    mse = torch.mean(diff * diff)
+    target_power = torch.mean(tgt * tgt)
+    if not torch.isfinite(target_power) or target_power <= eps:
+        raise ValueError("target power is not finite or too small")
+    return {
+        "mse": mse,
+        "target_power": target_power,
+        "nmse": mse / target_power,
+    }

@@ -329,6 +329,14 @@ def main(argv: Sequence[str] | None = None) -> None:
             config, select_linear=is_target_linear, make_target=make_target
         )
 
+        baseline = result.evaluation.baseline[args.task]
+        total_examples = baseline.evaluation.total_examples
+        print(
+            f"Evaluated examples: {baseline.evaluation.evaluated_examples} / "
+            f"{total_examples if total_examples is not None else 'unknown'}",
+            flush=True,
+        )
+
         plot_heatmaps(
             [
                 sensitivity_case_record(case, args.task)
