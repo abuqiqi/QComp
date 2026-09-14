@@ -28,6 +28,8 @@ class SensitivityScriptTests(unittest.TestCase):
 
         defaults = experiment.parse_args([])
         self.assertEqual(defaults.task, "mmlu")
+        self.assertEqual(defaults.rank, 96)
+        self.assertFalse(defaults.module_ranks)
         self.assertEqual(defaults.metric, ["acc"])
         self.assertIsNone(defaults.num_fewshot)
         gsm8k = experiment.parse_args(
@@ -44,6 +46,42 @@ class SensitivityScriptTests(unittest.TestCase):
         self.assertTrue(gsm8k.apply_chat_template)
         with self.assertRaises(SystemExit):
             experiment.parse_args(["--task", "gsm8k"])
+
+    def test_rank_strategies(self) -> None:
+        """验证分模块、统一和满秩策略及互斥参数。"""
+        for argv, suffix, rank in [
+            ([], "rank-96", 96),
+            (["--module-ranks"], "module-ranks", 64),
+            (["--rank", "32"], "rank-32", 32),
+            (["--full-rank"], "full-rank", 256),
+        ]:
+            with (
+                self.subTest(argv=argv),
+                patch.object(experiment, "run_sensitivity_experiment") as run,
+                patch.object(experiment, "plot_heatmaps"),
+                patch.object(experiment, "capture_console", return_value=nullcontext()),
+            ):
+                experiment.main(argv)
+                self.assertTrue(run.call_args.args[0].name.endswith(suffix))
+                target = run.call_args.kwargs["make_target"](
+                    "model.layers.0.self_attn.k_proj",
+                    nn.Linear(2048, 1024, device="meta"),
+                )
+                self.assertEqual(target.spec.ranks, (1, rank, rank, 1))
+                self.assertEqual(target.spec.in_modes, (16, 8, 16))
+        for argv in [
+            ["--rank", "32", "--full-rank"],
+            ["--rank", "32", "--module-ranks"],
+            ["--module-ranks", "--full-rank"],
+        ]:
+            with self.subTest(argv=argv), self.assertRaises(SystemExit):
+                experiment.parse_args(argv)
+        with self.assertRaises(ValueError):
+            experiment.make_qwen3_mpo_spec(nn.Linear(2048, 6144, device="meta"), 257)
+        spec = experiment.make_qwen3_mpo_spec(
+            nn.Linear(4096, 12288, device="meta"), None
+        )
+        self.assertEqual(spec.ranks, (1, 256, 768, 1))
 
     def test_layer_range_names_reject_legacy_cli(self) -> None:
         """明确区分 Linear 起点与题目起点，并拒绝旧参数和缩写。"""
@@ -140,7 +178,7 @@ class SensitivityScriptTests(unittest.TestCase):
         self.assertEqual(target.module_path, "block")
         self.assertEqual(target.representation, "mpo")
         self.assertEqual(target.spec.in_modes, (16, 16, 16))
-        self.assertEqual(target.spec.out_modes, (8, 8, 16))
+        self.assertEqual(target.spec.out_modes, (16, 4, 16))
         self.assertEqual(target.spec.ranks, (1, 3, 3, 1))
 
     def test_default_paths_are_shared_before_model_loading(self) -> None:
@@ -156,12 +194,53 @@ class SensitivityScriptTests(unittest.TestCase):
             report = Path(config.output)
             self.assertEqual(report.name, "report.md")
             self.assertRegex(report.parent.name, r"^\d{8}T\d{6}$")
-            self.assertEqual(report.parent.parent.name, "qwen3-mmlu-mpo-rank-96")
+            self.assertTrue(report.parent.parent.name.endswith("-mmlu-mpo-rank-96"))
             self.assertIsNone(config.results)
             capture.assert_called_once_with(report.parent / "console.log")
             capture.return_value.__enter__.assert_called_once()
             capture.return_value.__exit__.assert_called_once()
             run.assert_called_once()
+            plot.assert_called_once()
+
+    def test_model_name_in_experiment_directory(self) -> None:
+        """带具体模型名时目录标识应区分 1.7B、8B 等变体。"""
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(experiment, "run_sensitivity_experiment") as run,
+            patch.object(experiment, "plot_heatmaps") as plot,
+            patch.object(experiment, "capture_console") as capture,
+        ):
+            experiment.main(["--artifact-root", directory, "--model", "Qwen/Qwen3-1.7B"])
+            config = run.call_args.args[0]
+            report = Path(config.output)
+            self.assertEqual(report.parent.parent.name, "qwen3-1.7B-mmlu-mpo-rank-96")
+            self.assertEqual(config.model.model_name_or_path, "Qwen/Qwen3-1.7B")
+            plot.assert_called_once()
+
+    def test_runtime_config_controls_model_slug(self) -> None:
+        """未传 --model 时从 runtime.toml 读取模型名标识。"""
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(experiment, "run_sensitivity_experiment") as run,
+            patch.object(experiment, "plot_heatmaps") as plot,
+            patch.object(experiment, "capture_console") as capture,
+        ):
+            runtime_toml = Path(directory) / "runtime.toml"
+            runtime_toml.write_text(
+                """[model]
+name_or_path = 'Qwen/Qwen3-1.7B'
+
+[huggingface]
+home = 'hf_home'
+datasets_cache = 'hf_home/datasets'
+offline = true
+""",
+                encoding="utf-8",
+            )
+            experiment.main(["--artifact-root", directory, "--runtime-config", str(runtime_toml)])
+            config = run.call_args.args[0]
+            report = Path(config.output)
+            self.assertEqual(report.parent.parent.name, "qwen3-1.7B-mmlu-mpo-rank-96")
             plot.assert_called_once()
 
     def test_heatmap_coordinates_units_and_missing_values(self) -> None:
