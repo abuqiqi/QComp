@@ -51,6 +51,7 @@ from .data import (
 from .evaluation import (
     EvaluationTaskConfig,
     MetricDirection,
+    compute_nmse,
     metric_direction,
     resolve_metric_directions,
 )
@@ -182,6 +183,7 @@ __all__ = [
     "reconstruct_mpo",
     "reconstruct_tensor",
     "replace_linear",
+    "compute_nmse",
     "resolve_metric_directions",
     "restore_linear",
     "restore_compressed_model",

@@ -31,8 +31,7 @@ def qwen3_modes(size: int) -> tuple[int, int, int]:
         2048: (16, 8, 16),
         6144: (16, 24, 16),
         4096: (16, 16, 16),
-        12288: (16, 16, 48),
-        151936: (8, 16, 1187),
+        12288: (16, 48, 16),
     }
     if size not in modes:
         raise ValueError(f"no Qwen3 MPO modes configured for feature size {size}")
