@@ -194,7 +194,7 @@ class SensitivityScriptTests(unittest.TestCase):
             report = Path(config.output)
             self.assertEqual(report.name, "report.md")
             self.assertRegex(report.parent.name, r"^\d{8}T\d{6}$")
-            self.assertEqual(report.parent.parent.name, "qwen3-mmlu-mpo-rank-96")
+            self.assertTrue(report.parent.parent.name.endswith("-mmlu-mpo-rank-96"))
             self.assertIsNone(config.results)
             capture.assert_called_once_with(report.parent / "console.log")
             capture.return_value.__enter__.assert_called_once()
@@ -213,8 +213,34 @@ class SensitivityScriptTests(unittest.TestCase):
             experiment.main(["--artifact-root", directory, "--model", "Qwen/Qwen3-1.7B"])
             config = run.call_args.args[0]
             report = Path(config.output)
-            self.assertEqual(report.parent.parent.name, "qwen3-1.7b-mmlu-mpo-rank-96")
+            self.assertEqual(report.parent.parent.name, "qwen3-1.7B-mmlu-mpo-rank-96")
             self.assertEqual(config.model.model_name_or_path, "Qwen/Qwen3-1.7B")
+            plot.assert_called_once()
+
+    def test_runtime_config_controls_model_slug(self) -> None:
+        """未传 --model 时从 runtime.toml 读取模型名标识。"""
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(experiment, "run_sensitivity_experiment") as run,
+            patch.object(experiment, "plot_heatmaps") as plot,
+            patch.object(experiment, "capture_console") as capture,
+        ):
+            runtime_toml = Path(directory) / "runtime.toml"
+            runtime_toml.write_text(
+                """[model]
+name_or_path = 'Qwen/Qwen3-1.7B'
+
+[huggingface]
+home = 'hf_home'
+datasets_cache = 'hf_home/datasets'
+offline = true
+""",
+                encoding="utf-8",
+            )
+            experiment.main(["--artifact-root", directory, "--runtime-config", str(runtime_toml)])
+            config = run.call_args.args[0]
+            report = Path(config.output)
+            self.assertEqual(report.parent.parent.name, "qwen3-1.7B-mmlu-mpo-rank-96")
             plot.assert_called_once()
 
     def test_heatmap_coordinates_units_and_missing_values(self) -> None:

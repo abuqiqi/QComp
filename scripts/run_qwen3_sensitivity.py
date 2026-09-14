@@ -55,6 +55,7 @@ from qcomp import (
     ModelLoadConfig,
     MPOSpec,
     SensitivityExperimentConfig,
+    load_runtime_config,
     run_sensitivity_experiment,
 )
 from qcomp.evaluation import (
@@ -119,11 +120,12 @@ def parse_limit(value: str) -> int | float | None:
     return float(value) if "." in value else int(value)
 
 
-def _model_slug(model_name: str | None) -> str:
-    """从模型名称中提取目录安全的模型标识。
+def _model_slug(model_name: str | None, runtime_config: str | None = None) -> str:
+    """从模型来源与 runtime 配置提取目录安全的模型标识。
 
     参数：
-        model_name: 可能为 Hugging Face 名称、本地路径或检查点目录。
+        model_name: 临时覆盖的模型路径；为空时使用 runtime 配置。
+        runtime_config: runtime.toml 路径；空时读取默认路径。
 
     返回：
         用于实验名拼接的模型标记。
@@ -131,16 +133,18 @@ def _model_slug(model_name: str | None) -> str:
 
     default = "qwen3"
     if model_name is None:
-        return default
+        runtime = load_runtime_config(runtime_config)
+        model_name = runtime.model_name_or_path
     candidate = model_name.strip().rstrip("/")
     if not candidate:
         return default
-    candidate = candidate.rsplit("/", 1)[-1].lower()
-    match = re.search(r"qwen3-[0-9.]+b", candidate)
+    candidate = candidate.rsplit("/", 1)[-1]
+    match = re.search(r"(qwen3-[0-9.]+)b", candidate, re.IGNORECASE)
     if match is not None:
-        return match[0]
-    if candidate.startswith("qwen3"):
-        return re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-._")
+        return f"{match.group(1).lower()}B"
+    candidate_lower = candidate.lower()
+    if candidate_lower.startswith("qwen3"):
+        return re.sub(r"[^A-Za-z0-9._-]+", "-", candidate_lower).strip("-._")
     return default
 
 
@@ -267,7 +271,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         else f"rank-{args.rank}" if args.rank is not None else "module-ranks"
     )
     config = SensitivityExperimentConfig(
-        name=f"{_model_slug(args.model)}-{args.task}-mpo-{rank_strategy}",
+        name=f"{_model_slug(args.model, args.runtime_config)}-{args.task}-mpo-{rank_strategy}",
         model=ModelLoadConfig(
             model_name_or_path=args.model,
             device=args.device,
