@@ -39,9 +39,15 @@ import torch
 from torch import nn
 
 if __package__:
-    from .qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+    from .qwen3_alpaca_and_migration_mpo_config import (
+        qwen3_modes,
+        qwen3_mpo_spec_dict,
+    )
 else:
-    from qwen3_mpo_config import qwen3_modes, qwen3_mpo_spec_dict
+    from qwen3_alpaca_and_migration_mpo_config import (
+        qwen3_modes,
+        qwen3_mpo_spec_dict,
+    )
 
 from qcomp import (
     ArtifactPaths,

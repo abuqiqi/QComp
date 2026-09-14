@@ -41,9 +41,15 @@ from qcomp.workflows.sensitivity_io import (
 )
 
 if __package__:
-    from .qwen3_mpo_config import qwen3_mpo_spec_dict, qwen3_projection_shapes
+    from .qwen3_alpaca_and_migration_mpo_config import (
+        qwen3_mpo_spec_dict,
+        qwen3_projection_shapes,
+    )
 else:
-    from qwen3_mpo_config import qwen3_mpo_spec_dict, qwen3_projection_shapes
+    from qwen3_alpaca_and_migration_mpo_config import (
+        qwen3_mpo_spec_dict,
+        qwen3_projection_shapes,
+    )
 
 PROJECT = Path(__file__).resolve().parents[1]
 MODEL_FIELDS = (
@@ -361,7 +367,11 @@ def convert_source(
         "spec_recovery": {
             "rule": "Qwen3 三核 modes；两条内部 bond 使用实验名称中的 rank",
             "reference_commit": "615a10a",
-            "rule_sha256": digest(Path(__file__).with_name("qwen3_mpo_config.py")),
+            "rule_sha256": digest(
+                Path(__file__).with_name(
+                    "qwen3_alpaca_and_migration_mpo_config.py"
+                )
+            ),
         },
         "unknown_fields": ["model.dense_parameters", "cases.model_compression"],
         "assumptions": (

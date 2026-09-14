@@ -84,6 +84,16 @@ def tiny_spec(linear: nn.Linear, rank: int) -> MPOSpec:
 class AlpacaFineTuneScriptTests(unittest.TestCase):
     """覆盖 block 范围边界、联合压缩、参数冻结与训练恢复。"""
 
+    def test_qwen3_8b_modes_remain_compatible_with_existing_experiments(self) -> None:
+        """Qwen3-8B 的 KV 投影继续使用原实验采用的 1024 维拆分。"""
+
+        spec = experiment.make_qwen3_mpo_spec(
+            nn.Linear(4096, 1024, bias=False, device="meta"), 96
+        )
+        self.assertEqual(spec.out_modes, (8, 8, 16))
+        self.assertEqual(spec.in_modes, (16, 16, 16))
+        self.assertAlmostEqual(spec.compression_ratio, 3.4478114478114477)
+
     def test_default_range_selects_all_seven_projections_from_25(self) -> None:
         """默认包含编号 25 和末层，排除编号 24、输出头及非目标 proj。"""
 

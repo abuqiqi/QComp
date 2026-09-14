@@ -5734,6 +5734,246 @@
       "model_ratio": 1.0058792660424474,
       "compression_seconds": 0.13919441401958466,
       "evaluation_seconds": 1029.3228348628618
+    },
+    {
+      "case": "model.layers.12.mlp.up_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.12.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8142861312,
+        "compression_ratio": 1.0058792660424474,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16285722624,
+        "tensor_size_compression_ratio": 1.0058792660424474,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8309325246398787,
+        "exact_match_flexible_extract": 0.8332069749810462
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.05382865807429871,
+        "exact_match_flexible_extract": 0.05382865807429871
+      },
+      "layers": {
+        "model.layers.12.mlp.up_proj": {
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600,
+          "compression_ratio": 20.48,
+          "dense_tensor_bytes": 100663296,
+          "compressed_tensor_bytes": 4915200,
+          "tensor_size_compression_ratio": 20.48,
+          "relative_error": 0.96875
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.13857224630191922,
+      "evaluation_seconds": 1246.1890907110646
+    },
+    {
+      "case": "model.layers.12.mlp.down_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.12.mlp.down_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                48
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8142861312,
+        "compression_ratio": 1.0058792660424474,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16285722624,
+        "tensor_size_compression_ratio": 1.0058792660424474,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8415466262319939,
+        "exact_match_flexible_extract": 0.8203184230477635
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.04321455648218342,
+        "exact_match_flexible_extract": 0.06671721000758146
+      },
+      "layers": {
+        "model.layers.12.mlp.down_proj": {
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600,
+          "compression_ratio": 20.48,
+          "dense_tensor_bytes": 100663296,
+          "compressed_tensor_bytes": 4915200,
+          "tensor_size_compression_ratio": 20.48,
+          "relative_error": 0.96875
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.3067774511873722,
+      "evaluation_seconds": 1898.4798652967438
+    },
+    {
+      "case": "model.layers.13.self_attn.q_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.13.self_attn.q_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8176366592,
+        "compression_ratio": 1.0017573536898479,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16352733184,
+        "tensor_size_compression_ratio": 1.0017573536898479,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8635329795299469,
+        "exact_match_flexible_extract": 0.866565579984837
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.021228203184230465,
+        "exact_match_flexible_extract": 0.020470053070507976
+      },
+      "layers": {
+        "model.layers.13.self_attn.q_proj": {
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448,
+          "compression_ratio": 6.965986394557823,
+          "dense_tensor_bytes": 33554432,
+          "compressed_tensor_bytes": 4816896,
+          "tensor_size_compression_ratio": 6.965986394557823,
+          "relative_error": 0.890625
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05106909479945898,
+      "evaluation_seconds": 1769.9210798400454
+    },
+    {
+      "case": "model.layers.13.self_attn.k_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.13.self_attn.k_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                8,
+                8,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8187757568,
+        "compression_ratio": 1.0003636883451017,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16375515136,
+        "tensor_size_compression_ratio": 1.0003636883451017,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8658074298711145,
+        "exact_match_flexible_extract": 0.868081880212282
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.018953752843062888,
+        "exact_match_flexible_extract": 0.018953752843062888
+      },
+      "layers": {
+        "model.layers.13.self_attn.k_proj": {
+          "dense_parameters": 4194304,
+          "compressed_parameters": 1216512,
+          "compression_ratio": 3.4478114478114477,
+          "dense_tensor_bytes": 8388608,
+          "compressed_tensor_bytes": 2433024,
+          "tensor_size_compression_ratio": 3.4478114478114477,
+          "relative_error": 0.796875
+        }
+      },
+      "model_ratio": 1.0003636883451017,
+      "compression_seconds": 0.08124857069924474,
+      "evaluation_seconds": 1876.0670018852688
     }
   ],
   "provenance": {
