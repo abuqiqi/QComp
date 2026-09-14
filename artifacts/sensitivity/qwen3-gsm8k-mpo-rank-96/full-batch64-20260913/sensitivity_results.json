@@ -5614,6 +5614,66 @@
       "model_ratio": 1.0003636883451017,
       "compression_seconds": 0.03004853008314967,
       "evaluation_seconds": 1024.2229726049118
+    },
+    {
+      "case": "model.layers.12.self_attn.o_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.12.self_attn.o_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                16
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8176366592,
+        "compression_ratio": 1.0017573536898479,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16352733184,
+        "tensor_size_compression_ratio": 1.0017573536898479,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8529188779378317,
+        "exact_match_flexible_extract": 0.8551933282789992
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.03184230477634564,
+        "exact_match_flexible_extract": 0.03184230477634575
+      },
+      "layers": {
+        "model.layers.12.self_attn.o_proj": {
+          "dense_parameters": 16777216,
+          "compressed_parameters": 2408448,
+          "compression_ratio": 6.965986394557823,
+          "dense_tensor_bytes": 33554432,
+          "compressed_tensor_bytes": 4816896,
+          "tensor_size_compression_ratio": 6.965986394557823,
+          "relative_error": 0.8984375
+        }
+      },
+      "model_ratio": 1.0017573536898479,
+      "compression_seconds": 0.05063306214287877,
+      "evaluation_seconds": 1026.3900661389343
     }
   ],
   "provenance": {
