@@ -27,6 +27,7 @@ def test_task_config_normalizes_and_copies():
     directions.clear()
     assert config.metric_directions == {"acc": "higher", "loss": "lower"}
     assert config.evaluation.evaluation_seed == 42
+    assert config.evaluation.batch_size == 64
     with pytest.raises(TypeError):
         LMEvalConfig(task="boolq", seed=42)
 
@@ -85,3 +86,20 @@ def test_seed_cli_compatibility(script, option, attribute, required):
         assert getattr(script.parse_args(required + [flag, "17"]), attribute) == 17
     with pytest.raises(SystemExit):
         script.parse_args(required + [option, "17", "--seed", "17"])
+
+
+def test_evaluation_cli_defaults_use_batch_size_64():
+    """压缩评测与 Qwen3 sensitivity 默认使用 batch size 64。"""
+    compression = run_compression_plan.parse_args(
+        ["--selection-json", "plan.json"]
+    )
+    sensitivity = run_qwen3_sensitivity.parse_args([])
+
+    assert compression.eval_batch_size == 64
+    assert sensitivity.batch_size == 64
+    assert (
+        run_compression_plan.parse_args(
+            ["--selection-json", "plan.json", "--skip-eval"]
+        ).eval_batch_size
+        is None
+    )

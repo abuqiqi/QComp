@@ -105,7 +105,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         type=int,
         help="覆盖每个任务的评测样本上限；group 为每个子任务上限",
     )
-    parser.add_argument("--eval-batch-size", type=int, help="覆盖评测 batch size")
+    parser.add_argument(
+        "--eval-batch-size",
+        type=int,
+        help="覆盖评测 batch size；未指定时默认使用 64",
+    )
     parser.add_argument(
         "--eval-config", type=Path, help="独立的多任务评测 JSON，替代选层来源设置"
     )
@@ -140,6 +144,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         parser.error(
             "--skip-eval 不能与 --eval-config、baseline 或评测覆盖参数同时使用"
         )
+    if not args.skip_eval and args.eval_batch_size is None:
+        args.eval_batch_size = 64
     return args
 
 

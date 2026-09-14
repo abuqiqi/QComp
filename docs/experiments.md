@@ -160,7 +160,7 @@ python scripts/run_compression_plan.py \
 - `--no-plot`：不生成得分图；默认评测完成后输出 `scores.png`。
 - `--skip-eval`：只压缩并保存，不需要 JSON 内的分析来源；报告明确标记未评测。
 - `--eval-limit 16`：临时覆盖每个任务的评测样本上限，保持原样本起点。对于 MMLU 等 group，该值是每个子任务的上限。
-- `--eval-batch-size 4`：覆盖评测 batch size。
+- `--eval-batch-size 4`：覆盖评测 batch size；未指定时默认使用 64。
 - `--model /path/to/model`、`--runtime-config ...`：调整模型或运行环境。
 - `--decomposition-provider`、`--execution-provider`、`--model-dtype`、`--decomposition-dtype`：控制执行后端与精度。
 - `--output ...`：指定新的产物目录，已有目录拒绝覆盖。

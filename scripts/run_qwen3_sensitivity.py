@@ -201,7 +201,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="参与退化比较的指标名称；可以重复传入。",
     )
     parser.add_argument("--num-fewshot", type=int)
-    parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--max-length", type=int, default=4096)
     parser.add_argument("--limit", type=parse_limit, default=1)
     parser.add_argument(

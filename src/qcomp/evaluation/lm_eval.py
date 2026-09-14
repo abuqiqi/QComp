@@ -32,7 +32,7 @@ class LMEvalConfig:
 
     task: str
     num_fewshot: int | None = None
-    batch_size: int = 8
+    batch_size: int = 64
     max_length: int = 4096
     limit: int | float | None = None
     evaluation_seed: int = 42

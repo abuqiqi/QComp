@@ -2,9 +2,9 @@
   "kind": "qcomp_sensitivity_results",
   "run_id": "65e0335bb6e74d929c2b27428683fb9b",
   "name": "qwen3-gsm8k-mpo-rank-96",
-  "status": "running",
+  "status": "failed",
   "started_at": "2026-09-13T01:32:59.988846+00:00",
-  "finished_at": null,
+  "finished_at": "2026-09-14T07:09:58.253435+00:00",
   "expected_cases": [
     "model.layers.0.self_attn.q_proj",
     "model.layers.0.self_attn.k_proj",
@@ -6094,6 +6094,126 @@
       "model_ratio": 1.0017573536898479,
       "compression_seconds": 0.12176332529634237,
       "evaluation_seconds": 1864.4807566101663
+    },
+    {
+      "case": "model.layers.13.mlp.gate_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.13.mlp.gate_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8142861312,
+        "compression_ratio": 1.0058792660424474,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16285722624,
+        "tensor_size_compression_ratio": 1.0058792660424474,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8263836239575436,
+        "exact_match_flexible_extract": 0.8324488248673237
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.05837755875663375,
+        "exact_match_flexible_extract": 0.054586808188021196
+      },
+      "layers": {
+        "model.layers.13.mlp.gate_proj": {
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600,
+          "compression_ratio": 20.48,
+          "dense_tensor_bytes": 100663296,
+          "compressed_tensor_bytes": 4915200,
+          "tensor_size_compression_ratio": 20.48,
+          "relative_error": 0.96875
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.2963545569218695,
+      "evaluation_seconds": 1927.9084376157261
+    },
+    {
+      "case": "model.layers.13.mlp.up_proj",
+      "compression_plan": {
+        "targets": [
+          {
+            "module_path": "model.layers.13.mlp.up_proj",
+            "representation": "mpo",
+            "spec": {
+              "out_modes": [
+                16,
+                16,
+                48
+              ],
+              "in_modes": [
+                16,
+                16,
+                16
+              ],
+              "ranks": [
+                1,
+                96,
+                96,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "model_compression": {
+        "dense_parameters": 8190735360,
+        "compressed_parameters": 8142861312,
+        "compression_ratio": 1.0058792660424474,
+        "dense_tensor_bytes": 16381470720,
+        "compressed_tensor_bytes": 16285722624,
+        "tensor_size_compression_ratio": 1.0058792660424474,
+        "compressed_layers": 1
+      },
+      "metrics": {
+        "exact_match_strict_match": 0.8453373768006065,
+        "exact_match_flexible_extract": 0.8476118271417741
+      },
+      "degradations": {
+        "exact_match_strict_match": 0.039423805913570864,
+        "exact_match_flexible_extract": 0.039423805913570864
+      },
+      "layers": {
+        "model.layers.13.mlp.up_proj": {
+          "dense_parameters": 50331648,
+          "compressed_parameters": 2457600,
+          "compression_ratio": 20.48,
+          "dense_tensor_bytes": 100663296,
+          "compressed_tensor_bytes": 4915200,
+          "tensor_size_compression_ratio": 20.48,
+          "relative_error": 0.96875
+        }
+      },
+      "model_ratio": 1.0058792660424474,
+      "compression_seconds": 0.3002666290849447,
+      "evaluation_seconds": 1881.911973189097
     }
   ],
   "provenance": {
@@ -6103,5 +6223,9 @@
     "start_layer_index": 0,
     "max_layers": null
   },
-  "report_path": "/mnt/intern7/xls/projects/qcomp/artifacts/sensitivity/qwen3-gsm8k-mpo-rank-96/full-batch64-20260913/report.md"
+  "report_path": "/mnt/intern7/xls/projects/qcomp/artifacts/sensitivity/qwen3-gsm8k-mpo-rank-96/full-batch64-20260913/report.md",
+  "error": {
+    "type": "FileNotFoundError",
+    "message": "[Errno 2] No such file or directory: '/mnt/intern7/xls/projects/qcomp/config/runtime.toml'"
+  }
 }
