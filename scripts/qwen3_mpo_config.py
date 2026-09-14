@@ -2,6 +2,7 @@
 
 本模块只依赖标准库，将矩阵维度转换为可序列化的结构，不加载模型或后端。
 主要内容：
+- ``MODULE_RANKS``：定义七类投影的默认内部 rank。
 - ``qwen3_modes``：定义已支持特征维度的三核拆分。
 - ``qwen3_mpo_spec_dict``：生成并校验统一内部 rank 的 MPO 结构。
 - ``qwen3_projection_shapes``：从模型配置推导七类投影矩阵形状。
@@ -12,10 +13,23 @@ from math import prod
 from typing import Any
 
 
+MODULE_RANKS: dict[str, int] = {
+    "q_proj": 96,
+    "k_proj": 64,
+    "v_proj": 64,
+    "o_proj": 96,
+    "gate_proj": 160,
+    "up_proj": 160,
+    "down_proj": 160,
+}
+
+
 def qwen3_modes(size: int) -> tuple[int, int, int]:
     """返回 size 对应的三核 modes；不支持的维度明确报错。"""
     modes = {
-        1024: (8, 8, 16),
+        1024: (16, 4, 16),
+        2048: (16, 8, 16),
+        6144: (16, 24, 16),
         4096: (16, 16, 16),
         12288: (16, 16, 48),
         151936: (8, 16, 1187),
