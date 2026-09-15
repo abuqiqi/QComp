@@ -15,6 +15,7 @@
 - ``MetricDirection``：限定指标优化方向。
 - ``metric_direction``、``resolve_metric_directions``：查询常用指标方向。
 - ``TimingResult``：保存一组计时样本及其汇总统计。
+- ``local_output_error_sums``、``local_output_nmse``：计算有效 token 上的局部输出 NMSE。
 - ``time_decomposition``：测量权重分解时间。
 - ``time_inference``：测量模型层推理时间。
 - ``time_training_step``：测量完整训练 step 时间。
@@ -34,6 +35,7 @@ from .lm_eval import (
     evaluation_task_config_to_dict,
     lm_eval_dataset_size,
 )
+from .local_output_nmse import local_output_error_sums, local_output_nmse
 from .metrics import (
     MetricDirection,
     compute_nmse,
@@ -62,6 +64,8 @@ __all__ = [
     "evaluation_task_config_from_dict",
     "evaluation_task_config_to_dict",
     "lm_eval_dataset_size",
+    "local_output_error_sums",
+    "local_output_nmse",
     "metric_direction",
     "model_compression_metrics",
     "compute_nmse",

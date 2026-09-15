@@ -18,6 +18,7 @@
 - ``TensorNetworkFineTuneResult``：组合通用训练结果和张量网络特有产物。
 - ``finetune_tensor_network_causal_lm``：只更新张量网络参数并支持断点续训。
 - ``InferenceConfig``、``InferenceResult``：定义正常生成配置和组合结果。
+- ``capture_local_output_inputs``、``evaluate_local_output_nmse_plans``：缓存输入并执行局部输出 NMSE 筛选。
 - ``infer_causal_lm``：生成 token 并记录时间、吞吐与峰值显存。
 """
 
@@ -54,6 +55,18 @@ from .inference import (
     InferenceResult,
     infer_causal_lm,
 )
+from .local_output_nmse import (
+    MemoryInputs,
+    MemoryMasks,
+    capture_local_output_inputs,
+    capture_local_output_inputs_in_memory,
+    evaluate_local_output_nmse_plans,
+    evaluate_local_output_nmse_plans_in_memory,
+    iter_local_output_input_batches,
+    local_output_cache_fingerprint,
+    resolve_local_output_cache_path,
+    validate_local_output_input_cache,
+)
 from .sensitivity import (
     SensitivityExperimentConfig,
     SensitivityExperimentResult,
@@ -75,23 +88,33 @@ __all__ = [
     "MetricDirection",
     "ModelCompressionResult",
     "ModelEvaluator",
+    "MemoryInputs",
+    "MemoryMasks",
     "SensitivityExperimentConfig",
     "SensitivityExperimentResult",
     "TensorNetworkFineTuneResult",
     "TimedEvaluation",
     "compress_linear",
     "compress_model",
+    "capture_local_output_inputs",
+    "capture_local_output_inputs_in_memory",
     "compression_plan_from_dict",
     "compression_plan_to_dict",
     "evaluate_compression_plans",
+    "evaluate_local_output_nmse_plans",
+    "evaluate_local_output_nmse_plans_in_memory",
     "finetune_tensor_network_causal_lm",
     "format_sensitivity_report",
     "infer_causal_lm",
+    "iter_local_output_input_batches",
     "load_compression_plan",
+    "local_output_cache_fingerprint",
     "read_sensitivity_results",
     "restore_compressed_model",
+    "resolve_local_output_cache_path",
     "run_sensitivity_experiment",
     "sensitivity_case_record",
+    "validate_local_output_input_cache",
     "validate_sensitivity_results",
     "write_sensitivity_results",
 ]

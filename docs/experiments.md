@@ -205,6 +205,55 @@ nohup python -u scripts/run_compression_plan.py \
 python -m pytest tests/test_evaluate.py tests/test_compression_plan_script.py tests/test_compression_plan_io.py
 ```
 
+## Qwen3 局部输出 NMSE
+
+入口 `scripts/run_qwen3_local_output_nmse.py` 逐任务、逐批处理固定输入。
+候选一次分解并以模型精度常驻 GPU，每批 baseline backbone 只执行一次；block 完成时
+测量该 block 的候选并释放局部激活，不向后传播压缩输出，不写激活缓存。
+
+```bash
+conda run -n qwen3-tn python scripts/run_qwen3_local_output_nmse.py \
+  --config config/local_output_nmse.json
+```
+
+正式全量 MMLU 的吞吐配置为 `config/local_output_nmse_mmlu_full.json`，batch size 上限 8；
+默认 `config/local_output_nmse.json` 保持 batch size 1。
+
+配置包含 `retention_ratios` 和 `tasks`。每个任务指定 `name`、完整 `evaluation`
+（`LMEvalConfig`）、`input_strategy`、相对配置文件的 `historical_results` 路径。
+默认配置运行完整 MMLU，batch size 1，最大长度 4096；候选为三个保留率加历史完整 MPO
+配置，按模块和完整结构去重。batch size 是序列数上限，同时每批 padding 后的 token
+总量不超过 max_length；长题自动形成较小批次，不进行 OOM 重试。`--start-block`、`--max-blocks` 可缩小目标模块范围。
+
+`likelihood` 复用 lm-eval 的 few-shot 与选项请求；同题完全相同的模型输入只统计一次。
+`reference_answer` 支持 GSM8K（完整原始解题答案）和 TriviaQA（answer.value），使用
+原任务提示和标准答案固定前向，不调用生成。两类输入均左截断并移除最后一个预测目标
+ token；全部有效输入位置计入 NMSE，padding 排除，不跨题 packing。
+
+每个完整批次原子提交 `checkpoint.json`，包含累计分子分母和输入进度。恢复时重新分解
+候选，验证模型文件、tokenizer、任务数据与软件版本身份及已处理输入摘要，再继续：
+
+```bash
+conda run -n qwen3-tn python scripts/run_qwen3_local_output_nmse.py \
+  --resume artifacts/evaluations/qwen3-local-output-nmse/<run>
+```
+
+恢复使用断点中的执行配置；不保存候选或激活文件。异常停止并保留最后完整批次。
+缓存库接口仍可独立使用；本脚本统一采用流式执行，旧缓存命令参数会提示迁移。
+
+输出包括 `local_output_nmse.json`、CSV、`experiment_config.json`、事件日志和报告。
+总体由来源的分子、分母相加得到；历史配置不冒充目标保留率。单任务只输出其四张
+候选组热力图，多任务另输出总体；旧四来源结果仍支持 15 张图。
+
+```bash
+conda run -n qwen3-tn python scripts/run_qwen3_local_output_nmse.py \
+  --plot-only artifacts/evaluations/qwen3-local-output-nmse/<run>/local_output_nmse.json
+```
+
+`--heatmap-max` 设置共享色标上限。历史对比仅匹配相同模块和完整 MPO 配置，输出独立
+色标的 NMSE/掉点热力图、散点图、Spearman 和排名分歧表，文件名前缀包含任务与运行标识。
+历史记录未提供 token 或权重摘要时，报告明确标注无法证明逐 token 历史复现。
+
 ## Alpaca 联合压缩与微调
 
 联合压缩从零起始编号 `25`（含）到最后一个 Transformer block 的全部 attention / MLP proj，并用 Alpaca 只微调 MPO 参数：

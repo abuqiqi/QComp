@@ -9,6 +9,9 @@
 - `restore_compressed_model()`：关闭计划安装的压缩层并恢复原始 Linear。
 - `SensitivityExperimentConfig`、`run_sensitivity_experiment()`：配置资源并执行逐层 lm-eval 实验，逐 case 原子保存标准 JSON 结果和 Markdown 报告。
 - `evaluate_compression_plans()`：使用外部 backend 和 evaluator 比较多个临时压缩方案。
+- `capture_local_output_inputs_in_memory()`：在模型设备捕获当前 block 的 Linear 输入，并让共享 storage 的投影复用 clone。
+- `evaluate_local_output_nmse_plans_in_memory()`：使用设备内临时输入逐个评测单目标压缩计划。
+- `capture_local_output_inputs()`、`evaluate_local_output_nmse_plans()`：显式磁盘模式下分片缓存输入并流式评测。
 - `format_sensitivity_report()`：将敏感性分析结果转换为 Markdown，并按需写入文件。
 - `infer_causal_lm()`：执行正常自回归生成并返回 token、时间、吞吐和显存。
 - `finetune_tensor_network_causal_lm()`：选择张量网络参数，调用通用训练层并导出最新 artifacts。
@@ -232,3 +235,6 @@ checkpoint 只保存本次选择的参数、优化器、调度器、训练位置
 实验配置使用 `CompressionExecutionConfig.build_backends(plans)` 按实际表示构建并检查后端；它不改变随机状态。`EvaluationTaskConfig` 将任务参数和指标方向放在一起，调用公共评测流程时再构建 evaluator 与方向映射。敏感度的 `evaluation_seed` 控制 lm-eval，分解沿用评测结束后的随机状态，没有独立分解种子。
 
 敏感性结果使用 `read_sensitivity_results()` 与 `write_sensitivity_results()` 统一校验和读写；每个 case 保存完整压缩计划，任务配置使用 `evaluation_task_config_to_dict()` / `evaluation_task_config_from_dict()` 往返。生命周期和字段见[标准敏感性结果](../../../docs/experiments.md#标准敏感性结果)。
+
+流式 NMSE 使用 `streaming_nmse.prepare_candidates` 准备独立候选，
+`streaming_nmse.measure_batch` 返回一次 backbone 前向的临时统计；不替换 baseline。

@@ -1,0 +1,16 @@
+{
+  "datasets": [
+    {
+      "task": "gsm8k",
+      "metrics": [
+        "exact_match_strict_match",
+        "exact_match_flexible_extract"
+      ],
+      "num_fewshot": null,
+      "limit": null,
+      "sample_start_index": 0,
+      "evaluation_seed": 42,
+      "batch_size": 64
+    }
+  ]
+}

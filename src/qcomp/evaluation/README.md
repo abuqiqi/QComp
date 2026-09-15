@@ -11,6 +11,7 @@ evaluation/
 ├── __init__.py       # 导出公开评测接口
 ├── compression.py    # 参数量、压缩率和重建误差
 ├── lm_eval.py        # 通用 lm-eval task/group evaluator
+├── local_output_nmse.py # 有效 token 上的局部输出 NMSE 归约
 ├── metrics.py        # 常用评测指标的优化方向
 ├── performance.py    # 分解、推理和训练 step 计时
 └── task.py           # 通用评测任务和动态结果
@@ -27,6 +28,7 @@ evaluation/
 - `LMEvalConfig`：定义任一 lm-eval task 或 group 的执行参数。
 - `LMEvalEvaluator`：加载一次 task，并重复评测不同模型状态，动态返回 task metrics。
 - `MetricDirection`：限定指标是数值越高还是越低越好。
+- `local_output_error_sums`、`local_output_nmse`：累计局部输出误差、reference 能量并计算 NMSE。
 - `metric_direction`、`resolve_metric_directions`：查询常用指标方向。
 - `TimingResult`：保存多次计时样本，并提供平均值和中位数。
 - `time_decomposition`：测量 backend 分解稠密权重的时间。
@@ -222,3 +224,7 @@ for provider in list_backends("mpo"):
 `EvaluationTaskConfig(evaluation, metric_directions)` 组合单任务配置与关注指标，指标名称统一去除首尾空白并转为小写，拒绝重名和非法方向。`LMEvalConfig.evaluation_seed` 默认 42，同时传给 lm-eval 的 Python、NumPy、Torch 和 few-shot 种子，不改变题目起点或上限。
 
 `evaluation_task_config_to_dict(config)` 保存完整执行配置和指标方向，`evaluation_task_config_from_dict(data)` 校验并恢复配置；反序列化拒绝缺失字段，避免把当前默认值作为历史实验设置。
+
+`nmse_inputs.TaskInputs` 逐题构造 lm-eval 固定输入与顺序摘要，支持选项评分和
+GSM8K/TriviaQA 标准答案。`local_output_error_sums` 可接收同一 mask 的预计算 token 数，
+避免逐候选设备同步。

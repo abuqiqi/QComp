@@ -1,0 +1,24 @@
+{
+  "retention_ratios": [
+    0.8,
+    0.6,
+    0.4
+  ],
+  "tasks": [
+    {
+      "name": "mmlu",
+      "evaluation": {
+        "task": "mmlu",
+        "num_fewshot": null,
+        "batch_size": 8,
+        "max_length": 4096,
+        "limit": null,
+        "evaluation_seed": 42,
+        "apply_chat_template": false,
+        "sample_start_index": 0
+      },
+      "input_strategy": "likelihood",
+      "historical_results": "../artifacts/sensitivity/qwen3-mmlu-mpo-rank-96/20260905T182434/sensitivity_results.json"
+    }
+  ]
+}
